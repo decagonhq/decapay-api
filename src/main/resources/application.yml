@@ -1,0 +1,37 @@
+
+
+#==============SPRING===================
+spring:
+  profiles:
+    active: ${SPRING_ACTIVE_PROFILE:dev}
+  jackson:
+    default-property-inclusion: NON_NULL
+  main:
+    allow-bean-definition-overriding: true
+  web:
+    resources:
+      add-mappings: true
+
+    # =============SERVER==================
+server:
+  port: ${PORT:5000}
+  servlet:
+    context-path: /${CONTEXT_PATH:decapay}
+
+
+    # ============API===================
+api:
+  url-domain: ${APP_URL_DOMAIN:http://localhost:${server.port}${server.servlet.context-path}}
+  module-name: DecaPay
+  version: 1.0
+  basepath-api: /api/v1
+  basepath-admin: ${api.basepath-api}/admin
+  basepath-user: ${api.basepath-api}/user
+
+# ============ACTUATOR===================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
