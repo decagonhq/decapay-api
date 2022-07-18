@@ -1,7 +1,7 @@
 package com.decagon.decapay.config;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.exception.DataConflictException;
+import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.utils.ApiResponseUtil;
@@ -32,7 +32,7 @@ public class CustomizedResponseExceptionHandler extends ResponseEntityExceptionH
     }
 
 
-    @ExceptionHandler(DataConflictException.class)
+    @ExceptionHandler(ResourceConflictException.class)
     public final ResponseEntity handleDuplicateEntityExceptions(Exception ex, WebRequest request) {
         return ApiResponseUtil.errorResponse(HttpStatus.CONFLICT,ex.getMessage());
     }
