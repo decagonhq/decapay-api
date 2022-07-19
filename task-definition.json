@@ -69,26 +69,7 @@
     "placementConstraints": [],
     "memory": "512",
     "taskRoleArn": null,
-    "compatibilities": [
-      "EXTERNAL",
-      "EC2"
-    ],
-    "taskDefinitionArn": "arn:aws:ecs:us-east-2:913814110218:task-definition/decapay-api-td:1",
     "family": "decapay-api-td",
-    "requiresAttributes": [
-      {
-        "targetId": null,
-        "targetType": null,
-        "value": null,
-        "name": "com.amazonaws.ecs.capability.ecr-auth"
-      },
-      {
-        "targetId": null,
-        "targetType": null,
-        "value": null,
-        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
-      }
-    ],
     "pidMode": null,
     "requiresCompatibilities": [
       "EC2"
@@ -96,8 +77,6 @@
     "networkMode": "bridge",
     "runtimePlatform": null,
     "cpu": "512",
-    "revision": 1,
-    "status": "ACTIVE",
     "inferenceAccelerators": null,
     "proxyConfiguration": null,
     "volumes": []
