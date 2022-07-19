@@ -15,7 +15,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.decagon.decapay.constants.SchemaConstants.TABLE_USER;
 
@@ -36,7 +37,7 @@ public class User implements Auditable, Serializable {
     @Column(length = 100)
     private String lastName;
 
-    @Email(message = "please enter a valid email value")
+    @Email
     @Column(unique = true, length = 100)
     private String email;
 
@@ -50,11 +51,11 @@ public class User implements Auditable, Serializable {
     private UserStatus userStatus = UserStatus.ACTIVE;
     private LocalDateTime lastLogin;
 
-    @OneToMany(mappedBy = "user")
-    private Collection<BudgetCategory> budgetCategory;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<BudgetCategory> budgetCategories = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
-    private Collection<Budget> budget;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Budget> budgets = new HashSet<>();
 
     @Embedded
     private AuditSection auditSection = new AuditSection();
@@ -63,6 +64,26 @@ public class User implements Auditable, Serializable {
     public String toString() {
         return "User{id=%d, firstName='%s', lastName='%s', email='%s', password='%s', phoneNumber='%s', userStatus=%s, lastLogin=%s, auditSection=%s}"
                 .formatted(id, firstName, lastName, email, password, phoneNumber, userStatus, lastLogin, auditSection);
+    }
+
+    public void addBudgetCategory(BudgetCategory budgetCategory) {
+        budgetCategory.setUser(this);
+        this.budgetCategories.add(budgetCategory);
+    }
+
+    public void removeBudgetCategory(BudgetCategory budgetCategory) {
+        budgetCategory.setUser(null);
+        this.budgetCategories.remove(budgetCategory);
+    }
+
+    public void addBudget(Budget budget) {
+        budget.setUser(this);
+        this.budgets.add(budget);
+    }
+
+    public void removeBudget(Budget budget) {
+        budget.setUser(null);
+        this.budgets.remove(budget);
     }
 
 }

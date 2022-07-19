@@ -11,7 +11,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET_LINE_ITEM;
 
@@ -26,26 +27,34 @@ public class BudgetLineItem implements Auditable, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private BigDecimal projectedAmount = BigDecimal.ZERO;
 
-    private BigDecimal projectedAmount;
+    private BigDecimal totalAmountSpentSoFar = BigDecimal.ZERO;
 
-    private BigDecimal totalAmountSpentSoFar;
-
-    @Column(length = 100, columnDefinition = "jsonb")
+    @Column(length = 100)
     private String notificationThreshold;
 
     @ManyToOne
     @JoinColumn(name = "budget_category_id")
     private BudgetCategory budgetCategory;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "budget_id")
     private Budget budget;
 
-    @OneToMany(mappedBy = "budgetLineItem")
-    private Collection<Expenses> expenses;
+    @OneToMany(mappedBy = "budgetLineItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Expenses> expenses = new HashSet<>();
 
     @Embedded
     private AuditSection auditSection = new AuditSection();
+
+    public void addExpense(Expenses expense) {
+        expense.setBudgetLineItem(this);
+        this.expenses.add(expense);
+    }
+
+    public void removeExpense(Expenses expense) {
+        expense.setBudgetLineItem(null);
+        this.expenses.remove(expense);
+    }
 }

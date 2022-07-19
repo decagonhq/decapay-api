@@ -10,7 +10,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
 
 import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET_CATEGORY;
 
@@ -25,14 +24,12 @@ public class BudgetCategory implements Auditable, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 100)
     private String title;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-    @OneToMany(mappedBy = "budgetCategory")
-    private Collection<BudgetLineItem> budgetLineItem;
 
     @Embedded
     private AuditSection auditSection = new AuditSection();

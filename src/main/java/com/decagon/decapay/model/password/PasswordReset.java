@@ -29,7 +29,7 @@ public class PasswordReset implements Auditable, Serializable {
     @Column(unique = true)
     private String email;
 
-    @Column(unique = true)
+    @Column(length = 30, unique = true)
     private String deviceId;
 
     private String token;

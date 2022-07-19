@@ -27,9 +27,9 @@ public class Expenses implements Auditable, Serializable {
 
     private String description;
 
-    private BigDecimal amount;
+    private BigDecimal amount = BigDecimal.ZERO;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "budget_line_item_id")
     private BudgetLineItem budgetLineItem;
 
