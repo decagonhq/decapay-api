@@ -25,9 +25,11 @@ public class PasswordReset implements Auditable, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email(message = "please enter a valid email value")
+    @Email
+    @Column(unique = true)
     private String email;
 
+    @Column(unique = true)
     private String deviceId;
 
     private String token;
