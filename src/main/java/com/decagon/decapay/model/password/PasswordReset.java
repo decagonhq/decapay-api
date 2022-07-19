@@ -19,7 +19,11 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_PASSWORD_RESET
 @Getter
 @Setter
 @Entity
-@Table(name = TABLE_PASSWORD_RESET)
+@Table(name = TABLE_PASSWORD_RESET, uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "email","device_id"
+        })
+})
 public class PasswordReset implements Auditable, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +33,7 @@ public class PasswordReset implements Auditable, Serializable {
     @Column(unique = true)
     private String email;
 
-    @Column(length = 30, unique = true)
+    @Column(name = "device_id",length = 30, unique = true)
     private String deviceId;
 
     private String token;

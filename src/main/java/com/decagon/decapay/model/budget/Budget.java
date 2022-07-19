@@ -32,9 +32,11 @@ public class Budget implements Auditable, Serializable {
     @Column(length = 100)
     private String title;
 
-    private BigDecimal totalAmountSpentSoFar = BigDecimal.ZERO;
+    @Column(columnDefinition = "decimal(10,2) default (0)")
+    private BigDecimal totalAmountSpentSoFar;
 
-    private BigDecimal projectedAmount = BigDecimal.ZERO;
+    @Column(columnDefinition = "decimal(10,2) default (0)")
+    private BigDecimal projectedAmount;
 
     private LocalDateTime budgetStartDate;
 

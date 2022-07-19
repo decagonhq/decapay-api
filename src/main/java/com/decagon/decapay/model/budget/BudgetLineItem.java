@@ -27,9 +27,11 @@ public class BudgetLineItem implements Auditable, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private BigDecimal projectedAmount = BigDecimal.ZERO;
+    @Column(columnDefinition = "decimal(10,2) default (0)")
+    private BigDecimal projectedAmount;
 
-    private BigDecimal totalAmountSpentSoFar = BigDecimal.ZERO;
+    @Column(columnDefinition = "decimal(10,2) default (0)")
+    private BigDecimal totalAmountSpentSoFar;
 
     @Column(length = 100)
     private String notificationThreshold;

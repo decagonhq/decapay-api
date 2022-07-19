@@ -25,7 +25,11 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_USER;
 @Getter
 @Setter
 @Entity
-@Table(name = TABLE_USER)
+@Table(name = TABLE_USER, uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "email"
+        })
+})
 public class User implements Auditable, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
