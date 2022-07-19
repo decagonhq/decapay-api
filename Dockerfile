@@ -1,4 +1,3 @@
 FROM adoptopenjdk:11-jre-hotspot
-ARG JAR_FILE=*.jar
-COPY ${JAR_FILE} decapay.jar
+ADD target/decapay.jar decapay.jar
 ENTRYPOINT ["java", "-jar", "decapay.jar"]
