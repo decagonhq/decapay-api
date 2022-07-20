@@ -93,7 +93,17 @@
 			<artifactId>poi</artifactId>
 			<version>5.2.2</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>1.11.163</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-ses</artifactId>
+            <version>1.11.163</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<finalName>decapay</finalName>
