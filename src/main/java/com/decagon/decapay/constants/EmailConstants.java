@@ -20,6 +20,8 @@ public class EmailConstants {
     public static final String EMAIL_SPAM_DISCLAIMER_MSG = "This email is sent in accordance with the US CAN-SPAM Law in effect 2004-01-01. Removal requests can be sent to this address and will be honored and respected";
 
     //Templates
+    public static final String SAMPLE_EMAIL_TMPL ="sample_email" ;
 
-
+   //Email subject defaults
+   public static final String CREATE_SAMPLE_EMAIL_SUBJ = "Sample Email created";
 }
