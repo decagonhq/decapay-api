@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -54,4 +55,8 @@ public class CustomizedResponseExceptionHandler extends ResponseEntityExceptionH
         return ApiResponseUtil.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"An unknown error has occurred", e.getMessage());
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity handleBadCredentialsException(BadCredentialsException e) {
+        return ApiResponseUtil.errorResponse(HttpStatus.UNAUTHORIZED,e.getMessage());
+    }
 }
