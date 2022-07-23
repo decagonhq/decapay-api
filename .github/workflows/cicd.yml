@@ -5,7 +5,7 @@ on:
 
 env:
   ECS_CLUSTER: decapay-api                 
-  ECS_SERVICE: decapay-api-service                 
+  ECS_SERVICE: decapay-api-service2              
   ECS_TASK_DEFINITION: task-definition.json 
   CONTAINER_NAME: decapay-api-container 
   ECR_REPOSITORY: decapay-api          
