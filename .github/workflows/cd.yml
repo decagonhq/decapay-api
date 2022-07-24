@@ -1,7 +1,7 @@
-name: Build, Push to AWS ECR and Deploy to ECS
+name: Decapy CD
 on:
   push:
-    branches: [ cicd-setup ]
+    branches: [ main ]
 
 env:
   ECS_CLUSTER: decapay-api                 
@@ -13,7 +13,7 @@ env:
 
 jobs:
   build-and-push:
-    name: Build and Push to ECR
+    name: Build, Push to ECR and Deploy to ECS
     runs-on: ubuntu-latest
 
     steps:
