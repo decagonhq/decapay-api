@@ -20,15 +20,15 @@
         "environment": [
           {
             "name": "SPRING_DATASOURCE_PASSWORD",
-            "value": "password"
+            "value": "decapay-pword"
           },
           {
             "name": "SPRING_DATASOURCE_URL",
-            "value": "jdbc:postgresql://decapayDB:5432/decapay"
+            "value": "jdbc:postgresql://decapay-api-db.crwrzhnx1ugs.us-east-2.rds.amazonaws.com:5432/decapay_db"
           },
           {
             "name": "SPRING_DATASOURCE_USERNAME",
-            "value": "decapay"
+            "value": "decapay_db"
           },
           {
             "name": "SPRING_JPA_HIBERNATE_DDL_AUTO",
