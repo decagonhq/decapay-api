@@ -36,7 +36,7 @@ class LoginServiceTest {
     private LoginService loginService;
 
     @Test
-    void createAuthenticationToken() throws Exception {
+    void authenticate() throws Exception {
 
         LoginDto loginDto = new LoginDto();
         loginDto.setEmail("og@gmail.com");
@@ -50,7 +50,7 @@ class LoginServiceTest {
                 .thenReturn(new TestingAuthenticationToken("Principal", "Credentials"));
         BDDMockito.when(signInService.loadUserByUsername(loginDto.getEmail())).thenReturn(userDetails);
         BDDMockito.when(this.jwtUtil.generateToken(userDetails)).thenReturn("ABC123");
-        String jwt = loginService.createAuthenticationToken(loginDto);
+        String jwt = loginService.authenticate(loginDto);
         assertThat(jwt).isNotNull();
         assertEquals("ABC123", jwt);
     }

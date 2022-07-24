@@ -17,13 +17,13 @@ public class LoginService {
     private final UserService signInService;
 
 
-    public String createAuthenticationToken(LoginDto loginDto) throws Exception {
+    public String authenticate(LoginDto loginDto) throws Exception {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("incorrect username or password!");
+            throw e;
         }
         final UserDetails userDetails = signInService.loadUserByUsername(loginDto.getEmail());
         return jwtUtil.generateToken(userDetails);
