@@ -28,7 +28,7 @@
           },
           {
             "name": "SPRING_DATASOURCE_USERNAME",
-            "value": "decapay_db"
+            "value": "postgres"
           },
           {
             "name": "SPRING_JPA_HIBERNATE_DDL_AUTO",
