@@ -5,7 +5,15 @@
       {
         "dnsSearchDomains": null,
         "environmentFiles": null,
-        "logConfiguration": null,
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "secretOptions": null,
+          "options": {
+            "awslogs-group": "/ecs/decapay-api-td",
+            "awslogs-region": "us-east-2",
+            "awslogs-stream-prefix": "ecs"
+          }
+        },
         "entryPoint": null,
         "portMappings": [
           {
