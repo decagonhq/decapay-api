@@ -76,15 +76,15 @@ public class PasswordResetServiceImpl implements PasswordResetService{
         String code = "";
         try {
             code = String.valueOf(generateOTP());
+            Optional<PasswordReset> passwordReset = this.repository.findByEmail(email);
+            if (passwordReset.isPresent()) {
+                this.updatePasswordReset(passwordReset.get(), code);
+            } else {
+                this.createPasswordResetEntity(code, MOBILE_DEVICE_ID, email);
+                this.publishPasswordResetEmailForMobile(user, code);
+            }
         } catch (NoSuchAlgorithmException e) {
             log.error("Error generating OTP", e);
-        }
-        Optional<PasswordReset> passwordReset = this.repository.findByEmail(email);
-        if (passwordReset.isPresent()) {
-            this.updatePasswordReset(passwordReset.get(), code);
-        } else {
-            this.createPasswordResetEntity(code, MOBILE_DEVICE_ID, email);
-            this.publishPasswordResetEmailForMobile(user, code);
         }
     }
 
