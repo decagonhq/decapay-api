@@ -54,11 +54,7 @@ public class EmailTemplateUtil {
     }
 
     private void sendEmail(Email email){
-        try {
             this.emailService.sendAsyncEmail(email);
-        } catch (Exception e) {
-            log.error(UNABLE_TO_SEND_EMAIL, e);
-        }
     }
 
     public void sendPasswordResetEmailForMobile(User user, String code) {

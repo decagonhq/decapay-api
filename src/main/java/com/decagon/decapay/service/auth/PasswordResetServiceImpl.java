@@ -18,8 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.decagon.decapay.constants.AppConstants.*;
-import static com.decagon.decapay.constants.ResponseMessageConstants.EMAIL_IS_EMPTY;
-import static com.decagon.decapay.constants.ResponseMessageConstants.USER_NOT_FOUND;
+import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 import static com.decagon.decapay.utils.CommonUtil.generateOTP;
 
 @Slf4j
@@ -89,7 +88,11 @@ public class PasswordResetServiceImpl implements PasswordResetService{
     }
 
     private void publishPasswordResetEmailForMobile(User user, String code) {
-        this.emailTemplateUtil.sendPasswordResetEmailForMobile(user, code);
+        try {
+            this.emailTemplateUtil.sendPasswordResetEmailForMobile(user, code);
+        } catch (Exception e) {
+            log.error(UNABLE_TO_SEND_EMAIL, e);
+        }
     }
 
 
@@ -109,7 +112,11 @@ public class PasswordResetServiceImpl implements PasswordResetService{
     }
 
     private void publishPasswordResetEmail(User user, String passwordResetUrl) {
-        this.emailTemplateUtil.sendPasswordResetEmail(user, passwordResetUrl);
+        try {
+            this.emailTemplateUtil.sendPasswordResetEmail(user, passwordResetUrl);
+        } catch (Exception e) {
+            log.error(UNABLE_TO_SEND_EMAIL, e);
+        }
     }
 
     private String createPasswordResetUrl(String token) {
