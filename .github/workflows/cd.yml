@@ -1,7 +1,7 @@
 name: Decapy CD
 on:
   push:
-    branches: [ cicd-setup ]
+    branches: [ main ]
 
 env:
   ECS_CLUSTER: decapay-api                 
