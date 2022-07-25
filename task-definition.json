@@ -1,0 +1,83 @@
+{
+    "ipcMode": null,
+    "executionRoleArn": null,
+    "containerDefinitions": [
+      {
+        "dnsSearchDomains": null,
+        "environmentFiles": null,
+        "logConfiguration": null,
+        "entryPoint": null,
+        "portMappings": [
+          {
+            "hostPort": 0,
+            "protocol": "tcp",
+            "containerPort": 5000
+          }
+        ],
+        "command": null,
+        "linuxParameters": null,
+        "cpu": 512,
+        "environment": [
+          {
+            "name": "SPRING_DATASOURCE_PASSWORD",
+            "value": "decapay-pword"
+          },
+          {
+            "name": "SPRING_DATASOURCE_URL",
+            "value": "jdbc:postgresql://decapay-api-db.crwrzhnx1ugs.us-east-2.rds.amazonaws.com:5432/decapay_db"
+          },
+          {
+            "name": "SPRING_DATASOURCE_USERNAME",
+            "value": "postgres"
+          },
+          {
+            "name": "SPRING_JPA_HIBERNATE_DDL_AUTO",
+            "value": "update"
+          }
+        ],
+        "resourceRequirements": null,
+        "ulimits": null,
+        "dnsServers": null,
+        "mountPoints": [],
+        "workingDirectory": null,
+        "secrets": null,
+        "dockerSecurityOptions": null,
+        "memory": 512,
+        "memoryReservation": 512,
+        "volumesFrom": [],
+        "stopTimeout": null,
+        "image": "913814110218.dkr.ecr.us-east-2.amazonaws.com/decapay-api",
+        "startTimeout": null,
+        "firelensConfiguration": null,
+        "dependsOn": null,
+        "disableNetworking": null,
+        "interactive": null,
+        "healthCheck": null,
+        "essential": true,
+        "links": null,
+        "hostname": null,
+        "extraHosts": null,
+        "pseudoTerminal": null,
+        "user": null,
+        "readonlyRootFilesystem": null,
+        "dockerLabels": null,
+        "systemControls": null,
+        "privileged": null,
+        "name": "decapay-api-container"
+      }
+    ],
+    "placementConstraints": [],
+    "memory": "512",
+    "taskRoleArn": null,
+    "family": "decapay-api-td",
+    "pidMode": null,
+    "requiresCompatibilities": [
+      "EC2"
+    ],
+    "networkMode": "bridge",
+    "runtimePlatform": null,
+    "cpu": "512",
+    "inferenceAccelerators": null,
+    "proxyConfiguration": null,
+    "volumes": []
+  }
