@@ -16,7 +16,7 @@ spring:
   # ===============================
   mail:
     host: smtp.gmail.com
-    password: mydevemail20201#
+    password: qwqdgxaagvrzpqhi
     username: mydevemail2020@gmail.com
     properties:
       mail:

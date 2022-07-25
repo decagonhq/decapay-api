@@ -21,7 +21,7 @@ public interface IPasswordResetController {
             @ApiResponse(responseCode = "200", description = FORGOT_PASSWORD_INITIATED_SUCCESSFULLY),
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
             @ApiResponse(responseCode = "404", description = NOT_FOUND)})
-    @Operation(summary = "Publish forgot password email", description = "Publish forgot password email")
-    ResponseEntity<ApiDataResponse<Object>> initiateForgotPassword(@Valid @RequestBody ForgotPasswordRequestDto forgotPasswordRequestDto);
+    @Operation(summary = "Publish forgot password email", description = "Publish forgot password email with ANDROID_DEVICE_ID = 1 | WEB_DEVICE_ID = 2")
+    ResponseEntity<ApiDataResponse<Object>> initiateForgotPassword(@Valid @RequestBody ForgotPasswordRequestDto forgotPasswordRequestDto, String deviceId);
 
 }

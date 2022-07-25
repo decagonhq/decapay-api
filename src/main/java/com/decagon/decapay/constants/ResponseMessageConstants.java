@@ -19,4 +19,5 @@ public class ResponseMessageConstants {
     public static final String NOT_FOUND = "Not Found!";
     public static final String USER_NOT_FOUND = "User Not Found!";
     public static final String UNABLE_TO_SEND_EMAIL = "Unable to send email";
+    public static final String EMAIL_IS_EMPTY = "Email is Empty";
 }

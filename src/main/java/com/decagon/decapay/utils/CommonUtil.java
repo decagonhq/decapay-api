@@ -1,6 +1,10 @@
 package com.decagon.decapay.utils;
 
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
+
 public class CommonUtil {
 
 
@@ -15,6 +19,11 @@ public class CommonUtil {
             return false;
         }
         return true;
+    }
+
+    public static int generateOTP() throws NoSuchAlgorithmException {
+        Random random = SecureRandom.getInstanceStrong();
+        return 1000 + random.nextInt(9999);
     }
 
 }
