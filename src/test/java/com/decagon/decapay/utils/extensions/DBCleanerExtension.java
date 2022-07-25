@@ -24,9 +24,7 @@ public class DBCleanerExtension implements BeforeAllCallback, AfterAllCallback, 
 
     @Override
     public void beforeEach(ExtensionContext extensionContext) throws Exception {
-        if(!extensionContext.getTags().contains("parameterized")){
             DBCleanerUtil.clearDb(SpringExtension.getApplicationContext(extensionContext).getBean(JdbcTemplate.class));
-        }
     }
 
 }
