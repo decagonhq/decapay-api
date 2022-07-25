@@ -1,0 +1,21 @@
+services:
+  app:
+    image: 'decapay:latest'
+    build: ./
+    ports:
+      - "8081:5000"
+    container_name: decapay
+    depends_on:
+      - decapayDB
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://decapayDB:5432/decapay
+      - SPRING_DATASOURCE_USERNAME=decapay
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  decapayDB:
+    image: 'postgres:latest'
+    container_name: decapayDB
+    environment:
+      - POSTGRES_USER=decapay
+      - POSTGRES_PASSWORD=password
