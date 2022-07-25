@@ -26,7 +26,7 @@ public class FreemarkerTemplateEngine implements TemplateEngine {
                     .processTemplateIntoString(freemarkerConfig.getTemplate(templateName+TEMPLATE_FILE_EXT), templateTokens);
         } catch (Exception e) {
             log.error(UNABLE_TO_PROCESS_TEMPLATE, e);
-            return "";
+            return null;
         }
     }
 
