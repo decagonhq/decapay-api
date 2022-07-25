@@ -33,5 +33,5 @@ public class AppConstants {
 
     // Email Templates
     public static final String EMAIL_PASSWORD_RESET_TMPL = "email_password_reset";
-    public static final String EMAIL_PASSWORD_RESET_ANDROID_TMPL = "email_password_reset_android";
+    public static final String EMAIL_PASSWORD_RESET_MOBILE_TMPL = "email_password_reset_mobile";
 }

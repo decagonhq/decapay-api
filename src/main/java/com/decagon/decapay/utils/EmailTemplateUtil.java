@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.decagon.decapay.constants.AppConstants.*;
-import static com.decagon.decapay.constants.ResponseMessageConstants.UNABLE_TO_SEND_EMAIL;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,7 +60,7 @@ public class EmailTemplateUtil {
         Map<String, String> templateTokens = this.createEmailObjectsMap();
         templateTokens.put(EMAIL_PASSWORD_RESET_CODE, code);
         templateTokens.put(EMAIL_FULL_NAME, String.format("%s %s", user.getFirstName(), user.getLastName()));
-        Email email = this.createEmail(user.getEmail(), EMAIL_SUBJ_PASSWORD_RESET_EMAIL, EMAIL_PASSWORD_RESET_ANDROID_TMPL, templateTokens);
+        Email email = this.createEmail(user.getEmail(), EMAIL_SUBJ_PASSWORD_RESET_EMAIL, EMAIL_PASSWORD_RESET_MOBILE_TMPL, templateTokens);
         this.sendEmail(email);
 
     }
