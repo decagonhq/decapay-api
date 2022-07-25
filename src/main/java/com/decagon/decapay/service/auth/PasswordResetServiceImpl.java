@@ -49,7 +49,7 @@ public class PasswordResetServiceImpl implements PasswordResetService{
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         final String token = UUID.randomUUID().toString();
 
-        Optional<PasswordReset> passwordReset = this.repository.findByEmail(email);
+        Optional<PasswordReset> passwordReset = this.repository.findByEmailAndDeviceId(email, WEB_DEVICE_ID);
         if(passwordReset.isPresent()){
             this.updatePasswordReset(passwordReset.get(), token);
         } else {
@@ -75,7 +75,7 @@ public class PasswordResetServiceImpl implements PasswordResetService{
         String code = "";
         try {
             code = String.valueOf(generateOTP());
-            Optional<PasswordReset> passwordReset = this.repository.findByEmail(email);
+            Optional<PasswordReset> passwordReset = this.repository.findByEmailAndDeviceId(email, MOBILE_DEVICE_ID);
             if (passwordReset.isPresent()) {
                 this.updatePasswordReset(passwordReset.get(), code);
             } else {

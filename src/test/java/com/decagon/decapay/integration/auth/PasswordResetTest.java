@@ -89,7 +89,7 @@ class PasswordResetTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        var passwordReset = this.repository.findByEmail(user.getEmail()).get();
+        var passwordReset = this.repository.findByEmailAndDeviceId(user.getEmail(), WEB_DEVICE_ID).get();
         assertNotNull(passwordReset.getToken());
         assertEquals(WEB_DEVICE_ID, passwordReset.getDeviceId());
         assertTrue(passwordReset.getExpiredAt().isAfter(LocalDateTime.now()));
@@ -111,7 +111,7 @@ class PasswordResetTest {
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        var passwordReset = this.repository.findByEmail(user.getEmail()).get();
+        var passwordReset = this.repository.findByEmailAndDeviceId(user.getEmail(), MOBILE_DEVICE_ID).get();
         assertNotNull(passwordReset.getToken());
         assertEquals(MOBILE_DEVICE_ID, passwordReset.getDeviceId());
         assertTrue(passwordReset.getExpiredAt().isAfter(LocalDateTime.now()));
@@ -174,7 +174,7 @@ class PasswordResetTest {
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        var passwordReset = this.repository.findByEmail(user.getEmail()).get();
+        var passwordReset = this.repository.findByEmailAndDeviceId(user.getEmail(), WEB_DEVICE_ID).get();
         assertNotNull(passwordReset.getToken());
         assertEquals(WEB_DEVICE_ID, passwordReset.getDeviceId());
         assertTrue(passwordReset.getExpiredAt().isAfter(LocalDateTime.now()));
@@ -185,7 +185,7 @@ class PasswordResetTest {
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        var updatedPasswordReset = this.repository.findByEmail(user.getEmail()).get();
+        var updatedPasswordReset = this.repository.findByEmailAndDeviceId(user.getEmail(),WEB_DEVICE_ID).get();
         assertNotNull(updatedPasswordReset.getToken());
         assertEquals(WEB_DEVICE_ID, updatedPasswordReset.getDeviceId());
         assertTrue(updatedPasswordReset.getExpiredAt().isAfter(LocalDateTime.now()));
