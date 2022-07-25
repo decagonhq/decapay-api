@@ -7,12 +7,15 @@ import com.decagon.decapay.model.audit.Auditable;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -26,6 +29,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_USER;
 @Setter
 @Entity
 @Table(name = TABLE_USER)
+@Builder
 public class User implements Auditable, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +41,7 @@ public class User implements Auditable, Serializable {
     @Column(length = 100)
     private String lastName;
 
+    @NotBlank(message = "Email field  cannot be empty")
     @Email
     @Column(unique = true, length = 100)
     private String email;
