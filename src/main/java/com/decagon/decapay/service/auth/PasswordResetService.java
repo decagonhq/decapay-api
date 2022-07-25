@@ -1,7 +1,7 @@
 package com.decagon.decapay.service.auth;
 
-public interface PasswordResetService {
-    void publishForgotPasswordResetEmail(String email);
+import com.decagon.decapay.payloads.request.auth.ForgotPasswordRequestDto;
 
-    void publishForgotPasswordResetCodeEmail(String email);
+public interface PasswordResetService {
+    void publishForgotPassword(ForgotPasswordRequestDto forgotPasswordRequestDto, String deviceId);
 }

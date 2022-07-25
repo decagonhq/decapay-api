@@ -61,7 +61,7 @@ public class EmailTemplateUtil {
         }
     }
 
-    public void sendPasswordResetEmailForAndroid(User user, String code) {
+    public void sendPasswordResetEmailForMobile(User user, String code) {
         Map<String, String> templateTokens = this.createEmailObjectsMap();
         templateTokens.put(EMAIL_PASSWORD_RESET_CODE, code);
         templateTokens.put(EMAIL_FULL_NAME, String.format("%s %s", user.getFirstName(), user.getLastName()));

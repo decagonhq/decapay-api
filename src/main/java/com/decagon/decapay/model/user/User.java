@@ -51,8 +51,6 @@ public class User implements Auditable, Serializable {
     private UserStatus userStatus = UserStatus.ACTIVE;
     private LocalDateTime lastLogin;
 
-
-
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BudgetCategory> budgetCategories = new HashSet<>();
 

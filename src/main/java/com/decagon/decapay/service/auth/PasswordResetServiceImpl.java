@@ -4,10 +4,10 @@ import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.password.PasswordReset;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.payloads.request.auth.ForgotPasswordRequestDto;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.EmailTemplateUtil;
-import com.google.common.cache.LoadingCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,11 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
 import static com.decagon.decapay.constants.AppConstants.*;
-import static com.decagon.decapay.constants.AppConstants.USER_URI;
 import static com.decagon.decapay.constants.ResponseMessageConstants.EMAIL_IS_EMPTY;
 import static com.decagon.decapay.constants.ResponseMessageConstants.USER_NOT_FOUND;
 import static com.decagon.decapay.utils.CommonUtil.generateOTP;
@@ -33,22 +31,43 @@ public class PasswordResetServiceImpl implements PasswordResetService{
     private final PasswordResetRepository repository;
     private final UserRepository userRepository;
     private final EmailTemplateUtil emailTemplateUtil;
+
+
     @Override
-    public void publishForgotPasswordResetEmail(String email) {
+    public void publishForgotPassword(ForgotPasswordRequestDto forgotPasswordRequestDto, String deviceId) {
+        switch (deviceId) {
+            case MOBILE_DEVICE_ID -> this.publishForgotPasswordResetCodeEmail(forgotPasswordRequestDto.getEmail());
+            case WEB_DEVICE_ID -> this.publishForgotPasswordResetEmail(forgotPasswordRequestDto.getEmail());
+            default -> throw new InvalidRequestException("Unexpected value: " + deviceId);
+        }
+    }
+
+
+    private void publishForgotPasswordResetEmail(String email) {
         if (email == null) {
             throw new InvalidRequestException(EMAIL_IS_EMPTY);
         }
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         final String token = UUID.randomUUID().toString();
 
-        this.createPasswordResetEntity(token, WEB_DEVICE_ID,email);
-        String passwordResetUrl = this.createPasswordResetUrl(token);
-        this.publishPasswordResetEmail(user, passwordResetUrl);
+        Optional<PasswordReset> passwordReset = this.repository.findByEmail(email);
+        if(passwordReset.isPresent()){
+            this.updatePasswordReset(passwordReset.get(), token);
+        } else {
+            this.createPasswordResetEntity(token, WEB_DEVICE_ID, email);
+            String passwordResetUrl = this.createPasswordResetUrl(token);
+            this.publishPasswordResetEmail(user, passwordResetUrl);
+        }
+    }
+
+    private void updatePasswordReset(PasswordReset passwordReset, String token) {
+        passwordReset.setToken(token);
+        passwordReset.calculateTokenExpiryDate(String.valueOf(PASSWORD_RESET_TOKEN_VALIDITY_PERIOD));
+        this.repository.save(passwordReset);
     }
 
 
-    @Override
-    public void publishForgotPasswordResetCodeEmail(String email) {
+    private void publishForgotPasswordResetCodeEmail(String email) {
         if (email == null) {
             throw new InvalidRequestException(EMAIL_IS_EMPTY);
         }
@@ -60,12 +79,17 @@ public class PasswordResetServiceImpl implements PasswordResetService{
         } catch (NoSuchAlgorithmException e) {
             log.error("Error generating OTP", e);
         }
-        this.createPasswordResetEntity(code, ANDROID_DEVICE_ID, email);
-        this.publishPasswordResetEmailForAndroid(user, code);
+        Optional<PasswordReset> passwordReset = this.repository.findByEmail(email);
+        if (passwordReset.isPresent()) {
+            this.updatePasswordReset(passwordReset.get(), code);
+        } else {
+            this.createPasswordResetEntity(code, MOBILE_DEVICE_ID, email);
+            this.publishPasswordResetEmailForMobile(user, code);
+        }
     }
 
-    private void publishPasswordResetEmailForAndroid(User user, String code) {
-        this.emailTemplateUtil.sendPasswordResetEmailForAndroid(user, code);
+    private void publishPasswordResetEmailForMobile(User user, String code) {
+        this.emailTemplateUtil.sendPasswordResetEmailForMobile(user, code);
     }
 
 
@@ -76,7 +100,11 @@ public class PasswordResetServiceImpl implements PasswordResetService{
                 .email(email)
                 .token(token)
                 .build();
-        passwordReset.calculateTokenExpiryDate(String.valueOf(PASSWORD_RESET_TOKEN_VALIDITY_PERIOD));
+        if (deviceId.equals(WEB_DEVICE_ID)) {
+            passwordReset.calculateTokenExpiryDate(String.valueOf(PASSWORD_RESET_TOKEN_VALIDITY_PERIOD));
+        } else {
+            passwordReset.calculateTokenExpiryDate(String.valueOf(PASSWORD_RESET_CODE_VALIDITY_PERIOD));
+        }
         this.repository.save(passwordReset);
     }
 

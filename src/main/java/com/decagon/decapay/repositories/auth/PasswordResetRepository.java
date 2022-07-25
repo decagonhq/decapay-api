@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-
 @Repository
 public interface PasswordResetRepository extends JpaRepository<PasswordReset, Long> {
     Optional<PasswordReset> findByEmail(String email);

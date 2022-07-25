@@ -1,8 +1,8 @@
 package com.decagon.decapay.service.email.templateEngine;
 
-import com.decagon.decapay.exception.TemplateEngineException;
 import freemarker.template.Configuration;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
@@ -13,6 +13,7 @@ import static com.decagon.decapay.constants.AppConstants.TEMPLATE_PATH;
 import static com.decagon.decapay.constants.ResponseMessageConstants.UNABLE_TO_PROCESS_TEMPLATE;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class FreemarkerTemplateEngine implements TemplateEngine {
     private final Configuration freemarkerConfig;
@@ -24,7 +25,8 @@ public class FreemarkerTemplateEngine implements TemplateEngine {
             return FreeMarkerTemplateUtils
                     .processTemplateIntoString(freemarkerConfig.getTemplate(templateName+TEMPLATE_FILE_EXT), templateTokens);
         } catch (Exception e) {
-            throw new TemplateEngineException(UNABLE_TO_PROCESS_TEMPLATE, e);
+            log.error(UNABLE_TO_PROCESS_TEMPLATE, e);
+            return "";
         }
     }
 

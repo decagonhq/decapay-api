@@ -12,7 +12,8 @@ public class AppConstants {
 
     public static final int PASSWORD_RESET_TOKEN_VALIDITY_PERIOD = 168;//in hours(7days)
     public static final int PASSWORD_RESET_CODE_VALIDITY_PERIOD = 10;//in Minutes
-    public static final String ANDROID_DEVICE_ID = "1";
+    public static final String DEVICE_KEY_HEADER="DVC_KY_HDR";
+    public static final String MOBILE_DEVICE_ID = "1";
     public static final String WEB_DEVICE_ID = "2";
     public static final String PASSWORD_RESET_URI = "/reset-password";
     public static final String USER_URI = "/user";
