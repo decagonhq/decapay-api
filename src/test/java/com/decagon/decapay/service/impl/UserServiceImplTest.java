@@ -59,6 +59,7 @@ class UserServiceImplTest {
 
 
 	@Test
+	@DisplayName("Should register user successfully")
 	void registerUser() {
 		when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(null);
 

@@ -23,6 +23,8 @@ class UserControllerTest {
 
 	UserDTO userDTO;
 
+	ObjectMapper objectMapper = new ObjectMapper();
+
 
 	@BeforeEach
 	void setUp() {
@@ -33,6 +35,13 @@ class UserControllerTest {
 	void registerUser() throws Exception {
 		mockMvc.perform(
 			post("/users/register").contentType(MediaType.APPLICATION_JSON).content(
-				new ObjectMapper().writeValueAsString(userDTO))).andExpect(status().is(201));
+				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(201));
+	}
+
+	@Test
+	void registerUserFails() throws Exception {
+		mockMvc.perform(
+			post("/users/register").contentType(MediaType.APPLICATION_JSON).content(
+				objectMapper.writeValueAsString(new UserDTO()))).andExpect(status().is(400));
 	}
 }
