@@ -3,7 +3,7 @@ services:
     image: 'decapay:latest'
     build: ./
     ports:
-      - "8081:5000"
+      - "5001:5001"
     container_name: decapay
     depends_on:
       - decapayDB
