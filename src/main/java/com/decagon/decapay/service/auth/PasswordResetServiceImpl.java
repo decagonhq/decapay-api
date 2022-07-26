@@ -5,6 +5,7 @@ import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.password.PasswordReset;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.payloads.request.auth.ForgotPasswordRequestDto;
+import com.decagon.decapay.payloads.request.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.EmailTemplateUtil;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 import static com.decagon.decapay.constants.AppConstants.*;
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
+import static com.decagon.decapay.enumTypes.ResetCodeStatus.VERIFIED;
 import static com.decagon.decapay.utils.CommonUtil.generateOTP;
 
 @Slf4j
@@ -41,6 +43,30 @@ public class PasswordResetServiceImpl implements PasswordResetService{
         }
     }
 
+    @Override
+    public void verifyPasswordResetCode(VerifyPasswordResetCodeRequest verifyPasswordResetCodeRequest, String deviceId) {
+        if(verifyPasswordResetCodeRequest.getEmail() == null || verifyPasswordResetCodeRequest.getResetCode() == null) {
+            throw new InvalidRequestException(NO_RESET_CODE_OR_EMAIL_PROVIDED);
+        }
+
+        if (!deviceId.equals(MOBILE_DEVICE_ID)) {
+            throw new InvalidRequestException("Unexpected value: " + deviceId);
+        }
+
+        PasswordReset passwordReset = this.repository.findByEmailAndDeviceId(verifyPasswordResetCodeRequest.getEmail(), deviceId)
+                .orElseThrow(() -> new ResourceNotFoundException(PASSWORD_RESET_CODE_DOES_NOT_EXIST));
+
+        if(!passwordReset.getToken().equals(verifyPasswordResetCodeRequest.getResetCode())) {
+            throw new InvalidRequestException(INVALID_PASSWORD_RESET_CODE);
+        }
+
+        if(passwordReset.tokenExpired()) {
+            throw new InvalidRequestException(PASSWORD_RESET_CODE_HAS_EXPIRED);
+        }
+
+        passwordReset.setStatus(VERIFIED);
+        repository.save(passwordReset);
+    }
 
     private void publishForgotPasswordResetEmail(String email) {
         if (email == null) {
