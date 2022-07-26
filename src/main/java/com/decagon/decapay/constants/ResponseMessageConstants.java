@@ -10,6 +10,7 @@ public class ResponseMessageConstants {
     public static final String EMAIL_SENT_SUCCESSFULLY = "Email Sent Successfully";
     public static final String FORGOT_PASSWORD_INITIATED_SUCCESSFULLY = "Forgot Password Initiated Successfully";
     public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Password Changed Successfully";
+    public static final String SIGN_IN_SUCCESSFULLY = "Sign In Successfully";
     public static final String PASSWORD_RESET_CODE_VERIFIED_SUCCESSFULLY = "Password Reset Code Verified Successfully";
 
     //FAILURE MESSAGES

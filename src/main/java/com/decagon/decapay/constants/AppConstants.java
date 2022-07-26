@@ -9,7 +9,6 @@ public class AppConstants {
     public static final String TEMPLATE_PATH = "/templates/mail/";
     public static final String EMAIL_DISCLAIMER_MSG = "This email address was given to us by you or by one of our customers. If you feel that you have received this email in error, please send an email to %s for de-activation";
     public static final String EMAIL_SPAM_DISCLAIMER_MSG = "This email is sent in accordance with the US CAN-SPAM Law in effect 2004-01-01. Removal requests can be sent to this address and will be honored and respected";
-
     public static final int PASSWORD_RESET_TOKEN_VALIDITY_PERIOD = 168;//in hours(7days)
     public static final int PASSWORD_RESET_CODE_VALIDITY_PERIOD = 10;//in Minutes
     public static final String DEVICE_KEY_HEADER="DVC_KY_HDR";
