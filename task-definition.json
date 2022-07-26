@@ -41,6 +41,26 @@
           {
             "name": "SPRING_JPA_HIBERNATE_DDL_AUTO",
             "value": "update"
+          },
+          {
+            "name": "CONTEXT_PATH",
+            "value": ""
+          },
+          {
+            "name": "SPRING_ACTIVE_PROFILE",
+            "value": "prod"
+          },
+          {
+            "name": "APP_URL_DOMAIN",
+            "value": ""
+          },
+          {
+            "name": "DEFAULT_EMAIL_SENDER",
+            "value": "cloud-smtp"
+          },
+          {
+            "name": "PORT",
+            "value": "5000"
           }
         ],
         "resourceRequirements": null,
