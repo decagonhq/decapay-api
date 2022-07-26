@@ -6,9 +6,9 @@ server:
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${RDS_HOSTNAME:localhost}:${RDS_PORT:5432}/${RDS_DB_NAME:decapay}
-    username: ${RDS_USERNAME:postgres}
-    password: ${RDS_PASSWORD:root}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${RDS_HOSTNAME:localhost}:${RDS_PORT:5432}/${RDS_DB_NAME:decapay}}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:root}
   jpa:
     database: POSTGRESQL
     properties:
