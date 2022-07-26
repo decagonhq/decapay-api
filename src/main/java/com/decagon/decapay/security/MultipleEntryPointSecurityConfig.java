@@ -47,7 +47,8 @@ public class MultipleEntryPointSecurityConfig {
 
         private final String[] AUTH_WHITELIST = {
                 path +"/signin",
-                path + "/forgot-password"
+                path + "/forgot-password",
+                path + "/rgister"
         };
 
         @Override

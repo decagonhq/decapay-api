@@ -58,7 +58,6 @@ public class CustomizedResponseExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(InvalidCredentialException.class)
     public ResponseEntity handleBadCredentialsException(InvalidCredentialException e) {
-        System.out.println("***************" + e.getErrorMessage());
         return ApiResponseUtil.errorResponse(HttpStatus.BAD_REQUEST,e.getErrorMessage());
     }
 }

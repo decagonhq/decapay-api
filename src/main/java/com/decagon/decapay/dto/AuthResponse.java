@@ -4,10 +4,6 @@ package com.decagon.decapay.dto;
 public class AuthResponse {
     private String token;
 
-
-
-
-
     public AuthResponse(String jwt) {
         this.token = jwt;
     }
