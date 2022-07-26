@@ -10,6 +10,8 @@ public class ResponseMessageConstants {
     public static final String EMAIL_SENT_SUCCESSFULLY = "Email Sent Successfully";
     public static final String FORGOT_PASSWORD_INITIATED_SUCCESSFULLY = "Forgot Password Initiated Successfully";
     public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Password Changed Successfully";
+    
+    public static final String USER_SUCCESSFULLY_REGISTERED = "User successfully registered";
 
     //FAILURE MESSAGES
     public static final String UNABLE_TO_PROCESS_TEMPLATE = "Unable to process template";
@@ -20,4 +22,6 @@ public class ResponseMessageConstants {
     public static final String USER_NOT_FOUND = "User Not Found!";
     public static final String UNABLE_TO_SEND_EMAIL = "Unable to send email";
     public static final String EMAIL_IS_EMPTY = "Email is Empty";
+    
+    public static final String USER_EMAIL_ALREADY_EXISTS = "User email already exists";
 }

@@ -1,15 +1,14 @@
 package com.decagon.decapay.service.impl;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.decagon.decapay.DTO.UserDTO;
-import com.decagon.decapay.apiresponse.ApiDataResponse;
+import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.service.UserService;
 
-import com.decagon.decapay.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,30 +22,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ApiDataResponse<User> registerUser(final UserDTO userDTO) {
-		ApiDataResponse<User> response = new ApiDataResponse<>();
+	public User registerUser(final UserDTO userDTO) throws ResourceConflictException {
 
 		if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
-			response.setMessage("The user email exists already");
-			response.setStatus(HttpStatus.valueOf(400));
-			return response;
+			throw new ResourceConflictException();
 		}
 
-		try {
-			User user = User.builder().firstName(userDTO.getFirstName())
-				.lastName(userDTO.getLastName())
-				.email(userDTO.getEmail())
-				.password(passwordEncoder.encode(userDTO.getPassword()))
-				.phoneNumber(userDTO.getPhoneNumber()).build();
+		User user = User.builder().firstName(userDTO.getFirstName())
+			.lastName(userDTO.getLastName())
+			.email(userDTO.getEmail())
+			.password(passwordEncoder.encode(userDTO.getPassword()))
+			.phoneNumber(userDTO.getPhoneNumber()).build();
 
-			User registeredUser = userRepository.save(user);
-			response.setData(registeredUser);
-			response.setMessage("Successfully registered.");
-			response.setStatus(HttpStatus.valueOf(201));
-		} catch (Exception ex) {
-			response.setMessage(ex.getMessage());
-			response.setStatus(HttpStatus.valueOf(400));
-		}
-		return response;
+		return userRepository.save(user);
 	}
 }

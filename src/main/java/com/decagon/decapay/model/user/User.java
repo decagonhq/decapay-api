@@ -41,7 +41,6 @@ public class User implements Auditable, Serializable {
     @Column(length = 100)
     private String lastName;
 
-    @NotBlank(message = "Email field  cannot be empty")
     @Email
     @Column(unique = true, length = 100)
     private String email;

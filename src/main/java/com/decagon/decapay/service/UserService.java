@@ -8,5 +8,5 @@ import com.decagon.decapay.model.user.User;
 
 @Service
 public interface UserService {
-	ApiDataResponse<User> registerUser(UserDTO userDTO);
+	User registerUser(UserDTO userDTO);
 }
