@@ -6,6 +6,7 @@ import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 
 import com.decagon.decapay.util.TestUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -44,7 +45,7 @@ public class SigninTest {
 
     private HttpHeaders headers;
 
-//    @Value("${api.basepath-api}")
+    @Value("${api.basepath-api}")
     private String path = "";
 
     @BeforeEach
@@ -67,7 +68,7 @@ public class SigninTest {
         loginDto.setPassword("12345");
 
         MvcResult result = this.mockMvc
-                .perform(MockMvcRequestBuilders.post( "/signin").content(TestUtils.asJsonString(loginDto))
+                .perform(MockMvcRequestBuilders.post( path + "/signin").content(TestUtils.asJsonString(loginDto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -79,20 +80,20 @@ public class SigninTest {
     @Test
     void testShouldReturnAuthenticateSuccessfully() throws Exception {
         User user = new User();
-        user.setEmail("og@gmail.com");
-        user.setPassword(passwordEncoder.encode("12345"));
+        user.setEmail("ogg@gmail.com");
+        user.setPassword(passwordEncoder.encode("123456"));
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
-        user.setPhoneNumber("07056155664");
+        user.setPhoneNumber("07056355664");
         userRepository.save(user);
 
         LoginDto loginDto = new LoginDto();
-        loginDto.setEmail("og@gmail.com");
-        loginDto.setPassword("12345");
+        loginDto.setEmail("ogg@gmail.com");
+        loginDto.setPassword("123456");
 
 
         MvcResult result =  this.mockMvc
-                .perform(MockMvcRequestBuilders.post("/signin").content(TestUtils.asJsonString(loginDto))
+                .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

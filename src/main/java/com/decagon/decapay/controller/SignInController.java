@@ -23,7 +23,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
 
 @Tag(name ="Sign-in Controller")
-//@RequestMapping(value = "${api.basepath-api}")
+@RequestMapping(value = "${api.basepath-api}")
 @RequiredArgsConstructor
 @RestController
 public class SignInController {

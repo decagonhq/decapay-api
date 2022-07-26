@@ -34,7 +34,7 @@ public class MultipleEntryPointSecurityConfig {
     public static class ClientWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 //        @Value("${api.basepath-api}")
-        private String path = "";
+        private String path = "api/v1";
 
         @Autowired
         private JwtRequestFilter jwtRequestFilter;
@@ -46,7 +46,8 @@ public class MultipleEntryPointSecurityConfig {
         CustomUserDetailsService userDetailsService;
 
         private final String[] AUTH_WHITELIST = {
-                "/signin",
+                path +"/signin",
+                path + "/forgot-password"
         };
 
         @Override
