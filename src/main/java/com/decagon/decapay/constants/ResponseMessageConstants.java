@@ -13,6 +13,9 @@ public class ResponseMessageConstants {
     
     public static final String USER_SUCCESSFULLY_REGISTERED = "User successfully registered";
 
+    public static final String SIGN_IN_SUCCESSFULLY = "Sign In Successfully";
+    public static final String PASSWORD_RESET_CODE_VERIFIED_SUCCESSFULLY = "Password Reset Code Verified Successfully";
+
     //FAILURE MESSAGES
     public static final String UNABLE_TO_PROCESS_TEMPLATE = "Unable to process template";
     public static final String INVALID_REQUEST = "Invalid Request!";
@@ -24,4 +27,9 @@ public class ResponseMessageConstants {
     public static final String EMAIL_IS_EMPTY = "Email is Empty";
     
     public static final String USER_EMAIL_ALREADY_EXISTS = "User email already exists";
+
+    public static final String NO_RESET_CODE_OR_EMAIL_PROVIDED = "No Reset Code/Email Provided";
+    public static final String PASSWORD_RESET_CODE_DOES_NOT_EXIST = "Reset Code Does Not Exist";
+    public static final String INVALID_PASSWORD_RESET_CODE = "Reset Code Is Invalid";
+    public static final String PASSWORD_RESET_CODE_HAS_EXPIRED = "Reset Code Has Expired";
 }
