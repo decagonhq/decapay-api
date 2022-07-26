@@ -2,6 +2,7 @@ package com.decagon.decapay.service;
 
 import com.decagon.decapay.dto.LoginDto;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.utils.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ class LoginServiceTest {
     private UserDetails userDetails;
 
     @Mock
-    private UserService signInService;
+    private CustomUserDetailsService signInService;
 
     @InjectMocks
     private LoginService loginService;

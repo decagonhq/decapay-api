@@ -2,21 +2,21 @@ package com.decagon.decapay.dto;
 
 
 public class AuthResponse {
-    private String jwt;
+    private String token;
 
 
 
 
 
     public AuthResponse(String jwt) {
-        this.jwt = jwt;
+        this.token = jwt;
     }
 
-    public String getJwt() {
-        return jwt;
+    public String getToken() {
+        return token;
     }
 
-    public void setJwt(String jwt) {
-        this.jwt = jwt;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

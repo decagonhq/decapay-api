@@ -7,5 +7,5 @@ public class SchemaConstants {
     public static final String TABLE_BUDGET_CATEGORY="budget_categorys";
     public static final String TABLE_EXPENSES ="expenses";
     public static final String TABLE_PASSWORD_RESET="password_resets";
-
+    public static final String TABLE_AUTH="auth";
 }

@@ -1,4 +1,4 @@
-package com.decagon.decapay.service;
+package com.decagon.decapay.security;
 
 
 import com.decagon.decapay.model.user.User;
@@ -17,15 +17,15 @@ import static com.decagon.decapay.utils.ResourceHelper.validateResourceExists;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class UserService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findUserByEmail(email);
-        user.ifPresent(presentUser -> presentUser.setAccountNonLocked(true));
-        return validateResourceExists(user, "User Not Found!!");
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("No user found with username:" + email));
+        return user;
     }
 }

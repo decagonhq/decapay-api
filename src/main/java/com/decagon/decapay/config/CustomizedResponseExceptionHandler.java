@@ -1,6 +1,7 @@
 package com.decagon.decapay.config;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
+import com.decagon.decapay.exception.InvalidCredentialException;
 import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
@@ -55,8 +56,9 @@ public class CustomizedResponseExceptionHandler extends ResponseEntityExceptionH
         return ApiResponseUtil.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"An unknown error has occurred", e.getMessage());
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity handleBadCredentialsException(BadCredentialsException e) {
-        return ApiResponseUtil.errorResponse(HttpStatus.UNAUTHORIZED,e.getMessage());
+    @ExceptionHandler(InvalidCredentialException.class)
+    public ResponseEntity handleBadCredentialsException(InvalidCredentialException e) {
+        System.out.println("***************" + e.getErrorMessage());
+        return ApiResponseUtil.errorResponse(HttpStatus.BAD_REQUEST,e.getErrorMessage());
     }
 }
