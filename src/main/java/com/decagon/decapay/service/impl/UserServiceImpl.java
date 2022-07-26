@@ -24,13 +24,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User registerUser(final UserDTO userDTO) throws ResourceConflictException {
 
-		if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
+		if (userRepository.findByEmail(userDTO.getEmail().toLowerCase()).isPresent()) {
 			throw new ResourceConflictException();
 		}
 
 		User user = User.builder().firstName(userDTO.getFirstName())
 			.lastName(userDTO.getLastName())
-			.email(userDTO.getEmail())
+			.email(userDTO.getEmail().toLowerCase())
 			.password(passwordEncoder.encode(userDTO.getPassword()))
 			.phoneNumber(userDTO.getPhoneNumber()).build();
 

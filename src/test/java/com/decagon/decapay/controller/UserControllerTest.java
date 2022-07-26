@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -49,6 +50,8 @@ class UserControllerTest {
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
+	@Value("${api.basepath-user}")
+	private String path;
 
 	@BeforeEach
 	void setUp() {
@@ -58,7 +61,7 @@ class UserControllerTest {
 	@Test
 	void registerUser() throws Exception {
 		ResultActions response = mockMvc.perform(
-			post("/users/register").contentType(MediaType.APPLICATION_JSON).content(
+			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(
 				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(201));
 
 		User user = userRepository.findByEmail(userDTO.getEmail()).get();
@@ -76,7 +79,7 @@ class UserControllerTest {
 	@Test
 	void registerUserFailsWithIncompleteDTO() throws Exception {
 		mockMvc.perform(
-			post("/users/register").contentType(MediaType.APPLICATION_JSON).content(
+			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(
 				objectMapper.writeValueAsString(new UserDTO()))).andExpect(status().is(400));
 	}
 
@@ -90,7 +93,7 @@ class UserControllerTest {
 			.phoneNumber("0123456789").build());
 
 		mockMvc.perform(
-			post("/users/register").contentType(MediaType.APPLICATION_JSON).content(
+			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(
 				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(409));
 	}
 }
