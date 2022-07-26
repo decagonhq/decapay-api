@@ -1,0 +1,23 @@
+server:
+  port: ${PORT:5001}
+  servlet:
+    context-path: ${CONTEXT_PATH:}
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://${RDS_HOSTNAME:localhost}:${RDS_PORT:5432}/${RDS_DB_NAME:decapay}
+    username: ${RDS_USERNAME:postgres}
+    password: ${RDS_PASSWORD:root}
+  jpa:
+    database: POSTGRESQL
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: false
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
