@@ -1,0 +1,23 @@
+server:
+  port: ${PORT:5001}
+  servlet:
+    context-path: ${CONTEXT_PATH:}
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/decapay
+    username: postgres
+    password: root
+  jpa:
+    database: POSTGRESQL
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: false
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
