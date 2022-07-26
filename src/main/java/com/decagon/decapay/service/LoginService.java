@@ -2,9 +2,6 @@ package com.decagon.decapay.service;
 
 import com.decagon.decapay.dto.LoginDto;
 import com.decagon.decapay.exception.InvalidCredentialException;
-import com.decagon.decapay.model.user.Auth;
-import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.repository.AuthRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;

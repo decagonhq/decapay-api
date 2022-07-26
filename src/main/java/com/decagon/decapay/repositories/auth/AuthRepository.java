@@ -1,4 +1,4 @@
-package com.decagon.decapay.repository;
+package com.decagon.decapay.repositories.auth;
 
 
 import com.decagon.decapay.model.user.Auth;

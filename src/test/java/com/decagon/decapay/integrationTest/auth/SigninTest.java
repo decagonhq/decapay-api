@@ -1,18 +1,16 @@
 package com.decagon.decapay.integrationTest.auth;
 
 
-import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.dto.LoginDto;
-import com.decagon.decapay.model.user.Auth;
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.repository.AuthRepository;
-import com.decagon.decapay.repository.UserRepository;
+import com.decagon.decapay.repositories.user.UserRepository;
+
 import com.decagon.decapay.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -24,9 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.servlet.http.HttpServletRequest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,12 +42,9 @@ public class SigninTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    AuthRepository authRepository;
-
     private HttpHeaders headers;
 
-    @Value("${api.basepath-api}")
+//    @Value("${api.basepath-api}")
     private String path = "";
 
     @BeforeEach
@@ -75,7 +67,7 @@ public class SigninTest {
         loginDto.setPassword("12345");
 
         MvcResult result = this.mockMvc
-                .perform(MockMvcRequestBuilders.post( path+"/signin").content(TestUtils.asJsonString(loginDto))
+                .perform(MockMvcRequestBuilders.post( "/signin").content(TestUtils.asJsonString(loginDto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -100,7 +92,7 @@ public class SigninTest {
 
 
         MvcResult result =  this.mockMvc
-                .perform(MockMvcRequestBuilders.post("/user/signin").content(TestUtils.asJsonString(loginDto))
+                .perform(MockMvcRequestBuilders.post("/signin").content(TestUtils.asJsonString(loginDto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

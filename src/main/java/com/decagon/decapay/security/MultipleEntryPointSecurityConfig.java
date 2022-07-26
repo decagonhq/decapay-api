@@ -27,13 +27,13 @@ public class MultipleEntryPointSecurityConfig {
     }
 
     /*
-     * For client login
+     * For user login
      */
     @Configuration
     @Order(1)
     public static class ClientWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
-        @Value("${api.basepath-api}")
+//        @Value("${api.basepath-api}")
         private String path = "";
 
         @Autowired
@@ -46,7 +46,7 @@ public class MultipleEntryPointSecurityConfig {
         CustomUserDetailsService userDetailsService;
 
         private final String[] AUTH_WHITELIST = {
-                path+"/signin",
+                "/signin",
         };
 
         @Override
@@ -60,7 +60,8 @@ public class MultipleEntryPointSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.cors();
-            http.csrf().disable().antMatcher(path+"/**").authorizeRequests()
+            http.csrf().disable()
+                    .antMatcher(path+"/**").authorizeRequests()
                     .antMatchers(AUTH_WHITELIST).permitAll()
                     .anyRequest().authenticated().and().exceptionHandling().and().sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

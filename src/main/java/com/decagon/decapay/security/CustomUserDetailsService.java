@@ -2,7 +2,8 @@ package com.decagon.decapay.security;
 
 
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.repository.UserRepository;
+import com.decagon.decapay.repositories.user.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

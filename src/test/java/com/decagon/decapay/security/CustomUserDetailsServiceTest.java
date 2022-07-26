@@ -1,7 +1,7 @@
 package com.decagon.decapay.security;
 
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.repository.UserRepository;
+import com.decagon.decapay.repositories.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
