@@ -36,15 +36,11 @@ public class UserController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "201", description = USER_SUCCESSFULLY_REGISTERED),
 		@ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-		@ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS)})
+		@ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS) })
 	@Operation(summary = "Register user", description = "Register new user account with all mandatory fields.")
 	@PostMapping("/register")
 	public ResponseEntity<ApiDataResponse<User>> registerUser(@Valid @RequestBody UserDTO userRegistrationRequest) {
-		try {
-			User user = userService.registerUser(userRegistrationRequest);
-			return ApiResponseUtil.response(HttpStatus.CREATED, user, USER_SUCCESSFULLY_REGISTERED);
-		} catch (ResourceConflictException re) {
-			return ApiResponseUtil.response(HttpStatus.CONFLICT, USER_EMAIL_ALREADY_EXISTS);
-		}
+		return ApiResponseUtil.response(HttpStatus.CREATED, userService.registerUser(userRegistrationRequest),
+			USER_SUCCESSFULLY_REGISTERED);
 	}
 }

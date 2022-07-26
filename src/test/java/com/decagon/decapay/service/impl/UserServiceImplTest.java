@@ -9,9 +9,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.decagon.decapay.DTO.UserDTO;
@@ -19,13 +20,16 @@ import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-	@MockBean
+	@Mock
 	private UserRepository userRepository;
 
-	@Autowired
+	@Mock
+	BCryptPasswordEncoder passwordEncoder;
+
+	@InjectMocks
 	UserServiceImpl userService;
 
 	UserDTO userDTO;
