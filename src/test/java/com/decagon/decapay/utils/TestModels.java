@@ -1,5 +1,6 @@
 package com.decagon.decapay.utils;
 
+import com.decagon.decapay.model.password.PasswordReset;
 import com.decagon.decapay.model.user.User;
 
 public class TestModels {
@@ -12,5 +13,12 @@ public class TestModels {
         user.setPassword(password);
         user.setPhoneNumber(phoneNo);
         return user;
+    }
+
+    public static PasswordReset passwordReset(String email, String token) {
+        PasswordReset passwordReset = new PasswordReset();
+        passwordReset.setEmail(email);
+        passwordReset.setToken(token);
+        return passwordReset;
     }
 }
