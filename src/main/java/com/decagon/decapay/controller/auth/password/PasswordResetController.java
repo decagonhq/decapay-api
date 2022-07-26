@@ -2,6 +2,7 @@ package com.decagon.decapay.controller.auth.password;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.payloads.request.auth.ForgotPasswordRequestDto;
+import com.decagon.decapay.payloads.request.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.service.auth.PasswordResetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +37,18 @@ public class PasswordResetController {
                                                                           @RequestHeader(DEVICE_KEY_HEADER) String deviceId) {
         this.service.publishForgotPassword(forgotPasswordRequestDto, deviceId);
         return ApiResponseUtil.response(HttpStatus.OK, FORGOT_PASSWORD_INITIATED_SUCCESSFULLY);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = PASSWORD_RESET_CODE_VERIFIED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+    @Operation(summary = "Verify password reset code", description = "Verify password reset code with RequestHeader key = DVC_KY_HDR and value = MOBILE_DEVICE_ID = 1")
+    @PostMapping("/verify-code")
+    public ResponseEntity<ApiDataResponse<Object>> verifyPasswordResetCode(@Valid @RequestBody VerifyPasswordResetCodeRequest verifyPasswordResetCodeRequest,
+                                                                          @RequestHeader(DEVICE_KEY_HEADER) String deviceId) {
+        this.service.verifyPasswordResetCode(verifyPasswordResetCodeRequest, deviceId);
+        return ApiResponseUtil.response(HttpStatus.OK, PASSWORD_RESET_CODE_VERIFIED_SUCCESSFULLY);
     }
 
 }

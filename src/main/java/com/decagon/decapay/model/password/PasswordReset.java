@@ -1,5 +1,6 @@
 package com.decagon.decapay.model.password;
 
+import com.decagon.decapay.enumTypes.ResetCodeStatus;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
 import com.decagon.decapay.utils.CommonUtil;
@@ -39,6 +40,9 @@ public class PasswordReset implements Auditable, Serializable {
     private String token;
 
     private LocalDateTime expiredAt;
+
+    @Enumerated(EnumType.STRING)
+    private ResetCodeStatus status = ResetCodeStatus.UNVERIFIED;
 
     @Embedded
     private AuditSection auditSection = new AuditSection();
