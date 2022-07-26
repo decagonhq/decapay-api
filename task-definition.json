@@ -5,7 +5,15 @@
       {
         "dnsSearchDomains": null,
         "environmentFiles": null,
-        "logConfiguration": null,
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "secretOptions": null,
+          "options": {
+            "awslogs-group": "/ecs/decapay-api-td",
+            "awslogs-region": "us-east-2",
+            "awslogs-stream-prefix": "ecs"
+          }
+        },
         "entryPoint": null,
         "portMappings": [
           {
@@ -33,6 +41,26 @@
           {
             "name": "SPRING_JPA_HIBERNATE_DDL_AUTO",
             "value": "update"
+          },
+          {
+            "name": "CONTEXT_PATH",
+            "value": ""
+          },
+          {
+            "name": "SPRING_ACTIVE_PROFILE",
+            "value": "prod"
+          },
+          {
+            "name": "APP_URL_DOMAIN",
+            "value": ""
+          },
+          {
+            "name": "DEFAULT_EMAIL_SENDER",
+            "value": "cloud-smtp"
+          },
+          {
+            "name": "PORT",
+            "value": "5000"
           }
         ],
         "resourceRequirements": null,
