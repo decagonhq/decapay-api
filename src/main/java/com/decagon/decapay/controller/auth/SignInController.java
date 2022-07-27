@@ -1,4 +1,4 @@
-package com.decagon.decapay.controller;
+package com.decagon.decapay.controller.auth;
 
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;

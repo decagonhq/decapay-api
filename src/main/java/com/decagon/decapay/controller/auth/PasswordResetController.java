@@ -1,4 +1,4 @@
-package com.decagon.decapay.controller.auth.password;
+package com.decagon.decapay.controller.auth;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.payloads.request.auth.CreatePasswordRequestDto;
