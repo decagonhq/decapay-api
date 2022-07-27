@@ -24,7 +24,7 @@
       ],
       "command": null,
       "linuxParameters": null,
-      "cpu": 1024,
+      "cpu": 512,
       "environment": [
         {
           "name": "APP_URL_DOMAIN",
@@ -103,8 +103,8 @@
         }
       ],
       "dockerSecurityOptions": null,
-      "memory": 1024,
-      "memoryReservation": 1024,
+      "memory": 512,
+      "memoryReservation": 512,
       "volumesFrom": [],
       "stopTimeout": null,
       "image": "913814110218.dkr.ecr.us-east-2.amazonaws.com/decapay-api:latest",
@@ -128,13 +128,8 @@
     }
   ],
   "placementConstraints": [],
-  "memory": "1024",
+  "memory": "512",
   "taskRoleArn": "arn:aws:iam::913814110218:role/ecsTaskExecutionRole",
-  "compatibilities": [
-    "EXTERNAL",
-    "EC2"
-  ],
-  "taskDefinitionArn": "arn:aws:ecs:us-east-2:913814110218:task-definition/decapay-api-td:25",
   "family": "decapay-api-td",
   "requiresAttributes": [
     {
@@ -192,9 +187,7 @@
   ],
   "networkMode": "bridge",
   "runtimePlatform": null,
-  "cpu": "1024",
-  "revision": 25,
-  "status": "ACTIVE",
+  "cpu": "512",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,
   "volumes": []
