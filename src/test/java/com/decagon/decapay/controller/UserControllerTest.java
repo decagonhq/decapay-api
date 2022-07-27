@@ -50,7 +50,7 @@ class UserControllerTest {
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
-	@Value("${api.basepath-user}")
+	@Value("${api.basepath-api}")
 	private String path;
 
 	@BeforeEach
