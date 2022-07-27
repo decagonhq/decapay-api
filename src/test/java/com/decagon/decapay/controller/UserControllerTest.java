@@ -20,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.decagon.decapay.DTO.UserDTO;
+import com.decagon.decapay.dto.UserDTO;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.service.UserService;
