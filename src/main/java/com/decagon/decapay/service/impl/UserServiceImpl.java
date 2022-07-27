@@ -1,6 +1,6 @@
 package com.decagon.decapay.service.impl;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.decagon.decapay.DTO.UserDTO;
@@ -14,9 +14,9 @@ import com.decagon.decapay.service.UserService;
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
-	private final BCryptPasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
-	public UserServiceImpl(final UserRepository userRepository, final BCryptPasswordEncoder passwordEncoder) {
+	public UserServiceImpl(final UserRepository userRepository, final PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 	}

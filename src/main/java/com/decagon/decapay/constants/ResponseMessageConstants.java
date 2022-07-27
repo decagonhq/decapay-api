@@ -10,7 +10,8 @@ public class ResponseMessageConstants {
     public static final String EMAIL_SENT_SUCCESSFULLY = "Email Sent Successfully";
     public static final String FORGOT_PASSWORD_INITIATED_SUCCESSFULLY = "Forgot Password Initiated Successfully";
     public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Password Changed Successfully";
-    
+    public static final String PASSWORD_CREATED_SUCCESSFULLY = "Password Created Successfully";
+
     public static final String USER_SUCCESSFULLY_REGISTERED = "User successfully registered";
 
     public static final String SIGN_IN_SUCCESSFULLY = "Sign In Successfully";
@@ -32,4 +33,11 @@ public class ResponseMessageConstants {
     public static final String PASSWORD_RESET_CODE_DOES_NOT_EXIST = "Reset Code Does Not Exist";
     public static final String INVALID_PASSWORD_RESET_CODE = "Reset Code Is Invalid";
     public static final String PASSWORD_RESET_CODE_HAS_EXPIRED = "Reset Code Has Expired";
+    public static final String PASSWORD_RESET_CODE_ALREADY_USED = "Reset Code Already Used";
+    public static final String PASSWORD_RESET_TOKEN_HAS_EXPIRED = "Reset Token Has Expired";
+    public static final String PASSWORD_RESET_CODE_IS_UNVERIFIED = "Reset Code Is Unverified";
+    public static final String TOKEN_DOES_NOT_EXIST = "Token Does Not Exist";
+    public static final String PASSWORD_SHOULD_NOT_BE_EMPTY = "Password Should Not be Empty";
+    public static final String PASSWORDS_DONT_MATCH = "Passwords Dont Match";
+    public static final String UNEXPECTED_VALUE = "Unexpected value: ";
 }
