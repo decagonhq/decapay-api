@@ -1,4 +1,4 @@
-package com.decagon.decapay.controller;
+package com.decagon.decapay.integration.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
