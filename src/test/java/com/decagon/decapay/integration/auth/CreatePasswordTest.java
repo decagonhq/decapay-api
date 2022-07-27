@@ -198,6 +198,20 @@ class CreatePasswordTest {
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(PASSWORD_CREATED_SUCCESSFULLY));
+
+        //confirm that the password has been changed and user can sign in with the new password
+        user = this.userRepository.findByEmail(user.getEmail()).get();
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail(user.getEmail());
+        loginDto.setPassword("change");
+
+
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").exists());
     }
 
     @Test
@@ -219,6 +233,20 @@ class CreatePasswordTest {
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(PASSWORD_CREATED_SUCCESSFULLY));
+
+        //confirm that the password has been changed and user can sign in with the new password
+        user = this.userRepository.findByEmail(user.getEmail()).get();
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail(user.getEmail());
+        loginDto.setPassword("change");
+
+
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").exists());
     }
 
     @Test
@@ -252,20 +280,6 @@ class CreatePasswordTest {
 
         passwordReset = this.passwordResetRepository.findByEmailAndDeviceId(user.getEmail(), MOBILE_DEVICE_ID).get();
         assertEquals(INVALID, passwordReset.getStatus());
-
-        //confirm that the password has been changed and user can sign in with the new password
-        user = this.userRepository.findByEmail(user.getEmail()).get();
-        LoginDto loginDto = new LoginDto();
-        loginDto.setEmail(user.getEmail());
-        loginDto.setPassword("change");
-
-
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.token").exists());
     }
 
     @Test
@@ -290,21 +304,6 @@ class CreatePasswordTest {
 
         passwordReset = this.passwordResetRepository.findByEmailAndDeviceId(user.getEmail(), WEB_DEVICE_ID).get();
         assertEquals(INVALID, passwordReset.getStatus());
-
-
-        //confirm that the password has been changed and user can sign in with the new password
-        user = this.userRepository.findByEmail(user.getEmail()).get();
-        LoginDto loginDto = new LoginDto();
-        loginDto.setEmail(user.getEmail());
-        loginDto.setPassword("change");
-
-
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.token").exists());
     }
 
 
