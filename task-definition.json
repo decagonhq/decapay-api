@@ -70,7 +70,7 @@
       "workingDirectory": null,
       "secrets": [
         {
-          "valueFrom": "arn:aws:ssm:us-east-2:913814110218:parameter/PROD_AWS_ACCESS_KEY",
+          "valueFrom": "PROD_AWS_ACCESS_KEY",
           "name": "AWS_ACCESS_KEY"
         },
         {
