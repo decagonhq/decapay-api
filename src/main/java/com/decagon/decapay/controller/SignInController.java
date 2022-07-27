@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
 
-@Tag(name ="Sign-in Controller")
+@Tag(name ="Sign In Controller")
 @RequestMapping(value = "${api.basepath-api}")
 @RequiredArgsConstructor
 @RestController
