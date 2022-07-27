@@ -24,7 +24,6 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_USER;
 @Setter
 @Entity
 @Table(name = TABLE_USER)
-@Builder
 @EntityListeners(AuditListener.class)
 public class User implements Auditable, Serializable {
     @Id
