@@ -40,11 +40,13 @@ class UserServiceImplTest {
 	@BeforeEach
 	void setUp() {
 		userDTO = new UserDTO("firstName", "lastName", "a@b.com", "Password1!", "0123456789");
-		user = User.builder().firstName("firstName")
-			.lastName("lastName")
-			.email("a@b.com")
-			.password("Password1!")
-			.phoneNumber("0123456789").build();
+        user=new User();
+		user.setFirstName("firstName");
+		user.setLastName("lastName");
+		user.setEmail("a@b.com");
+		user.setPassword("Password1!");
+		user.setPhoneNumber("0123456789");
+
 	}
 
 	@Test

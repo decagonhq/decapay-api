@@ -17,7 +17,6 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_PASSWORD_RESET
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Getter
 @Setter
 @EntityListeners(AuditListener.class)

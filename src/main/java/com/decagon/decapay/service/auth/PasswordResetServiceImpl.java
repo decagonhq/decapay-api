@@ -28,7 +28,7 @@ import static com.decagon.decapay.utils.CommonUtil.generateOTP;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PasswordResetServiceImpl implements PasswordResetService{
+public class PasswordResetServiceImpl implements PasswordResetService {
     @Value("${api.url-domain}")
     private String urlDomain;
     private final PasswordResetRepository repository;
@@ -48,7 +48,7 @@ public class PasswordResetServiceImpl implements PasswordResetService{
 
     @Override
     public void verifyPasswordResetCode(VerifyPasswordResetCodeRequest verifyPasswordResetCodeRequest, String deviceId) {
-        if(verifyPasswordResetCodeRequest.getEmail() == null || verifyPasswordResetCodeRequest.getResetCode() == null) {
+        if (verifyPasswordResetCodeRequest.getEmail() == null || verifyPasswordResetCodeRequest.getResetCode() == null) {
             throw new InvalidRequestException(NO_RESET_CODE_OR_EMAIL_PROVIDED);
         }
 
@@ -59,11 +59,11 @@ public class PasswordResetServiceImpl implements PasswordResetService{
         PasswordReset passwordReset = this.repository.findByEmailAndDeviceId(verifyPasswordResetCodeRequest.getEmail(), deviceId)
                 .orElseThrow(() -> new ResourceNotFoundException(PASSWORD_RESET_CODE_DOES_NOT_EXIST));
 
-        if(!passwordReset.getToken().equals(verifyPasswordResetCodeRequest.getResetCode())) {
+        if (!passwordReset.getToken().equals(verifyPasswordResetCodeRequest.getResetCode())) {
             throw new InvalidRequestException(INVALID_PASSWORD_RESET_CODE);
         }
 
-        if(passwordReset.tokenExpired()) {
+        if (passwordReset.tokenExpired()) {
             throw new InvalidRequestException(PASSWORD_RESET_CODE_HAS_EXPIRED);
         }
 
@@ -91,35 +91,34 @@ public class PasswordResetServiceImpl implements PasswordResetService{
         if (passwordReset.tokenExpired()) {
             throw new InvalidRequestException(PASSWORD_RESET_TOKEN_HAS_EXPIRED);
         }
-        User user = this.userRepository.findByEmail(passwordReset.getEmail()).orElseThrow(()->new ResourceNotFoundException(USER_NOT_FOUND));
+        User user = this.userRepository.findByEmail(passwordReset.getEmail()).orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         this.saveNewPassword(user, createPasswordRequestDto.getPassword());
         this.invalidateToken(passwordReset);
     }
 
     private void createNewPasswordForMobile(CreatePasswordRequestDto createPasswordRequestDto) {
         PasswordReset passwordReset = this.repository.findByToken(createPasswordRequestDto.getToken()).orElseThrow(() -> new ResourceNotFoundException(PASSWORD_RESET_CODE_DOES_NOT_EXIST));
-        if (passwordReset.getStatus().equals(UNVERIFIED)){
+        if (passwordReset.getStatus().equals(UNVERIFIED)) {
             throw new InvalidRequestException(PASSWORD_RESET_CODE_IS_UNVERIFIED);
         }
-        User user = this.userRepository.findByEmail(passwordReset.getEmail()).orElseThrow(()->new ResourceNotFoundException(USER_NOT_FOUND));
+        User user = this.userRepository.findByEmail(passwordReset.getEmail()).orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
         this.saveNewPassword(user, createPasswordRequestDto.getPassword());
         this.invalidateToken(passwordReset);
     }
 
-    private void saveNewPassword(User user, String password){
+    private void saveNewPassword(User user, String password) {
         user.setPassword(passwordEncoder.encode(password));
         this.userRepository.save(user);
     }
 
-    private void invalidateToken(PasswordReset passwordReset){
+    private void invalidateToken(PasswordReset passwordReset) {
         passwordReset.setStatus(INVALID);
         this.repository.save(passwordReset);
     }
 
 
-
-    private void validatePassword(String password, String confirmPassword){
-        if (!password.equals(confirmPassword)){
+    private void validatePassword(String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
             throw new InvalidRequestException(PASSWORDS_DONT_MATCH);
         }
     }
@@ -132,7 +131,7 @@ public class PasswordResetServiceImpl implements PasswordResetService{
         final String token = UUID.randomUUID().toString();
 
         Optional<PasswordReset> passwordReset = this.repository.findByEmailAndDeviceId(email, WEB_DEVICE_ID);
-        if(passwordReset.isPresent()){
+        if (passwordReset.isPresent()) {
             this.updatePasswordReset(passwordReset.get(), token);
         } else {
             this.createPasswordResetEntity(token, WEB_DEVICE_ID, email);
@@ -178,13 +177,18 @@ public class PasswordResetServiceImpl implements PasswordResetService{
     }
 
 
-
     private void createPasswordResetEntity(String token, String deviceId, String email) {
-        PasswordReset passwordReset = PasswordReset.builder()
+        /*PasswordReset passwordReset = PasswordReset.builder()
                 .deviceId(deviceId)
                 .email(email)
                 .token(token)
-                .build();
+                .build();*/
+
+        PasswordReset passwordReset = new PasswordReset();
+        passwordReset.setDeviceId(deviceId);
+        passwordReset.setEmail(email);
+        passwordReset.setToken(token);
+
         if (deviceId.equals(WEB_DEVICE_ID)) {
             passwordReset.calculateTokenExpiryDate(String.valueOf(PASSWORD_RESET_TOKEN_VALIDITY_PERIOD));
         } else {
@@ -202,6 +206,6 @@ public class PasswordResetServiceImpl implements PasswordResetService{
     }
 
     private String createPasswordResetUrl(String token) {
-        return String.format("%s%s%s/%s",urlDomain,PASSWORD_RESET_URI,USER_URI,token);
+        return String.format("%s%s%s/%s", urlDomain, PASSWORD_RESET_URI, USER_URI, token);
     }
 }
