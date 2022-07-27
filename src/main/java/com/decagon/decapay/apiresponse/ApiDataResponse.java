@@ -30,7 +30,7 @@ public class ApiDataResponse<T> {
   private List<ApiSubError> subErrors;
   private T data;
 
-  private ApiDataResponse() {
+  public ApiDataResponse() {
     timestamp = LocalDateTime.now();
   }
 

@@ -7,6 +7,7 @@ import com.decagon.decapay.model.audit.Auditable;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_USER;
 @Setter
 @Entity
 @Table(name = TABLE_USER)
+@Builder
 public class User implements Auditable, Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
