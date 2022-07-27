@@ -92,7 +92,7 @@ class CreatePasswordTest {
 
         headers = this.addMobileIdToHeaders();
         this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/create-password").content(TestUtils.asJsonString(dto))
+                .perform(MockMvcRequestBuilders.post(path + "/reset-password").content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -113,7 +113,7 @@ class CreatePasswordTest {
 
         headers = this.addWebIdToHeaders();
         this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/create-password").content(TestUtils.asJsonString(dto))
+                .perform(MockMvcRequestBuilders.post(path + "/reset-password").content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -129,7 +129,7 @@ class CreatePasswordTest {
         //act
         headers = this.addWebIdToHeaders();
         this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/create-password").content(TestUtils.asJsonString(dto))
+                .perform(MockMvcRequestBuilders.post(path + "/reset-password").content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -150,7 +150,7 @@ class CreatePasswordTest {
 
         headers = this.addWebIdToHeaders();
         this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/create-password").content(TestUtils.asJsonString(dto))
+                .perform(MockMvcRequestBuilders.post(path + "/reset-password").content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -173,7 +173,7 @@ class CreatePasswordTest {
         //act
         headers = this.addMobileIdToHeaders();
         this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/create-password").content(TestUtils.asJsonString(dto))
+                .perform(MockMvcRequestBuilders.post(path + "/reset-password").content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -194,7 +194,7 @@ class CreatePasswordTest {
         //act
         headers = this.addMobileIdToHeaders();
         this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/create-password").content(TestUtils.asJsonString(dto))
+                .perform(MockMvcRequestBuilders.post(path + "/reset-password").content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(PASSWORD_CREATED_SUCCESSFULLY));
@@ -229,7 +229,7 @@ class CreatePasswordTest {
         //act
         headers = this.addWebIdToHeaders();
         this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/create-password").content(TestUtils.asJsonString(dto))
+                .perform(MockMvcRequestBuilders.post(path + "/reset-password").content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(PASSWORD_CREATED_SUCCESSFULLY));
@@ -265,7 +265,7 @@ class CreatePasswordTest {
         //act
         headers = this.addMobileIdToHeaders();
         this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/create-password").content(TestUtils.asJsonString(dto))
+                .perform(MockMvcRequestBuilders.post(path + "/reset-password").content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(PASSWORD_CREATED_SUCCESSFULLY));
@@ -297,7 +297,7 @@ class CreatePasswordTest {
         //act
         headers = this.addWebIdToHeaders();
         this.mockMvc
-                .perform(MockMvcRequestBuilders.post(path + "/create-password").content(TestUtils.asJsonString(dto))
+                .perform(MockMvcRequestBuilders.post(path + "/reset-password").content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(PASSWORD_CREATED_SUCCESSFULLY));
