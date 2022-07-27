@@ -119,10 +119,6 @@ public class PasswordResetServiceImpl implements PasswordResetService{
 
 
     private void validatePassword(String password, String confirmPassword){
-        if(password.length() < 1){
-            throw new InvalidRequestException(PASSWORD_SHOULD_NOT_BE_EMPTY);
-        }
-
         if (!password.equals(confirmPassword)){
             throw new InvalidRequestException(PASSWORDS_DONT_MATCH);
         }
