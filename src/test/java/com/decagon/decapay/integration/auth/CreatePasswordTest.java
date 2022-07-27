@@ -1,9 +1,11 @@
 package com.decagon.decapay.integration.auth;
 
 
+import com.decagon.decapay.dto.LoginDto;
 import com.decagon.decapay.model.password.PasswordReset;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.payloads.request.auth.CreatePasswordRequestDto;
+import com.decagon.decapay.payloads.request.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.TestModels;
@@ -30,6 +32,7 @@ import static com.decagon.decapay.constants.AppConstants.*;
 import static com.decagon.decapay.constants.ResponseMessageConstants.PASSWORD_CREATED_SUCCESSFULLY;
 import static com.decagon.decapay.enumTypes.ResetCodeStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -239,8 +242,30 @@ class CreatePasswordTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(PASSWORD_CREATED_SUCCESSFULLY));
 
+        // assert that the password reset token cannot be used anymore
+        VerifyPasswordResetCodeRequest dto2 = new VerifyPasswordResetCodeRequest("fabiane@decagonhq.com","3215");
+        //act
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.post(path + "/verify-code").content(TestUtils.asJsonString(dto2))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
         passwordReset = this.passwordResetRepository.findByEmailAndDeviceId(user.getEmail(), MOBILE_DEVICE_ID).get();
         assertEquals(INVALID, passwordReset.getStatus());
+
+        //confirm that the password has been changed and user can sign in with the new password
+        user = this.userRepository.findByEmail(user.getEmail()).get();
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail(user.getEmail());
+        loginDto.setPassword("change");
+
+
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").exists());
     }
 
     @Test
@@ -265,6 +290,21 @@ class CreatePasswordTest {
 
         passwordReset = this.passwordResetRepository.findByEmailAndDeviceId(user.getEmail(), WEB_DEVICE_ID).get();
         assertEquals(INVALID, passwordReset.getStatus());
+
+
+        //confirm that the password has been changed and user can sign in with the new password
+        user = this.userRepository.findByEmail(user.getEmail()).get();
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail(user.getEmail());
+        loginDto.setPassword("change");
+
+
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").exists());
     }
 
 

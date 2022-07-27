@@ -33,6 +33,7 @@ public class ResponseMessageConstants {
     public static final String PASSWORD_RESET_CODE_DOES_NOT_EXIST = "Reset Code Does Not Exist";
     public static final String INVALID_PASSWORD_RESET_CODE = "Reset Code Is Invalid";
     public static final String PASSWORD_RESET_CODE_HAS_EXPIRED = "Reset Code Has Expired";
+    public static final String PASSWORD_RESET_CODE_ALREADY_USED = "Reset Code Already Used";
     public static final String PASSWORD_RESET_TOKEN_HAS_EXPIRED = "Reset Token Has Expired";
     public static final String PASSWORD_RESET_CODE_IS_UNVERIFIED = "Reset Code Is Unverified";
     public static final String TOKEN_DOES_NOT_EXIST = "Token Does Not Exist";
