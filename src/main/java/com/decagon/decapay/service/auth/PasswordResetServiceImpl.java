@@ -4,6 +4,7 @@ import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.password.PasswordReset;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.payloads.request.auth.CreatePasswordRequestDto;
 import com.decagon.decapay.payloads.request.auth.ForgotPasswordRequestDto;
 import com.decagon.decapay.payloads.request.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
@@ -12,6 +13,7 @@ import com.decagon.decapay.utils.EmailTemplateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
@@ -20,7 +22,7 @@ import java.util.UUID;
 
 import static com.decagon.decapay.constants.AppConstants.*;
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
-import static com.decagon.decapay.enumTypes.ResetCodeStatus.VERIFIED;
+import static com.decagon.decapay.enumTypes.ResetCodeStatus.*;
 import static com.decagon.decapay.utils.CommonUtil.generateOTP;
 
 @Slf4j
@@ -32,6 +34,7 @@ public class PasswordResetServiceImpl implements PasswordResetService{
     private final PasswordResetRepository repository;
     private final UserRepository userRepository;
     private final EmailTemplateUtil emailTemplateUtil;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -39,7 +42,7 @@ public class PasswordResetServiceImpl implements PasswordResetService{
         switch (deviceId) {
             case MOBILE_DEVICE_ID -> this.publishForgotPasswordResetCodeEmail(forgotPasswordRequestDto.getEmail());
             case WEB_DEVICE_ID -> this.publishForgotPasswordResetEmail(forgotPasswordRequestDto.getEmail());
-            default -> throw new InvalidRequestException("Unexpected value: " + deviceId);
+            default -> throw new InvalidRequestException(UNEXPECTED_VALUE + deviceId);
         }
     }
 
@@ -64,8 +67,61 @@ public class PasswordResetServiceImpl implements PasswordResetService{
             throw new InvalidRequestException(PASSWORD_RESET_CODE_HAS_EXPIRED);
         }
 
+        if (passwordReset.getStatus().equals(VERIFIED) || passwordReset.getStatus().equals(INVALID)) {
+            throw new InvalidRequestException(PASSWORD_RESET_CODE_ALREADY_USED);
+        }
+
         passwordReset.setStatus(VERIFIED);
         repository.save(passwordReset);
+    }
+
+    @Override
+    public void createPassword(CreatePasswordRequestDto createPasswordRequestDto, String deviceId) {
+        this.validatePassword(createPasswordRequestDto.getPassword(), createPasswordRequestDto.getConfirmPassword());
+
+        switch (deviceId) {
+            case MOBILE_DEVICE_ID -> this.createNewPasswordForMobile(createPasswordRequestDto);
+            case WEB_DEVICE_ID -> this.createNewPasswordForWeb(createPasswordRequestDto);
+            default -> throw new InvalidRequestException(UNEXPECTED_VALUE + deviceId);
+        }
+    }
+
+    private void createNewPasswordForWeb(CreatePasswordRequestDto createPasswordRequestDto) {
+        PasswordReset passwordReset = this.repository.findByToken(createPasswordRequestDto.getToken()).orElseThrow(() -> new ResourceNotFoundException(TOKEN_DOES_NOT_EXIST));
+        if (passwordReset.tokenExpired()) {
+            throw new InvalidRequestException(PASSWORD_RESET_TOKEN_HAS_EXPIRED);
+        }
+        User user = this.userRepository.findByEmail(passwordReset.getEmail()).orElseThrow(()->new ResourceNotFoundException(USER_NOT_FOUND));
+        this.saveNewPassword(user, createPasswordRequestDto.getPassword());
+        this.invalidateToken(passwordReset);
+    }
+
+    private void createNewPasswordForMobile(CreatePasswordRequestDto createPasswordRequestDto) {
+        PasswordReset passwordReset = this.repository.findByToken(createPasswordRequestDto.getToken()).orElseThrow(() -> new ResourceNotFoundException(PASSWORD_RESET_CODE_DOES_NOT_EXIST));
+        if (passwordReset.getStatus().equals(UNVERIFIED)){
+            throw new InvalidRequestException(PASSWORD_RESET_CODE_IS_UNVERIFIED);
+        }
+        User user = this.userRepository.findByEmail(passwordReset.getEmail()).orElseThrow(()->new ResourceNotFoundException(USER_NOT_FOUND));
+        this.saveNewPassword(user, createPasswordRequestDto.getPassword());
+        this.invalidateToken(passwordReset);
+    }
+
+    private void saveNewPassword(User user, String password){
+        user.setPassword(passwordEncoder.encode(password));
+        this.userRepository.save(user);
+    }
+
+    private void invalidateToken(PasswordReset passwordReset){
+        passwordReset.setStatus(INVALID);
+        this.repository.save(passwordReset);
+    }
+
+
+
+    private void validatePassword(String password, String confirmPassword){
+        if (!password.equals(confirmPassword)){
+            throw new InvalidRequestException(PASSWORDS_DONT_MATCH);
+        }
     }
 
     private void publishForgotPasswordResetEmail(String email) {
