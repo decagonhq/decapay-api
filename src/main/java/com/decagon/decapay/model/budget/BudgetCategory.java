@@ -1,5 +1,6 @@
 package com.decagon.decapay.model.budget;
 
+import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
 import com.decagon.decapay.model.user.User;
@@ -18,6 +19,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET_CATEGOR
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditListener.class)
 @Table(name = TABLE_BUDGET_CATEGORY)
 public class BudgetCategory implements Auditable, Serializable {
     @Id
