@@ -135,9 +135,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             this.updatePasswordReset(passwordReset.get(), token);
         } else {
             this.createPasswordResetEntity(token, WEB_DEVICE_ID, email);
-            String passwordResetUrl = this.createPasswordResetUrl(token);
-            this.publishPasswordResetEmail(user, passwordResetUrl);
         }
+        String passwordResetUrl = this.createPasswordResetUrl(token);
+        this.publishPasswordResetEmail(user, passwordResetUrl);
     }
 
     private void updatePasswordReset(PasswordReset passwordReset, String token) {
@@ -161,8 +161,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
                 this.updatePasswordReset(passwordReset.get(), code);
             } else {
                 this.createPasswordResetEntity(code, MOBILE_DEVICE_ID, email);
-                this.publishPasswordResetEmailForMobile(user, code);
             }
+            this.publishPasswordResetEmailForMobile(user, code);
         } catch (NoSuchAlgorithmException e) {
             log.error("Error generating OTP", e);
         }
