@@ -29,7 +29,7 @@ import static com.decagon.decapay.utils.CommonUtil.generateOTP;
 @Service
 @RequiredArgsConstructor
 public class PasswordResetServiceImpl implements PasswordResetService {
-    @Value("${api.url-domain}")
+    @Value("${api.frontend-url}")
     private String urlDomain;
     private final PasswordResetRepository repository;
     private final UserRepository userRepository;
@@ -206,6 +206,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     private String createPasswordResetUrl(String token) {
-        return String.format("%s%s%s/%s", urlDomain, PASSWORD_RESET_URI, USER_URI, token);
+        return String.format("%s%s/%s", urlDomain, PASSWORD_RESET_URI, token);
     }
 }
