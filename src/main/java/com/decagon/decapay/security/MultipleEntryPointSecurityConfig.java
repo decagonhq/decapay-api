@@ -2,7 +2,6 @@ package com.decagon.decapay.security;
 
 import com.decagon.decapay.utils.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -48,7 +47,9 @@ public class MultipleEntryPointSecurityConfig {
         private final String[] AUTH_WHITELIST = {
                 path +"/signin",
                 path + "/forgot-password",
-                path + "/rgister"
+                path + "/reset-password",
+                path + "/register",
+                path + "/verify-code"
         };
 
         @Override
