@@ -34,7 +34,7 @@ public class MultipleEntryPointSecurityConfig {
     public static class ClientWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 //        @Value("${api.basepath-api}")
-        private String path = "api/v1";
+        private final String path = "/api/v1";
 
         @Autowired
         private JwtRequestFilter jwtRequestFilter;

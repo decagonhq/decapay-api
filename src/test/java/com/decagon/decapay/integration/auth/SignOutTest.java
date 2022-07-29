@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -79,7 +80,6 @@ public class SignOutTest {
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername("go@gmail.com");
 
-
         String token = jwtUtil.generateToken(userDetails);
 
         SignOutRequestDto signOutRequestDto = new SignOutRequestDto();
@@ -99,10 +99,11 @@ public class SignOutTest {
         assertEquals(tokenBlacklistCollection.size(), 1);
         assertEquals(token, tokenBlacklistCollection.iterator().next().getToken());
 
-//        this.mockMvc
-//                .perform(get(path + "/all").content(TestUtils.asJsonString(signOutRequestDto))
-//                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isUnauthorized());
+        //assert token cannot be used again for any api request
+       this.mockMvc
+                .perform(get(path + "/any").content(TestUtils.asJsonString(signOutRequestDto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+                .andExpect(status().isForbidden());
     }
 }
