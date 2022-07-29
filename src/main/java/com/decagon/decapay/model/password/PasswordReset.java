@@ -1,6 +1,7 @@
 package com.decagon.decapay.model.password;
 
 import com.decagon.decapay.enumTypes.ResetCodeStatus;
+import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
 import com.decagon.decapay.utils.CommonUtil;
@@ -16,9 +17,9 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_PASSWORD_RESET
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Getter
 @Setter
+@EntityListeners(AuditListener.class)
 @Entity
 @Table(name = TABLE_PASSWORD_RESET, uniqueConstraints = {
         @UniqueConstraint(columnNames = {
@@ -30,11 +31,9 @@ public class PasswordReset implements Auditable, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email
-    @Column(unique = true)
     private String email;
 
-    @Column(name = "device_id",length = 30, unique = true)
+    @Column(name = "device_id",length = 30)
     private String deviceId;
 
     private String token;

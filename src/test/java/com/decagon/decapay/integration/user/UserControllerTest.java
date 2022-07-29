@@ -1,4 +1,4 @@
-package com.decagon.decapay.controller;
+package com.decagon.decapay.integration.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -20,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.decagon.decapay.DTO.UserDTO;
+import com.decagon.decapay.dto.UserDTO;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.service.UserService;
@@ -86,11 +86,13 @@ class UserControllerTest {
 	@Test
 	void registerUserFailsWhenUserAlreadyExists() throws Exception {
 
-		userRepository.save(User.builder().firstName("firstName")
-			.lastName("lastName")
-			.email("a@b.com")
-			.password("Password1!")
-			.phoneNumber("0123456789").build());
+		User user=new User();
+		user.setFirstName("firstName");
+		user.setLastName("lastName");
+		user.setEmail("a@b.com");
+		user.setPassword("Password1!");
+		user.setPhoneNumber("0123456789");
+		userRepository.save(user);
 
 		mockMvc.perform(
 			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(

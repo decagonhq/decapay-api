@@ -43,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String token = extractBearerToken(request);
-            if (StringUtils.isNotEmpty(token) && tokenBlacklistService.isTokenBlacklisted(token) && SecurityContextHolder.getContext().getAuthentication() == null){
+            if (StringUtils.isNotEmpty(token) && !tokenBlacklistService.isTokenBlacklisted(token) && SecurityContextHolder.getContext().getAuthentication() == null){
                 String username = jwtUtil.extractUsername(token);
                 if (username != null){
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -59,8 +59,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
-            SecurityContextHolder.clearContext();
-            this.writeErrorResponse("Invalid Token",response,HttpStatus.UNAUTHORIZED);
+                this.writeErrorResponse("Invalid token", response, HttpStatus.UNAUTHORIZED);
         }
 
     }
@@ -70,7 +69,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private String extractBearerToken(HttpServletRequest request){
         final String authorizationHeader = request.getHeader("Authorization");
         String token = null;
-        log.info("Authorization header: " + authorizationHeader);
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
         }

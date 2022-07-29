@@ -1,6 +1,7 @@
 package com.decagon.decapay.model.budget;
 
 
+import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET_LINE_IT
 @NoArgsConstructor
 @Getter
 @Setter
+@EntityListeners(AuditListener.class)
 @Entity
 @Table(name = TABLE_BUDGET_LINE_ITEM)
 public class BudgetLineItem implements Auditable, Serializable {

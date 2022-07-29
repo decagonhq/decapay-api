@@ -1,8 +1,9 @@
-package com.decagon.decapay.service;
+package com.decagon.decapay.service.auth;
 
 import com.decagon.decapay.dto.LoginDto;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.security.CustomUserDetailsService;
+import com.decagon.decapay.service.LoginService;
 import com.decagon.decapay.utils.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

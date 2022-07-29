@@ -1,6 +1,7 @@
 package com.decagon.decapay.security;
 
 
+import com.decagon.decapay.enumTypes.UserStatus;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 
@@ -10,10 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
-
-import static com.decagon.decapay.utils.ResourceHelper.validateResourceExists;
-
 
 @RequiredArgsConstructor
 @Slf4j
@@ -25,8 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("No user found with username:" + email));
-        return user;
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("No user found with username:" + email));
+        return new UserInfo(user.getEmail(),user.getPassword(),user.getUserStatus().equals(UserStatus.ACTIVE));
     }
 }

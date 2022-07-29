@@ -35,19 +35,19 @@ public class CustomizedResponseExceptionHandler extends ResponseEntityExceptionH
 
 
     @ExceptionHandler(ResourceConflictException.class)
-    public final ResponseEntity handleDuplicateEntityExceptions(Exception ex, WebRequest request) {
-        return ApiResponseUtil.errorResponse(HttpStatus.CONFLICT,ex.getMessage());
+    public final ResponseEntity handleDuplicateEntityExceptions(ResourceConflictException ex, WebRequest request) {
+        return ApiResponseUtil.errorResponse(HttpStatus.CONFLICT,ex.getErrorMessage());
     }
 
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity handleResourceNotFoundException(ResourceNotFoundException e) {
-        return ApiResponseUtil.errorResponse(HttpStatus.NOT_FOUND,e.getMessage());
+        return ApiResponseUtil.errorResponse(HttpStatus.NOT_FOUND,e.getErrorMessage());
     }
 
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity handleResourceNotFoundException(InvalidRequestException e) {
-        return ApiResponseUtil.errorResponse(HttpStatus.BAD_REQUEST,e.getMessage());
+        return ApiResponseUtil.errorResponse(HttpStatus.BAD_REQUEST,e.getErrorMessage());
     }
 
     @ExceptionHandler(Exception.class)

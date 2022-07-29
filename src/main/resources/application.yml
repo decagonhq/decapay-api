@@ -40,6 +40,7 @@ server:
     # ============API===================
 api:
   url-domain: ${APP_URL_DOMAIN:http://localhost:${server.port}${server.servlet.context-path}}
+  frontend-url: ${FRONT_END_URL:}
   module-name: DecaPay
   version: 1.0
   basepath-api: /api/v1

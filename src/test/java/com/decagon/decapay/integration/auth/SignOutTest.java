@@ -1,4 +1,4 @@
-package com.decagon.decapay.integrationTest.auth;
+package com.decagon.decapay.integration.auth;
 
 
 import com.decagon.decapay.dto.SignOutRequestDto;
@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -100,10 +101,10 @@ public class SignOutTest {
         assertEquals(tokenBlacklistCollection.size(), 1);
         assertEquals(token, tokenBlacklistCollection.iterator().next().getToken());
 
-        this.mockMvc
-                .perform(post(path + "/budget").content(TestUtils.asJsonString(signOutRequestDto))
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+//        this.mockMvc
+//                .perform(get(path + "/all").content(TestUtils.asJsonString(signOutRequestDto))
+//                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().isUnauthorized());
     }
 }

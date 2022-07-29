@@ -6,6 +6,8 @@ import com.decagon.decapay.repositories.auth.TokenBlacklistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 @Service
 @RequiredArgsConstructor
 public class TokenBlacklistService {

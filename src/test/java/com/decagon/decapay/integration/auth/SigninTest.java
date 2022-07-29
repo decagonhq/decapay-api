@@ -1,4 +1,4 @@
-package com.decagon.decapay.integrationTest.auth;
+package com.decagon.decapay.integration.auth;
 
 
 import com.decagon.decapay.dto.LoginDto;
