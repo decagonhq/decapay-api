@@ -66,11 +66,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         if (passwordReset.tokenExpired()) {
             throw new InvalidRequestException(PASSWORD_RESET_CODE_HAS_EXPIRED);
         }
-
-        if (passwordReset.getStatus().equals(VERIFIED) || passwordReset.getStatus().equals(INVALID)) {
-            throw new InvalidRequestException(PASSWORD_RESET_CODE_ALREADY_USED);
-        }
-
+        
         passwordReset.setStatus(VERIFIED);
         repository.save(passwordReset);
     }
