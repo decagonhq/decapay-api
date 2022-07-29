@@ -1,8 +1,6 @@
 package com.decagon.decapay.utils;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.exception.InvalidCredentialException;
-import com.decagon.decapay.model.user.TokenBlacklist;
 import com.decagon.decapay.service.auth.TokenBlacklistService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
@@ -16,7 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
