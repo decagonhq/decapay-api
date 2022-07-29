@@ -23,9 +23,9 @@ public class CommonUtil {
 
     public static int generateOTP() throws NoSuchAlgorithmException {
         Random random = SecureRandom.getInstanceStrong();
-        var otp = 1000 + random.nextInt(9999);
-        if(String.valueOf(otp).length() == 4) return otp;
-        return generateOTP();
+        int min = 1000;
+        int max = 9999;
+        return random.nextInt(max-min) + min;
     }
 
 }
