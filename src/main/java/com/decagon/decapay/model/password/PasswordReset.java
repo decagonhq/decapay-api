@@ -41,7 +41,7 @@ public class PasswordReset implements Auditable, Serializable {
     private LocalDateTime expiredAt;
 
     @Enumerated(EnumType.STRING)
-    private ResetCodeStatus status = ResetCodeStatus.UNVERIFIED;
+    private ResetCodeStatus status;
 
     @Embedded
     private AuditSection auditSection = new AuditSection();
