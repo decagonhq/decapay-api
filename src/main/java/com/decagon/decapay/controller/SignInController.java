@@ -4,7 +4,9 @@ package com.decagon.decapay.controller;
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.AuthResponse;
 import com.decagon.decapay.dto.LoginDto;
+import com.decagon.decapay.dto.SignOutRequestDto;
 import com.decagon.decapay.service.LoginService;
+import com.decagon.decapay.service.auth.TokenBlacklistService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
 
@@ -29,6 +32,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 public class SignInController {
 
     private final LoginService loginService;
+    private final TokenBlacklistService tokenBlacklistService;
 
 
     @ApiResponses(value = {
@@ -41,5 +45,17 @@ public class SignInController {
         String token = loginService.authenticate(loginDto);
         AuthResponse authResponse = new AuthResponse(token);
         return ApiResponseUtil.response(HttpStatus.OK, authResponse, "Sign in successfully");
+    }
+
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = SIGN_OUT_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+    @Operation(summary = "Sign out user successfully")
+    @PostMapping("/signout")
+    public ResponseEntity<ApiDataResponse<AuthResponse>> signOut(@RequestBody SignOutRequestDto signOutRequestDto){
+        tokenBlacklistService.blackListToken(signOutRequestDto.getToken());
+        return ApiResponseUtil.response(HttpStatus.OK,"Sign Out successfully");
     }
 }
