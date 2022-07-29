@@ -206,6 +206,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     private String createPasswordResetUrl(String token) {
-        return String.format("%s%s/%s", urlDomain, PASSWORD_RESET_URI, token);
+        return String.format("%s%s?%s", urlDomain, PASSWORD_RESET_URI, "token="+token);
     }
 }
