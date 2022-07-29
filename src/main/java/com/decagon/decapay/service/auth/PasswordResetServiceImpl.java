@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
@@ -51,7 +52,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         if (verifyPasswordResetCodeRequest.getEmail() == null || verifyPasswordResetCodeRequest.getResetCode() == null) {
             throw new InvalidRequestException(NO_RESET_CODE_OR_EMAIL_PROVIDED);
         }
-
         if (!deviceId.equals(MOBILE_DEVICE_ID)) {
             throw new InvalidRequestException("Unexpected value: " + deviceId);
         }
@@ -59,7 +59,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         PasswordReset passwordReset = this.repository.findByEmailAndDeviceId(verifyPasswordResetCodeRequest.getEmail(), deviceId)
                 .orElseThrow(() -> new ResourceNotFoundException(PASSWORD_RESET_CODE_DOES_NOT_EXIST));
 
-        if (!passwordReset.getToken().equals(verifyPasswordResetCodeRequest.getResetCode())) {
+        if (!verifyPasswordResetCodeRequest.getResetCode().equals(passwordReset.getToken())) {
             throw new InvalidRequestException(INVALID_PASSWORD_RESET_CODE);
         }
 
@@ -72,6 +72,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
+    @Transactional
     public void createPassword(CreatePasswordRequestDto createPasswordRequestDto, String deviceId) {
         this.validatePassword(createPasswordRequestDto.getPassword(), createPasswordRequestDto.getConfirmPassword());
 
@@ -108,8 +109,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     private void invalidateToken(PasswordReset passwordReset) {
-        passwordReset.setStatus(INVALID);
-        this.repository.save(passwordReset);
+        passwordReset.setToken(null);
     }
 
 
