@@ -11,11 +11,17 @@ import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
+import com.icegreen.greenmail.configuration.GreenMailConfiguration;
+import com.icegreen.greenmail.junit5.GreenMailExtension;
+import com.icegreen.greenmail.util.GreenMailUtil;
+import com.icegreen.greenmail.util.ServerSetupTest;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,6 +32,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 
 import static com.decagon.decapay.constants.AppConstants.*;
@@ -76,6 +83,9 @@ class PasswordResetTest {
         return headers;
     };
 
+    @RegisterExtension
+    static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
+            .withConfiguration(GreenMailConfiguration.aConfig().withUser("emailuser", "emailpass"));
 
     @Test
     void shouldPublishForgotPasswordEmailForWebUserSuccessfully() throws Exception {
@@ -99,6 +109,12 @@ class PasswordResetTest {
         assertEquals(WEB_DEVICE_ID, passwordReset.getDeviceId());
         assertTrue(passwordReset.getExpiredAt().isAfter(LocalDateTime.now()));
 
+        //assert email sent
+        MimeMessage[] receivedMessages = greenMail.getReceivedMessages();
+        MimeMessage receivedMessage = receivedMessages[0];
+        assertTrue(StringUtils.isNotEmpty(GreenMailUtil.getBody(receivedMessage)));
+        assertEquals(1, receivedMessage.getAllRecipients().length);
+        assertEquals("fabiane@decagonhq.com", receivedMessage.getAllRecipients()[0].toString());
     }
 
     @Test

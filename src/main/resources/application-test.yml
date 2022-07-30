@@ -10,5 +10,23 @@ spring:
       ddl-auto: update
     open-in-view: false
 
+  # ===============================
+  # = MAIL
+  # ===============================
+  mail:
+    host: localhost
+    password: emailpass
+    username: emailuser
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          port: 3025
+          auth: false
+          starttls:
+            enable: false
+            required: false
+
 
 
