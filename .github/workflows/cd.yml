@@ -26,11 +26,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    
-    - name: set env file and vars
-      run: |
-        touch .env
-        echo SPRING_DATASOURCE_URL= ${{secrets.SPRING_DATASOURCE_URL}} >> .env
 
     - name: Build with Maven
       run: mvn clean install -Dspring.profiles.active=prod

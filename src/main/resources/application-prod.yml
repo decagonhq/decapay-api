@@ -16,7 +16,7 @@ amazonProperties:
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${RDS_HOSTNAME:localhost}:${RDS_PORT:5432}/${RDS_DB_NAME:decapay}}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://decapay-api-db.crwrzhnx1ugs.us-east-2.rds.amazonaws.com:5432/decapay_db}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:root}
   jpa:
