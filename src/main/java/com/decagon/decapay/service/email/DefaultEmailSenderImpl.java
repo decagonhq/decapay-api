@@ -6,6 +6,7 @@ import com.decagon.decapay.payloads.request.email.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.util.IOUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -20,6 +21,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Component
 @Slf4j
+@Profile({"dev","test"})
 public class DefaultEmailSenderImpl implements EmailSender {
 
     private final JavaMailSender emailSender;
