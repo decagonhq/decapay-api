@@ -30,6 +30,11 @@ jobs:
     - name: Build with Maven
       run: |
         export SPRING_DATASOURCE_PASSWORD=${{secrets.SPRING_DATASOURCE_PASSWORD}}
+        export AWS_ACCESS_KEY={{secrets.SMTP_AWS_ACCESS_KEY}}
+        export AWS_SECRET={{secrets.SMTP_AWS_SECRET}}
+        export AWS_SMTP_HOST={{secrets.AWS_SMTP_HOST}}
+        export AWS_SMTP_USERNAME={{secrets.AWS_SMTP_USERNAME}}
+        export AWS_SMTP_PASSWORD={{secrets.AWS_SMTP_PASSWORD}}
         mvn clean install -Dspring.profiles.active=prod
 
     - name: Configure AWS credentials
