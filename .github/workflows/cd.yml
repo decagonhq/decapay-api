@@ -26,14 +26,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-        
-    - name: Set env file and vars
-      run: |
-        touch .env
-        echo SPRING_ACTIVE_PROFILE="prod" >> .env
-
     - name: Build with Maven
-      run: mvn clean install
+      run: mvn clean install -Dspring.profiles.active=prod
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
