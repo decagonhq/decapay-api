@@ -1,8 +1,4 @@
 package com.decagon.decapay.utils;
-
-
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Random;
 
 public class CommonUtil {
@@ -21,8 +17,8 @@ public class CommonUtil {
         return true;
     }
 
-    public static int generateOTP() throws NoSuchAlgorithmException {
-        Random random = SecureRandom.getInstanceStrong();
+    public static int generateOTP() {
+        Random random = new Random();
         int min = 1000;
         int max = 9999;
         return random.nextInt(max-min) + min;
