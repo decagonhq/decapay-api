@@ -1,4 +1,4 @@
-package com.decagon.decapay.integrationTest.auth;
+package com.decagon.decapay.integration.auth;
 
 
 import com.decagon.decapay.dto.LoginDto;
@@ -65,7 +65,7 @@ public class SigninTest {
 
         LoginDto loginDto = new LoginDto();
         loginDto.setEmail("gt@gmail.com");
-        loginDto.setPassword("12345");
+        loginDto.setPassword("1234");
 
         MvcResult result = this.mockMvc
                 .perform(MockMvcRequestBuilders.post( path + "/signin").content(TestUtils.asJsonString(loginDto))

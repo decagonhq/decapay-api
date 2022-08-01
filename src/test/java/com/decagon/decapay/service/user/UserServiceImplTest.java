@@ -1,4 +1,4 @@
-package com.decagon.decapay.service.impl;
+package com.decagon.decapay.service.user;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
+import com.decagon.decapay.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.decagon.decapay.DTO.UserDTO;
+import com.decagon.decapay.dto.UserDTO;
 import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
@@ -39,11 +40,13 @@ class UserServiceImplTest {
 	@BeforeEach
 	void setUp() {
 		userDTO = new UserDTO("firstName", "lastName", "a@b.com", "Password1!", "0123456789");
-		user = User.builder().firstName("firstName")
-			.lastName("lastName")
-			.email("a@b.com")
-			.password("Password1!")
-			.phoneNumber("0123456789").build();
+        user=new User();
+		user.setFirstName("firstName");
+		user.setLastName("lastName");
+		user.setEmail("a@b.com");
+		user.setPassword("Password1!");
+		user.setPhoneNumber("0123456789");
+
 	}
 
 	@Test

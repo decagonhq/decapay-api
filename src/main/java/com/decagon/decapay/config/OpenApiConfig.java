@@ -1,5 +1,7 @@
 package com.decagon.decapay.config;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -15,6 +17,7 @@ import static com.decagon.decapay.constants.AppConstants.*;
 
 
 @Configuration
+@OpenAPIDefinition(servers = {@Server(url = "/", description = "Default Server URL")})
 public class OpenApiConfig {
 
     private final String moduleName;

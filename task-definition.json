@@ -28,7 +28,11 @@
       "environment": [
         {
           "name": "APP_URL_DOMAIN",
-          "value": "decapay.net"
+          "value": "https://decapay.net"
+        },
+        {
+          "name": "FRONT_END_URL",
+          "value": "https://decapay.netlify.app"
         },
         {
           "name": "CONTEXT_PATH",

@@ -10,16 +10,18 @@ import com.decagon.decapay.config.email.EmailConfig;
 import com.decagon.decapay.payloads.request.email.Email;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component("sesEmailSender")
+@Profile("prod")
 public class SESEmailSenderImpl implements EmailSender {
 
     // The email body for recipients with non-HTML email clients.
     static final String TEXTBODY =
             "This email was sent through Amazon SES " + "using the AWS SDK for Java.";
 
-    @Value("${config.emailSender.region}")
+    @Value("${amazonProperties.region}")
     private String region;
     @Value("${amazonProperties.accessKey}")
     private String accessKey;

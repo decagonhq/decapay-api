@@ -12,23 +12,6 @@ spring:
     resources:
       add-mappings: true
 
-  # ===============================
-  # = MAIL
-  # ===============================
-  mail:
-    host: smtp.gmail.com
-    password: qwqdgxaagvrzpqhi
-    username: mydevemail2020@gmail.com
-    properties:
-      mail:
-        transport:
-          protocol: smtp
-        smtp:
-          port: 587
-          auth: true
-          starttls:
-            enable: true
-            required: true
 
     # =============SERVER==================
 server:
@@ -40,6 +23,7 @@ server:
     # ============API===================
 api:
   url-domain: ${APP_URL_DOMAIN:http://localhost:${server.port}${server.servlet.context-path}}
+  frontend-url: ${FRONT_END_URL:}
   module-name: DecaPay
   version: 1.0
   basepath-api: /api/v1
@@ -54,14 +38,4 @@ management:
         include: "*"
 
 config.emailSender: ${DEFAULT_EMAIL_SENDER:default}
-config.emailSender.region: us_west_2
 
-amazonProperties:
-  region: ${AWS_REGION:us-east-1}
-  endpointUrl: ${AWS_ENDPOINT_URL:https://s3.us-east-1.amazonaws.com}
-  accessKey: ${AWS_ACCESS_KEY:}
-  secretKey: ${AWS_SECRET:}
-  bucketName: ${AWS_BUCKET_NAME:decagon-decapay}
-  smtpHost: ${AWS_SMTP_HOST:}
-  smtpUserName: ${AWS_SMTP_USERNAME:}
-  smtpPassword: ${AWS_SMTP_PASSWORD:}

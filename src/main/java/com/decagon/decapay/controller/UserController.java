@@ -6,6 +6,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.USER_SUCCES
 
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.decagon.decapay.DTO.UserDTO;
+import com.decagon.decapay.dto.UserDTO;
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.model.user.User;
@@ -24,6 +25,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
+@Tag(name ="Register User Controller")
 @RestController
 @RequestMapping(value = "${api.basepath-api}")
 public class UserController {

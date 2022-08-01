@@ -19,8 +19,10 @@ public class EmailSenderConfig {
             return (EmailSender) context.getBean("defaultEmailSenderImpl");
         } else if(emailSender.equals("cloud")) {
             return (EmailSender) context.getBean("sesEmailSender");
-        }else{
+        } else if(emailSender.equals("cloud-smtp")) {
             return (EmailSender) context.getBean("sesSMTPEmailSender");
+        }else{
+            return (EmailSender) context.getBean("defaultEmailSenderImpl");
         }
     }
 

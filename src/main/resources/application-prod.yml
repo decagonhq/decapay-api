@@ -3,6 +3,16 @@ server:
   servlet:
     context-path: ${CONTEXT_PATH:}
 
+amazonProperties:
+  region: us-west-2
+  endpointUrl: https://s3.us-west-2.amazonaws.com
+  accessKey: ${AWS_ACCESS_KEY:}
+  secretKey: ${AWS_SECRET:}
+  bucketName: decapay
+  smtpHost: ${AWS_SMTP_HOST:}
+  smtpUserName: ${AWS_SMTP_USERNAME:}
+  smtpPassword: ${AWS_SMTP_PASSWORD:}
+
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
