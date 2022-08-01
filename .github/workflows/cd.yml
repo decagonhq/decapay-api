@@ -28,7 +28,9 @@ jobs:
         cache: maven
 
     - name: Build with Maven
-      run: mvn clean install -Dspring.profiles.active=prod
+      run: |
+        export SPRING_DATASOURCE_PASSWORD=${{secrets.SPRING_DATASOURCE_PASSWORD}}
+        mvn clean install -Dspring.profiles.active=prod
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
