@@ -23,7 +23,7 @@ jobs:
     - name: Set env file and vars
       run: |
         touch .env
-        echo SPRING_ACTIVE_PROFILE=prod >> .env
+        echo SPRING_ACTIVE_PROFILE="prod" >> .env
 
     - name: Set up JDK 17
       uses: actions/setup-java@v3
