@@ -9,9 +9,12 @@ amazonProperties:
   accessKey: ${AWS_ACCESS_KEY:}
   secretKey: ${AWS_SECRET:}
   bucketName: decapay
+  #smtp email config
   smtpHost: ${AWS_SMTP_HOST:}
   smtpUserName: ${AWS_SMTP_USERNAME:}
   smtpPassword: ${AWS_SMTP_PASSWORD:}
+
+config.emailSender: cloud-smtp
 
 spring:
   datasource:
