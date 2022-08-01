@@ -1,7 +1,7 @@
 name: Decapy CD
 on:
   push:
-    branches: [ cicd-setup2 ]
+    branches: [ main ]
 
 env:
   ECS_CLUSTER: decapay-api                 
@@ -19,8 +19,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: cat
-      run: cat src/main/resources/application.yml
+   
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
