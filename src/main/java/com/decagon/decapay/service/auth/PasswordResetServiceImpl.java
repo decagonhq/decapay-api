@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -154,18 +153,14 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
         String code = "";
-        try {
-            code = String.valueOf(generateOTP());
-            Optional<PasswordReset> passwordReset = this.repository.findByEmailAndDeviceId(email, MOBILE_DEVICE_ID);
-            if (passwordReset.isPresent()) {
-                this.updatePasswordReset(passwordReset.get(), code);
-            } else {
-                this.createPasswordResetEntity(code, MOBILE_DEVICE_ID, email);
-            }
-            this.publishPasswordResetEmailForMobile(user, code);
-        } catch (NoSuchAlgorithmException e) {
-            log.error("Error generating OTP", e);
+        code = String.valueOf(generateOTP());
+        Optional<PasswordReset> passwordReset = this.repository.findByEmailAndDeviceId(email, MOBILE_DEVICE_ID);
+        if (passwordReset.isPresent()) {
+            this.updatePasswordReset(passwordReset.get(), code);
+        } else {
+            this.createPasswordResetEntity(code, MOBILE_DEVICE_ID, email);
         }
+        this.publishPasswordResetEmailForMobile(user, code);
     }
 
     private void publishPasswordResetEmailForMobile(User user, String code) {
