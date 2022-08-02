@@ -13,6 +13,7 @@ import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class SignInController {
     private final TokenBlacklistService tokenBlacklistService;
     private final UserRepository userRepository;
 
-
+    @SecurityRequirements
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = SIGN_IN_SUCCESSFULLY),
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
