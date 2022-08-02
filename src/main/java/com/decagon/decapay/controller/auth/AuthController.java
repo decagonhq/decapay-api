@@ -5,7 +5,6 @@ import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.AuthResponse;
 import com.decagon.decapay.dto.LoginDto;
 import com.decagon.decapay.dto.SignOutRequestDto;
-import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.service.LoginService;
 import com.decagon.decapay.service.auth.TokenBlacklistService;
@@ -22,16 +21,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.List;
-
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
 
-@Tag(name ="Sign In Controller")
+@Tag(name ="Auth Controller")
 @RequestMapping(value = "${api.basepath-api}")
 @RequiredArgsConstructor
 @RestController
-public class SignInController {
+public class AuthController {
 
     private final LoginService loginService;
     private final TokenBlacklistService tokenBlacklistService;
