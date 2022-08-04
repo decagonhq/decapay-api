@@ -15,6 +15,10 @@ public class TestModels {
         return user;
     }
 
+    public static User aUSer() {
+        return user("firstName","lastName", "a@b.com", "password", "0123456789");
+    }
+
     public static PasswordReset passwordReset(String email, String token) {
         PasswordReset passwordReset = new PasswordReset();
         passwordReset.setEmail(email);

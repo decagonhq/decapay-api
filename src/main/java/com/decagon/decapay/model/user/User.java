@@ -20,8 +20,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_USER;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = TABLE_USER)
 @EntityListeners(AuditListener.class)

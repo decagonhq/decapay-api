@@ -16,6 +16,8 @@ public class ResponseMessageConstants {
     public static final String PASSWORD_RESET_CODE_VERIFIED_SUCCESSFULLY = "Password Reset Code Verified Successfully";
     public static final String SIGN_OUT_SUCCESSFULLY = "Sign Out Successfully";
 
+    public static final String BUDGET_SUCCESSFULLY_CREATED = "Budget successfully created";
+
     //FAILURE MESSAGES
     public static final String UNABLE_TO_PROCESS_TEMPLATE = "Unable to process template";
     public static final String INVALID_REQUEST = "Invalid Request!";

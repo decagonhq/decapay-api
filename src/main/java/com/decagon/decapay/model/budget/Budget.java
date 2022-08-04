@@ -6,14 +6,13 @@ import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
 import com.decagon.decapay.model.user.User;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,8 +20,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity
 @EntityListeners(AuditListener.class)
 @Table(name = TABLE_BUDGET)
@@ -40,12 +38,14 @@ public class Budget implements Auditable, Serializable {
     @Column(columnDefinition = "decimal(10,2) default (0)")
     private BigDecimal projectedAmount;
 
-    private LocalDateTime budgetStartDate;
+    private LocalDate budgetStartDate;
 
-    private LocalDateTime budgetEndDate;
+    private LocalDate budgetEndDate;
 
     @Column(length = 100)
     private String notificationThreshold;
+
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "parent_budget_id")

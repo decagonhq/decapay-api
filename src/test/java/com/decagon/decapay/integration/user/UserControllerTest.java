@@ -61,7 +61,7 @@ class UserControllerTest {
 	@Test
 	void registerUser() throws Exception {
 		ResultActions response = mockMvc.perform(
-			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(
+			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
 				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(201));
 
 		User user = userRepository.findByEmail(userDTO.getEmail()).get();
@@ -79,14 +79,14 @@ class UserControllerTest {
 	@Test
 	void registerUserFailsWithIncompleteDTO() throws Exception {
 		mockMvc.perform(
-			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(
+			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
 				objectMapper.writeValueAsString(new UserDTO()))).andExpect(status().is(400));
 	}
 
 	@Test
 	void registerUserFailsWhenUserAlreadyExists() throws Exception {
 
-		User user=new User();
+		User user = new User();
 		user.setFirstName("firstName");
 		user.setLastName("lastName");
 		user.setEmail("a@b.com");
@@ -95,7 +95,7 @@ class UserControllerTest {
 		userRepository.save(user);
 
 		mockMvc.perform(
-			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(
+			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
 				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(409));
 	}
 }
