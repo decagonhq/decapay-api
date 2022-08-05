@@ -12,7 +12,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class BudgetLineDetailsDto {
+public class BudgetLineItemDetailsDto {
     private BigDecimal projectedAmount;
     private String notificationThreshold;
     private BudgetCategoryDto budgetCategory;

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
-public class BudgetViewDto {
+public class ViewBudgetDto {
     private Long id;
     private String title;
     private BigDecimal projectedAmount;
@@ -18,7 +18,7 @@ public class BudgetViewDto {
     private LocalDateTime budgetEndDate;
     private String notificationThreshold;
     private String budgetPeriod;
-    private Collection<BudgetLineDetailsDto> lineItems = new ArrayList<>();
+    private Collection<BudgetLineItemDetailsDto> lineItems = new ArrayList<>();
 
 
 }

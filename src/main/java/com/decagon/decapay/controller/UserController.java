@@ -6,6 +6,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.USER_SUCCES
 
 import javax.validation.Valid;
 
+import com.decagon.decapay.DTO.UserDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.decagon.decapay.dto.UserDTO;
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.model.user.User;

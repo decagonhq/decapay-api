@@ -1,7 +1,7 @@
 package com.decagon.decapay.integration.auth;
 
 
-import com.decagon.decapay.dto.SignOutRequestDto;
+import com.decagon.decapay.DTO.SignOutRequestDto;
 import com.decagon.decapay.model.user.TokenBlacklist;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.auth.TokenBlacklistRepository;
