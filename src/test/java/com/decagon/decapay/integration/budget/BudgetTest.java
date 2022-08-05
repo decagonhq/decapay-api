@@ -15,6 +15,7 @@ import com.decagon.decapay.repositories.budget.ExpensesRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.utils.JwtUtil;
+import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,48 +98,20 @@ public class BudgetTest {
     @Transactional
     void shouldViewBudgetDetailsSuccessfully() throws Exception {
 
-        LocalDateTime today = LocalDateTime.now();
-
-        Expenses transportationExpense1 = new Expenses();
-        transportationExpense1.setAmount(BigDecimal.valueOf(1300));
-        transportationExpense1.setDescription("Day 1 Transportation");
-        expensesRepository.save(transportationExpense1);
-
-        Expenses transportationExpense2 = new Expenses();
-        transportationExpense2.setAmount(BigDecimal.valueOf(1200));
-        transportationExpense2.setDescription("Day 2 Transportation");
-        expensesRepository.save(transportationExpense2);
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
 
         BudgetCategory budgetCategory = new BudgetCategory();
         budgetCategory.setTitle("Transportation Budget");
         budgetCategoryRepository.save(budgetCategory);
 
-        BudgetLineItem budgetLineItem = new BudgetLineItem();
-        budgetLineItem.setNotificationThreshold("Notification ThreshHold");
-        budgetLineItem.setProjectedAmount(BigDecimal.valueOf(5000));
-        budgetLineItem.setBudgetCategory(budgetCategory);
-        budgetLineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
-        budgetLineItem.addExpense(transportationExpense1);
-        budgetLineItem.addExpense(transportationExpense2);
+        BudgetLineItem budgetLineItem =TestModels.setUpBudgetLineItems(budgetCategory);
         budgetLineItemRepository.save(budgetLineItem);
 
-        Budget budget = new Budget();
-        budget.setTitle("Transportation Budget");
-        budget.setNotificationThreshold("Notification Trashold");
-        budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
-        budget.setProjectedAmount(budgetLineItem.getProjectedAmount());
-        budget.setBudgetStartDate(today);
-        budget.setBudgetEndDate(today.plusWeeks(3));
-        budget.addBudgetLineItem(budgetLineItem);
+        Budget budget = TestModels.setUpBudget(budgetLineItem);
         budgetRepository.save(budget);
 
-        User user = new User();
-        user.setEmail("ola@gmail.com");
-        user.setFirstName("ola");
-        user.setLastName("dip");
-        user.setPhoneNumber("08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setPassword(passwordEncoder.encode("password"));
         user.addBudget(budget);
         userRepository.save(user);
 
@@ -161,47 +134,20 @@ public class BudgetTest {
     @Transactional
     void shouldReturn403ForbiddenErrorWhenUserNotSignIn() throws Exception {
 
-        LocalDateTime today = LocalDateTime.now();
-
-        Expenses TransportationExpense1 = new Expenses();
-        TransportationExpense1.setDescription("Day 1 Transportation");
-        TransportationExpense1.setAmount(BigDecimal.valueOf(1300));
-
-        Expenses TransportationExpense2 = new Expenses();
-        TransportationExpense2.setDescription("Day 2 Transportation");
-        TransportationExpense2.setAmount(BigDecimal.valueOf(1200));
-        expensesRepository.saveAll(List.of(TransportationExpense1, TransportationExpense2));
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
 
         BudgetCategory budgetCategory = new BudgetCategory();
         budgetCategory.setTitle("Transportation Budget");
         budgetCategoryRepository.save(budgetCategory);
 
-        BudgetLineItem budgetLineItem = new BudgetLineItem();
-        budgetLineItem.setNotificationThreshold("Notification ThreshHold");
-        budgetLineItem.setProjectedAmount(BigDecimal.valueOf(5000));
-        budgetLineItem.setBudgetCategory(budgetCategory);
-        budgetLineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
-        budgetLineItem.addExpense(TransportationExpense1);
-        budgetLineItem.addExpense(TransportationExpense2);
+        BudgetLineItem budgetLineItem =TestModels.setUpBudgetLineItems(budgetCategory);
         budgetLineItemRepository.save(budgetLineItem);
 
-        Budget budget = new Budget();
-        budget.setTitle("Transportation Budget");
-        budget.setNotificationThreshold("Notification Trashold");
-        budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
-        budget.setProjectedAmount(budgetLineItem.getProjectedAmount());
-        budget.setBudgetStartDate(today);
-        budget.setBudgetEndDate(today.plusWeeks(3));
-        budget.addBudgetLineItem(budgetLineItem);
+        Budget budget = TestModels.setUpBudget(budgetLineItem);
         budgetRepository.save(budget);
 
-        User user = new User();
-        user.setEmail("ola@gmail.com");
-        user.setFirstName("ola");
-        user.setLastName("dip");
-        user.setPhoneNumber("08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setPassword(passwordEncoder.encode("password"));
         user.addBudget(budget);
         userRepository.save(user);
 
@@ -209,43 +155,20 @@ public class BudgetTest {
                 .andExpect(status().isForbidden());
     }
 
-
-
     @Test
     @Transactional
     void shouldReturn404NotFoundWhenBudgetIsNotAvailable() throws Exception {
-
-        LocalDateTime today = LocalDateTime.now();
-
-        Expenses TransportationExpense1 = new Expenses();
-        TransportationExpense1.setDescription("Day 1 Transportation");
-        TransportationExpense1.setAmount(BigDecimal.valueOf(1300));
-
-        Expenses TransportationExpense2 = new Expenses();
-        TransportationExpense2.setDescription("Day 2 Transportation");
-        TransportationExpense2.setAmount(BigDecimal.valueOf(1200));
-        expensesRepository.saveAll(List.of(TransportationExpense1, TransportationExpense2));
 
         BudgetCategory budgetCategory = new BudgetCategory();
         budgetCategory.setTitle("Transportation Budget");
         budgetCategoryRepository.save(budgetCategory);
 
-        BudgetLineItem budgetLineItem = new BudgetLineItem();
-        budgetLineItem.setNotificationThreshold("Notification ThreshHold");
-        budgetLineItem.setProjectedAmount(BigDecimal.valueOf(5000));
-        budgetLineItem.setBudgetCategory(budgetCategory);
-        budgetLineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
-        budgetLineItem.addExpense(TransportationExpense1);
-        budgetLineItem.addExpense(TransportationExpense2);
+        BudgetLineItem budgetLineItem =TestModels.setUpBudgetLineItems(budgetCategory);
         budgetLineItemRepository.save(budgetLineItem);
 
-        User user = new User();
-        user.setEmail("ola@gmail.com");
-        user.setFirstName("ola");
-        user.setLastName("dip");
-        user.setPhoneNumber("08067644805");
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setPassword(passwordEncoder.encode("password"));
         userRepository.save(user);
 
         setUpAuthUser(user);
@@ -258,47 +181,19 @@ public class BudgetTest {
     @Transactional
     void shouldReturn400InvalidRequestWhenAUserViewBudgetSheDidNotCreate() throws Exception {
 
-        LocalDateTime today = LocalDateTime.now();
-
-        Expenses TransportationExpense1 = new Expenses();
-        TransportationExpense1.setDescription("Day 1 Transportation");
-        TransportationExpense1.setAmount(BigDecimal.valueOf(1300));
-
-        Expenses TransportationExpense2 = new Expenses();
-        TransportationExpense2.setDescription("Day 2 Transportation");
-        TransportationExpense2.setAmount(BigDecimal.valueOf(1200));
-        expensesRepository.saveAll(List.of(TransportationExpense1, TransportationExpense2));
-
         BudgetCategory budgetCategory = new BudgetCategory();
         budgetCategory.setTitle("Transportation Budget");
         budgetCategoryRepository.save(budgetCategory);
 
-        BudgetLineItem budgetLineItem = new BudgetLineItem();
-        budgetLineItem.setNotificationThreshold("Notification ThreshHold");
-        budgetLineItem.setProjectedAmount(BigDecimal.valueOf(5000));
-        budgetLineItem.setBudgetCategory(budgetCategory);
-        budgetLineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
-        budgetLineItem.addExpense(TransportationExpense1);
-        budgetLineItem.addExpense(TransportationExpense2);
+        BudgetLineItem budgetLineItem =TestModels.setUpBudgetLineItems(budgetCategory);
         budgetLineItemRepository.save(budgetLineItem);
 
-        Budget budget = new Budget();
-        budget.setTitle("Transportation Budget");
-        budget.setNotificationThreshold("Notification Trashold");
-        budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
-        budget.setProjectedAmount(budgetLineItem.getProjectedAmount());
-        budget.setBudgetStartDate(today);
-        budget.setBudgetEndDate(today.plusWeeks(3));
-        budget.addBudgetLineItem(budgetLineItem);
+        Budget budget = TestModels.setUpBudget(budgetLineItem);
         budgetRepository.save(budget);
 
-        User user = new User();
-        user.setEmail("ola@gmail.com");
-        user.setFirstName("ola");
-        user.setLastName("dip");
-        user.setPhoneNumber("08067644805");
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setPassword(passwordEncoder.encode("password"));
         userRepository.save(user);
 
         setUpAuthUser(user);
