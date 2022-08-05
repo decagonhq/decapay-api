@@ -6,6 +6,7 @@ import com.decagon.decapay.payloads.request.email.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.util.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Component;
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import java.util.Properties;
-
 @RequiredArgsConstructor
 @Component
 @Slf4j
