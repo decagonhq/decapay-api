@@ -1,10 +1,10 @@
 package com.decagon.decapay.controller.auth;
 
 
-import com.decagon.decapay.DTO.SignOutRequestDto;
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.AuthResponse;
 import com.decagon.decapay.dto.LoginDto;
+import com.decagon.decapay.dto.SignOutRequestDto;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.service.LoginService;
 import com.decagon.decapay.service.auth.TokenBlacklistService;
