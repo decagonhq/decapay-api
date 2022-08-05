@@ -6,7 +6,6 @@ import com.decagon.decapay.enumTypes.UserStatus;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
-import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
 import com.decagon.decapay.repositories.budget.BudgetLineItemRepository;
@@ -33,9 +32,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -200,6 +197,34 @@ public class BudgetTest {
 
         this.mockMvc.perform(get(path + "/budget/{budgetId}", budget.getId()).headers(headers))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnEmptyCollectionWhenBudgetLineItemIsDoesNotExist() throws Exception {
+
+        LocalDateTime today = LocalDateTime.now();
+
+        Budget budget = new Budget();
+        budget.setTitle("Transportation Budget");
+        budget.setNotificationThreshold("Notification Trashold");
+        budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
+        budget.setBudgetStartDate(today);
+        budget.setBudgetEndDate(today.plusWeeks(3));
+        budgetRepository.save(budget);
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        user.addBudget(budget);
+        userRepository.save(user);
+
+        setUpAuthUser(user);
+
+        this.mockMvc.perform(get(path + "/budget/{budgetId}", budget.getId()).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.lineItems.size()").value(0));
+
     }
 
 

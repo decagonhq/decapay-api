@@ -15,6 +15,7 @@ import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.UserInfo;
 import com.decagon.decapay.utils.UserInfoUtills;
+import io.jsonwebtoken.lang.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -54,28 +55,32 @@ public class BudgetServiceImpl implements BudgetService{
                 budgetViewDto.setBudgetStartDate(budget.getBudgetStartDate());
                 budgetViewDto.setBudgetEndDate(budget.getBudgetEndDate());
                 budgetViewDto.setNotificationThreshold(budget.getNotificationThreshold());
-
                 budgetViewDto.setProjectedAmount(budget.getProjectedAmount());
 
                 final BigDecimal[] totalExpenses = {BigDecimal.ZERO};
 
-                var budgetLineItems = budget.getBudgetLineItems() .stream().map(budgetLineItem -> {
-                    BudgetLineItemDetailsDto budgetDto = new BudgetLineItemDetailsDto();
-                    this.populateLineItems(budgetLineItem, budgetDto);
+                Collection<BudgetLineItem> budgetLineItems= budget.getBudgetLineItems();
 
-                    budgetDto.setExpenses(
-                            budgetLineItem.getExpenses().stream().map(expenses -> {totalExpenses[0] = totalExpenses[0].add(expenses.getAmount());
-                                return new BudgetExpensesDto(expenses.getId(), expenses.getAmount(), expenses.getDescription());}).collect(Collectors.toList())
-                    );
-                    return budgetDto;
-                }).collect(Collectors.toList());
+                if (!Collections.isEmpty(budgetLineItems)){
+                    var lineItems = budgetLineItems.stream().map(budgetLineItem -> {
+                        BudgetLineItemDetailsDto budgetDto = new BudgetLineItemDetailsDto();
+                        this.populateLineItems(budgetLineItem, budgetDto);
+
+                        budgetDto.setExpenses(
+                                budgetLineItem.getExpenses().stream().map(expenses -> {totalExpenses[0] = totalExpenses[0].add(expenses.getAmount());
+                                    return new BudgetExpensesDto(expenses.getId(), expenses.getAmount(), expenses.getDescription());}).collect(Collectors.toList())
+                        );
+                        return budgetDto;
+                    }).collect(Collectors.toList());
+
+                    budgetViewDto.setLineItems(lineItems);
+                    BigDecimal spentSoFar =(totalExpenses[0].divide(budget.getProjectedAmount()));
+                    BigDecimal percentageSpentSoFar = spentSoFar.multiply(BigDecimal.valueOf(100));
+                    budgetViewDto.setPercentageSpentSoFar(percentageSpentSoFar);
+                }
 
                 budgetViewDto.setTotalAmountSpentSoFar(totalExpenses[0]);
-                BigDecimal spentSoFar =(totalExpenses[0].divide(budget.getProjectedAmount()));
-                BigDecimal percentageSpentSoFar = spentSoFar.multiply(BigDecimal.valueOf(100));
 
-                budgetViewDto.setLineItems(budgetLineItems);
-                budgetViewDto.setPercentageSpentSoFar(percentageSpentSoFar);
                 return budgetViewDto;
     }
 
