@@ -1,8 +1,8 @@
 package com.decagon.decapay.controller.budget;
 
 
-import com.decagon.decapay.DTO.ViewBudgetDto;
 import com.decagon.decapay.apiresponse.ApiDataResponse;
+import com.decagon.decapay.dto.ViewBudgetDto;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
