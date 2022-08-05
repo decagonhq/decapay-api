@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(description = "DTO containing information needed to create a budget.")
 public class CreateBudgetRequestDTO {
-	@NotBlank
 	@Size(min = 1, max = 100, message = "Title field cannot be empty or more than 100 characters")
 	@Schema(description = "Title, maximum 100 characters", required = true)
 	private String title;

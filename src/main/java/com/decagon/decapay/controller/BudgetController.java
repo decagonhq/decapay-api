@@ -40,7 +40,7 @@ public class BudgetController {
 		@ApiResponse(responseCode = "400", description = INVALID_REQUEST),
 		@ApiResponse(responseCode = "403", description = REQUEST_FORBIDDEN) })
 	@Operation(summary = "Create budget", description = "Create new user budget for with all mandatory fields.")
-	@PostMapping("/user/budget")
+	@PostMapping("/budgets")
 	public ResponseEntity<ApiDataResponse<CreateBudgetResponseDTO>> createBudget(@Valid @RequestBody CreateBudgetRequestDTO createBudgetRequest) {
 		return ApiResponseUtil.response(HttpStatus.CREATED, budgetService.createBudget(createBudgetRequest),
 			BUDGET_SUCCESSFULLY_CREATED);

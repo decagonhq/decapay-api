@@ -11,7 +11,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.decagon.decapay.dto.CreateBudgetRequestDTO;
+import com.decagon.decapay.enumTypes.BudgetPeriod;
 import com.decagon.decapay.enumTypes.UserStatus;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.user.User;
@@ -33,8 +33,8 @@ import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.utils.JwtUtil;
+import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -67,32 +67,29 @@ class BudgetControllerTest {
 	@Value("${api.basepath-api}")
 	private String path = "";
 
-	ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-
-
 	@Test
 	void createBudgetSucceedsWithCustomPeriod() throws Exception {
-		assertCreateBudgetWithPeriod("CUSTOM");
+		assertCreateBudgetWithPeriod(BudgetPeriod.CUSTOM);
 	}
 
 	@Test
 	void createBudgetSucceedsWithDailyPeriod() throws Exception {
-		assertCreateBudgetWithPeriod("DAILY");
+		assertCreateBudgetWithPeriod(BudgetPeriod.DAILY);
 	}
 
 	@Test
 	void createBudgetSucceedsWithWeeklyPeriod() throws Exception {
-		assertCreateBudgetWithPeriod("WEEKLY");
+		assertCreateBudgetWithPeriod(BudgetPeriod.WEEKLY);
 	}
 
 	@Test
 	void createBudgetSucceedsWithMonthlyPeriod() throws Exception {
-		assertCreateBudgetWithPeriod("MONTHLY");
+		assertCreateBudgetWithPeriod(BudgetPeriod.MONTHLY);
 	}
 
 	@Test
 	void createBudgetSucceedsWithAnnualPeriod() throws Exception {
-		assertCreateBudgetWithPeriod("ANNUAL");
+		assertCreateBudgetWithPeriod(BudgetPeriod.ANNUAL);
 	}
 
 	@Test
@@ -102,8 +99,8 @@ class BudgetControllerTest {
 				LocalDate.of(2022, 01, 02), "des");
 
 		mockMvc.perform(
-			post(path + "/user/budget").contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(budgetRequest))).andExpect(status().isForbidden());
+			post(path + "/budgets").contentType(MediaType.APPLICATION_JSON).content(
+				TestUtils.asJsonString(budgetRequest))).andExpect(status().isForbidden());
 	}
 
 	@Test
@@ -115,8 +112,8 @@ class BudgetControllerTest {
 				LocalDate.of(2022, 01, 01), "des");
 
 		mockMvc.perform(
-			post(path + "/user/budget").headers(headers).contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(budgetRequest))).andExpect(status().is(400));
+			post(path + "/budgets").headers(headers).contentType(MediaType.APPLICATION_JSON).content(
+				TestUtils.asJsonString(budgetRequest))).andExpect(status().is(400));
 	}
 
 	@Test
@@ -139,28 +136,28 @@ class BudgetControllerTest {
 
 		CreateBudgetRequestDTO budgetRequest =
 			new CreateBudgetRequestDTO("Title", BigDecimal.TEN, "CUSTOM", LocalDate.of(2022, 01, 01),
-				LocalDate.of(2022, 01, 01), "des");
+				LocalDate.of(2022, 01, 02), "des");
 
 		mockMvc.perform(
-			post(path + "/user/budget").headers(headers).contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(budgetRequest))).andExpect(status().is(400));
+			post(path + "/budgets").headers(headers).contentType(MediaType.APPLICATION_JSON).content(
+				TestUtils.asJsonString(budgetRequest))).andExpect(status().is(400));
 	}
 
-	void assertCreateBudgetWithPeriod(String period) throws Exception {
+	void assertCreateBudgetWithPeriod(BudgetPeriod period) throws Exception {
 		addAuthorizationHeader();
 		CreateBudgetRequestDTO budgetRequest = new CreateBudgetRequestDTO();
 
 		budgetRequest.setTitle("Title");
-		budgetRequest.setPeriod(period);
+		budgetRequest.setPeriod(period.toString());
 		budgetRequest.setAmount(BigDecimal.TEN);
-		if("CUSTOM".equals(period)) {
+		if(BudgetPeriod.CUSTOM == period) {
 			budgetRequest.setBudgetStartDate(LocalDate.of(2022, 1, 1));
 			budgetRequest.setBudgetEndDate(LocalDate.of(2022, 1, 2));
 		}
 
 		mockMvc.perform(
-			post(path + "/user/budget").headers(headers).contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(budgetRequest))).andExpect(status().isCreated());
+			post(path + "/budgets").headers(headers).contentType(MediaType.APPLICATION_JSON).content(
+				TestUtils.asJsonString(budgetRequest))).andExpect(status().isCreated());
 
 		List<Budget> budgets = budgetRepository.findAll();
 		assertEquals(1, budgets.size());
@@ -170,7 +167,7 @@ class BudgetControllerTest {
 		assertEquals(budgetRequest.getPeriod(), budget.getBudgetPeriod().toString());
 		assertEquals(0, budget.getProjectedAmount().compareTo(budgetRequest.getAmount()));
 
-		switch (budget.getBudgetPeriod()) {
+		switch (period) {
 			case CUSTOM -> {
 				assertEquals(budgetRequest.getBudgetStartDate(), budget.getBudgetStartDate());
 				assertEquals(budgetRequest.getBudgetEndDate(), budget.getBudgetEndDate());
