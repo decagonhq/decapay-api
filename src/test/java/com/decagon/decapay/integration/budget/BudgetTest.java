@@ -1,18 +1,16 @@
 package com.decagon.decapay.integration.budget;
 
 
+import com.decagon.decapay.constants.AppConstants;
+import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.enumTypes.BudgetPeriod;
 import com.decagon.decapay.enumTypes.UserStatus;
 import com.decagon.decapay.model.budget.Budget;
-import com.decagon.decapay.model.budget.BudgetCategory;
-import com.decagon.decapay.model.budget.BudgetLineItem;
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
-import com.decagon.decapay.repositories.budget.BudgetLineItemRepository;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
-import com.decagon.decapay.repositories.budget.ExpensesRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
+import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.JwtUtil;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
@@ -30,9 +28,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Currency;
+import java.util.Locale;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,44 +44,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @ExtendWith(DBCleanerExtension.class)
 public class BudgetTest {
-
     @Value("${api.basepath-api}")
     private String path;
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     private BudgetRepository budgetRepository;
-
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private BudgetCategoryRepository budgetCategoryRepository;
-
     @Autowired
     private JwtUtil jwtUtil;
     private HttpHeaders headers;
-
-    @Autowired
-    private ExpensesRepository expensesRepository;
-
-    @Autowired
-    private BudgetLineItemRepository budgetLineItemRepository;
 
     @BeforeEach
     public void runBeforeAllTestMethods() throws Exception {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
     }
-
 
     public void setUpAuthUser(User user){
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
@@ -90,78 +74,8 @@ public class BudgetTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + token);
     }
-
     @Test
-    @Transactional
-    void shouldViewBudgetDetailsSuccessfully() throws Exception {
-
-        User user = TestModels.user("ola", "dip", "ola@gmail.com",
-                passwordEncoder.encode("password"), "08067644805");
-
-        BudgetCategory budgetCategory = new BudgetCategory();
-        budgetCategory.setTitle("Transportation Budget");
-        budgetCategoryRepository.save(budgetCategory);
-
-        BudgetLineItem budgetLineItem =TestModels.setUpBudgetLineItems(budgetCategory);
-        budgetLineItemRepository.save(budgetLineItem);
-
-        Budget budget = TestModels.setUpBudget(budgetLineItem);
-        budgetRepository.save(budget);
-
-        user.setUserStatus(UserStatus.ACTIVE);
-        user.addBudget(budget);
-        userRepository.save(user);
-
-        setUpAuthUser(user);
-
-        this.mockMvc.perform(get(path + "/budget/{budgetId}", budget.getId()).headers(headers))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.percentageSpentSoFar").value(50))
-                .andExpect(jsonPath("$.data.projectedAmount").value(5000))
-                .andExpect(jsonPath("$.data.notificationThreshold").value("Notification Trashold"))
-                .andExpect(jsonPath("$.data.title").value("Transportation Budget"))
-                .andExpect(jsonPath("$.data.totalAmountSpentSoFar").value(2500))
-                .andExpect(jsonPath("$.data.budgetPeriod").value(BudgetPeriod.MONTHLY.name()))
-                .andExpect(jsonPath("$.data.lineItems[0].projectedAmount").value(5000))
-                .andExpect(jsonPath("$.data.lineItems[0].notificationThreshold").value("Notification ThreshHold"))
-                .andExpect(jsonPath("$.data.lineItems[0].budgetCategory.title").value("Transportation Budget"));
-    }
-
-    @Test
-    @Transactional
-    void shouldReturn403ForbiddenErrorWhenUserNotSignIn() throws Exception {
-
-        User user = TestModels.user("ola", "dip", "ola@gmail.com",
-                passwordEncoder.encode("password"), "08067644805");
-
-        BudgetCategory budgetCategory = new BudgetCategory();
-        budgetCategory.setTitle("Transportation Budget");
-        budgetCategoryRepository.save(budgetCategory);
-
-        BudgetLineItem budgetLineItem =TestModels.setUpBudgetLineItems(budgetCategory);
-        budgetLineItemRepository.save(budgetLineItem);
-
-        Budget budget = TestModels.setUpBudget(budgetLineItem);
-        budgetRepository.save(budget);
-
-        user.setUserStatus(UserStatus.ACTIVE);
-        user.addBudget(budget);
-        userRepository.save(user);
-
-        this.mockMvc.perform(get(path + "/budget/{budgetId}", budget.getId()).headers(headers))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @Transactional
-    void shouldReturn404NotFoundWhenBudgetIsNotAvailable() throws Exception {
-
-        BudgetCategory budgetCategory = new BudgetCategory();
-        budgetCategory.setTitle("Transportation Budget");
-        budgetCategoryRepository.save(budgetCategory);
-
-        BudgetLineItem budgetLineItem =TestModels.setUpBudgetLineItems(budgetCategory);
-        budgetLineItemRepository.save(budgetLineItem);
+    void shouldReturn404WhenViewBudgetAndBudgetNotExist() throws Exception {
 
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
@@ -175,35 +89,42 @@ public class BudgetTest {
     }
 
     @Test
-    @Transactional
     void shouldReturn400InvalidRequestWhenAUserViewBudgetSheDidNotCreate() throws Exception {
 
-        BudgetCategory budgetCategory = new BudgetCategory();
-        budgetCategory.setTitle("Transportation Budget");
-        budgetCategoryRepository.save(budgetCategory);
-
-        BudgetLineItem budgetLineItem =TestModels.setUpBudgetLineItems(budgetCategory);
-        budgetLineItemRepository.save(budgetLineItem);
-
-        Budget budget = TestModels.setUpBudget(budgetLineItem);
-        budgetRepository.save(budget);
-
-        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+        User user = TestModels.user("ola", "dip", "o@b.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+
+        Budget budget = new Budget();
+        LocalDateTime today = LocalDateTime.now();
+        budget.setTitle("Transportation Budget");
+        budget.setNotificationThreshold("Notification Trashold");
+        budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
+        budget.setBudgetStartDate(today);
+        budget.setBudgetEndDate(today.plusWeeks(3));
+
+        user.addBudget(budget);
         userRepository.save(user);
 
-        setUpAuthUser(user);
+        User user1 = TestModels.user("ola1", "dip1", "a@g.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user1.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user1);
+
+        setUpAuthUser(user1);
 
         this.mockMvc.perform(get(path + "/budget/{budgetId}", budget.getId()).headers(headers))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @Transactional
     void shouldReturnEmptyCollectionWhenBudgetLineItemIsDoesNotExist() throws Exception {
 
         LocalDateTime today = LocalDateTime.now();
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
 
         Budget budget = new Budget();
         budget.setTitle("Transportation Budget");
@@ -211,11 +132,7 @@ public class BudgetTest {
         budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
         budget.setBudgetStartDate(today);
         budget.setBudgetEndDate(today.plusWeeks(3));
-        budgetRepository.save(budget);
 
-        User user = TestModels.user("ola", "dip", "ola@gmail.com",
-                passwordEncoder.encode("password"), "08067644805");
-        user.setUserStatus(UserStatus.ACTIVE);
         user.addBudget(budget);
         userRepository.save(user);
 
@@ -228,4 +145,45 @@ public class BudgetTest {
     }
 
 
+    @Test
+    void shouldViewBudgetDetailsSuccessfully() throws Exception {
+        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
+        Currency currency = AppConstants.DEFAULT_CURRENCY;
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        LocalDateTime today = LocalDateTime.now();
+
+        Budget budget = new Budget();
+        budget.setTitle("Transportation Budget");
+        budget.setNotificationThreshold("Notification Trashold");
+        budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
+        budget.setBudgetStartDate(today);
+        budget.setBudgetEndDate(today.plusWeeks(3));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
+        budget.setProjectedAmount(BigDecimal.valueOf(5000));
+
+        user.addBudget(budget);
+        userRepository.save(user);
+
+        setUpAuthUser(user);
+
+        this.mockMvc.perform(get(path + "/budget/{budgetId}", budget.getId()).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.projectedAmount").value(5000.00))
+                .andExpect(jsonPath("$.data.displayProjectedAmount").value(currency.getSymbol(locale) + "5,000.00"))
+                .andExpect(jsonPath("$.data.notificationThreshold").value("Notification Trashold"))
+                .andExpect(jsonPath("$.data.title").value("Transportation Budget"))
+                .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateTimeToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.displayStartDate").value(CustomDateUtil.formatLocalDateTimeToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateTimeToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateTimeToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                .andExpect(jsonPath("$.data.totalAmountSpentSoFar").value( 2500.00))
+                .andExpect(jsonPath("$.data.displayTotalAmountSpentSoFar").value(currency.getSymbol(locale) + "2,500.00"))
+                .andExpect(jsonPath("$.data.percentageSpentSoFar").value(50.0))
+                .andExpect(jsonPath("$.data.displayPercentageSpentSoFar").value("50.0%"))
+                .andExpect(jsonPath("$.data.budgetPeriod").value(BudgetPeriod.MONTHLY.name()));
+    }
 }

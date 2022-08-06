@@ -1,6 +1,8 @@
 package com.decagon.decapay.service.budget;
 
 
+import com.decagon.decapay.constants.AppConstants;
+import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.dto.BudgetCategoryDto;
 import com.decagon.decapay.dto.BudgetExpensesDto;
 import com.decagon.decapay.dto.BudgetLineItemDetailsDto;
@@ -14,6 +16,8 @@ import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.UserInfo;
+import com.decagon.decapay.service.currency.CurrencyService;
+import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.UserInfoUtills;
 import io.jsonwebtoken.lang.Collections;
 import lombok.RequiredArgsConstructor;
@@ -21,26 +25,31 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Currency;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class BudgetServiceImpl implements BudgetService{
-
     private final UserInfoUtills userInfoUtills;
-
     private final UserRepository userRepository;
-
     private final BudgetRepository budgetRepository;
+    private final CurrencyService currencyService;
 
     @Override
     public ViewBudgetDto viewBudgetDetails(Long budgetId) {
         User user = this.getAuthenticatedUser();
 
-        Budget budget = budgetRepository.findById(budgetId)
-                .orElseThrow(()-> new ResourceNotFoundException("Resource Not Found"));
+        Optional<Budget> optionalBudget = budgetRepository.findBudgetDetailsById(budgetId);
 
-        if (!user.equals(budget.getUser())){
+        if (optionalBudget.isEmpty()){
+            throw new ResourceNotFoundException("Resource Not Found");
+        }
+
+        Budget budget = optionalBudget.get();
+        if (!user.getId().equals(budget.getUser().getId())){
             throw new InvalidRequestException("Invalid Request");
         }
 
@@ -48,49 +57,24 @@ public class BudgetServiceImpl implements BudgetService{
     }
 
     private ViewBudgetDto convertBudgetViewDto(Budget budget) {
-                ViewBudgetDto budgetViewDto = new ViewBudgetDto();
-                budgetViewDto.setId(budget.getId());
-                budgetViewDto.setTitle(budget.getTitle());
-                budgetViewDto.setBudgetPeriod(budget.getBudgetPeriod().name());
-                budgetViewDto.setBudgetStartDate(budget.getBudgetStartDate());
-                budgetViewDto.setBudgetEndDate(budget.getBudgetEndDate());
-                budgetViewDto.setNotificationThreshold(budget.getNotificationThreshold());
-                budgetViewDto.setProjectedAmount(budget.getProjectedAmount());
-
-                final BigDecimal[] totalExpenses = {BigDecimal.ZERO};
-
-                Collection<BudgetLineItem> budgetLineItems= budget.getBudgetLineItems();
-
-                if (!Collections.isEmpty(budgetLineItems)){
-                    var lineItems = budgetLineItems.stream().map(budgetLineItem -> {
-                        BudgetLineItemDetailsDto budgetDto = new BudgetLineItemDetailsDto();
-                        this.populateLineItems(budgetLineItem, budgetDto);
-
-                        budgetDto.setExpenses(
-                                budgetLineItem.getExpenses().stream().map(expenses -> {totalExpenses[0] = totalExpenses[0].add(expenses.getAmount());
-                                    return new BudgetExpensesDto(expenses.getId(), expenses.getAmount(), expenses.getDescription());}).collect(Collectors.toList())
-                        );
-                        return budgetDto;
-                    }).collect(Collectors.toList());
-
-                    budgetViewDto.setLineItems(lineItems);
-                    BigDecimal spentSoFar =(totalExpenses[0].divide(budget.getProjectedAmount()));
-                    BigDecimal percentageSpentSoFar = spentSoFar.multiply(BigDecimal.valueOf(100));
-                    budgetViewDto.setPercentageSpentSoFar(percentageSpentSoFar);
-                }
-
-                budgetViewDto.setTotalAmountSpentSoFar(totalExpenses[0]);
-
-                return budgetViewDto;
+        ViewBudgetDto budgetViewDto = new ViewBudgetDto();
+        budgetViewDto.setId(budget.getId());
+        budgetViewDto.setTitle(budget.getTitle());
+        budgetViewDto.setBudgetPeriod(budget.getBudgetPeriod().name());
+        budgetViewDto.setNotificationThreshold(budget.getNotificationThreshold());
+        budgetViewDto.setProjectedAmount(budget.getProjectedAmount());
+        budgetViewDto.setTotalAmountSpentSoFar(budget.getTotalAmountSpentSoFar());
+        budgetViewDto.setEndDate(budget.getBudgetEndDate());
+        budgetViewDto.setStartDate(budget.getBudgetStartDate());
+        budgetViewDto.setDisplayEndDate(budget.getBudgetEndDate());
+        budgetViewDto.setDisplayStartDate(budget.getBudgetStartDate());
+        budgetViewDto.setDisplayProjectedAmount(currencyService.formatAmount(budget.getProjectedAmount()));
+        budgetViewDto.setDisplayTotalAmountSpentSoFar(currencyService.formatAmount(budget.getTotalAmountSpentSoFar()));
+        BigDecimal percentageSpentSoFar = budget.calculatePercentageAmountSpent();
+        budgetViewDto.setPercentageSpentSoFar(percentageSpentSoFar);
+        budgetViewDto.setDisplayPercentageSpentSoFar(percentageSpentSoFar+"%");
+        return budgetViewDto;
     }
-
-    private void populateLineItems(BudgetLineItem budgetLineItem, BudgetLineItemDetailsDto budgetDto) {
-        budgetDto.setBudgetCategory(new BudgetCategoryDto(budgetLineItem.getBudgetCategory().getId(), budgetLineItem.getBudgetCategory().getTitle()));
-        budgetDto.setProjectedAmount(budgetLineItem.getProjectedAmount());
-        budgetDto.setNotificationThreshold(budgetLineItem.getNotificationThreshold());
-    }
-
-
     public User getAuthenticatedUser() {
         UserInfo authenticatedUserInfo = this.userInfoUtills.authenticationUserInfo();
         if (authenticatedUserInfo == null){

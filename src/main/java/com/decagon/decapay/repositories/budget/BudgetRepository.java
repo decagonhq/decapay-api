@@ -1,9 +1,8 @@
 package com.decagon.decapay.repositories.budget;
 
 import com.decagon.decapay.model.budget.Budget;
-import com.decagon.decapay.model.user.User;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -11,4 +10,12 @@ import java.util.Optional;
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
+
+    @Query("select b from Budget b " +
+            "left join fetch b.user u " +
+            "left join fetch b.budgetLineItems bl " +
+            "left join fetch bl.expenses " +
+            "where b.id=?1 " +
+            "and b.auditSection.delF <> '1' ")
+    Optional<Budget> findBudgetDetailsById(Long budgetId);
 }
