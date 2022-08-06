@@ -28,7 +28,6 @@ public class BudgetController {
     @Operation(summary = "View Budget", description = "View Budget Details")
     @GetMapping("/budget/{budgetId}")
     public ResponseEntity<ApiDataResponse<ViewBudgetDto>> fetchBudgetDetails(@PathVariable Long budgetId) {
-        System.out.println("@@@@@@@@@@@@@@@@@@@");
         ViewBudgetDto budgetDto = this.budgetService.viewBudgetDetails(budgetId);
         return ApiResponseUtil.response(HttpStatus.OK, budgetDto);
         }
