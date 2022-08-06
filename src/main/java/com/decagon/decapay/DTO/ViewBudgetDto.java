@@ -31,5 +31,5 @@ public class ViewBudgetDto {
     private LocalDateTime displayEndDate;
     @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)
     private LocalDateTime displayStartDate;
-    Collection<BudgetLineItem> lineItems = new ArrayList<>();
+    Collection<BudgetLineItemDto> lineItems = new ArrayList<>();
 }
