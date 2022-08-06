@@ -1,11 +1,7 @@
 package com.decagon.decapay.unit.domain;
 
 
-import com.decagon.decapay.enumTypes.BudgetPeriod;
 import com.decagon.decapay.model.budget.Budget;
-import com.decagon.decapay.service.budget.BudgetServiceImpl;
-import com.decagon.decapay.service.currency.CurrencyServiceImpl;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,16 +19,6 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class BudgetTest {
     @InjectMocks
     Budget budget;
-
-    @Test
-    void shouldCalculatePercentgeAmountSuccessfully() throws Exception {
-        Currency currency = Currency.getInstance("NGN");
-        BigDecimal amount = BigDecimal.valueOf(200000);
-        //String formattedAmount = this.budget.formatAmount(amount);
-        // assertEquals(currency.getSymbol() + "200,000.00", formattedAmount);
-    }
-
-
 
     @ParameterizedTest
     @MethodSource("budgetProvider")
