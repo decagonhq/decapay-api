@@ -7,7 +7,6 @@ import com.decagon.decapay.enumTypes.BudgetPeriod;
 import com.decagon.decapay.enumTypes.UserStatus;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.utils.CustomDateUtil;
@@ -50,9 +49,6 @@ public class BudgetTest {
     private MockMvc mockMvc;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private BudgetRepository budgetRepository;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
@@ -84,7 +80,7 @@ public class BudgetTest {
 
         setUpAuthUser(user);
 
-        this.mockMvc.perform(get(path + "/budget/{budgetId}", 2).headers(headers))
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}", 2).headers(headers))
                 .andExpect(status().isNotFound());
     }
 
@@ -113,7 +109,7 @@ public class BudgetTest {
 
         setUpAuthUser(user1);
 
-        this.mockMvc.perform(get(path + "/budget/{budgetId}", budget.getId()).headers(headers))
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}", budget.getId()).headers(headers))
                 .andExpect(status().isBadRequest());
     }
 
@@ -138,7 +134,7 @@ public class BudgetTest {
 
         setUpAuthUser(user);
 
-        this.mockMvc.perform(get(path + "/budget/{budgetId}", budget.getId()).headers(headers))
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}", budget.getId()).headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.lineItems.size()").value(0));
 
@@ -170,7 +166,7 @@ public class BudgetTest {
 
         setUpAuthUser(user);
 
-        this.mockMvc.perform(get(path + "/budget/{budgetId}", budget.getId()).headers(headers))
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}", budget.getId()).headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.projectedAmount").value(5000.00))
                 .andExpect(jsonPath("$.data.displayProjectedAmount").value(currency.getSymbol(locale) + "5,000.00"))
