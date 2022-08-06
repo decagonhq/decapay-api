@@ -3,6 +3,7 @@ package com.decagon.decapay.utils;
 import com.decagon.decapay.model.password.PasswordReset;
 import com.decagon.decapay.model.user.User;
 
+
 public class TestModels {
 
     public static User user(String firstName, String lastName, String email, String password, String phoneNo) {
@@ -21,4 +22,5 @@ public class TestModels {
         passwordReset.setToken(token);
         return passwordReset;
     }
+
 }
