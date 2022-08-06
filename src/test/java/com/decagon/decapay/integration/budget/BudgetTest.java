@@ -89,7 +89,7 @@ public class BudgetTest {
     }
 
     @Test
-    void shouldReturn400InvalidRequestWhenAUserViewBudgetSheDidNotCreate() throws Exception {
+    void shouldReturn400InvalidRequestWhenAUserViewBudgetUserDidNotCreate() throws Exception {
 
         User user = TestModels.user("ola", "dip", "o@b.com",
                 passwordEncoder.encode("password"), "08067644805");
@@ -118,7 +118,7 @@ public class BudgetTest {
     }
 
     @Test
-    void shouldReturnEmptyCollectionWhenBudgetLineItemIsDoesNotExist() throws Exception {
+    void shouldReturnEmptyCollectionWhenBudgetLineItemDoesNotExist() throws Exception {
 
         LocalDateTime today = LocalDateTime.now();
 
