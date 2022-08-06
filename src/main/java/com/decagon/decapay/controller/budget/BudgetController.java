@@ -26,7 +26,7 @@ public class BudgetController {
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
             @ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS) })
     @Operation(summary = "View Budget", description = "View Budget Details")
-    @GetMapping("/budget/{budgetId}")
+    @GetMapping("/budgets/{budgetId}")
     public ResponseEntity<ApiDataResponse<ViewBudgetDto>> fetchBudgetDetails(@PathVariable Long budgetId) {
         ViewBudgetDto budgetDto = this.budgetService.viewBudgetDetails(budgetId);
         return ApiResponseUtil.response(HttpStatus.OK, budgetDto);
