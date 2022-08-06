@@ -68,6 +68,10 @@ public class BudgetServiceImpl implements BudgetService{
         if (authenticatedUserInfo == null){
             throw new UnAuthorizedException("Authenticated User not found");
         }
-        return this.userRepository.findUserByEmail(authenticatedUserInfo.getUsername()).get();
+        Optional<User> user = userRepository.findUserByEmail(authenticatedUserInfo.getUsername());
+        if (user.isEmpty()){
+            throw  new ResourceNotFoundException("User not found");
+        }
+        return user.get();
     }
 }

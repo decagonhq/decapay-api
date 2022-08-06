@@ -13,8 +13,6 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
     @Query("select b from Budget b " +
             "left join fetch b.user u " +
-            "left join fetch b.budgetLineItems bl " +
-            "left join fetch bl.expenses " +
             "where b.id=?1 " +
             "and b.auditSection.delF <> '1' ")
     Optional<Budget> findBudgetDetailsById(Long budgetId);
