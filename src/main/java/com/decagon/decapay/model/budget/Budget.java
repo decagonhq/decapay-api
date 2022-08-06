@@ -13,6 +13,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,10 +53,11 @@ public class Budget implements Auditable, Serializable {
     private Budget parentBudget;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BudgetPeriod budgetPeriod;
 
     @OneToMany(mappedBy = "budget", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -73,5 +75,13 @@ public class Budget implements Auditable, Serializable {
     public void removeBudgetLineItem(BudgetLineItem budgetLineItem) {
         budgetLineItem.setBudget(null);
         this.budgetLineItems.remove(budgetLineItem);
+    }
+
+    public BigDecimal calculatePercentageAmountSpent(){
+        if (this.getTotalAmountSpentSoFar() == null){
+            return BigDecimal.ZERO.setScale(1, RoundingMode.CEILING);
+        }
+        BigDecimal spentSoFar = this.getTotalAmountSpentSoFar().divide(this.getProjectedAmount(), BigDecimal.ROUND_HALF_DOWN);
+        return spentSoFar.multiply(BigDecimal.valueOf(100)).setScale(1, RoundingMode.CEILING);
     }
 }

@@ -22,5 +22,4 @@ public class EmailSenderConfig {
             default -> (EmailSender) context.getBean("defaultEmailSenderImpl");
         };
     }
-
 }

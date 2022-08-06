@@ -1,7 +1,9 @@
 package com.decagon.decapay.utils;
 
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -22,5 +24,30 @@ public class CustomDateUtil {
         SimpleDateFormat format = new SimpleDateFormat("yyyy");
         return format.format(new Date(dt.getTime()));
     }
+
+    public static String formatDateToString(LocalDate localDate, String pattern) {
+        if (localDate == null) {
+            return null;
+        }
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+            return localDate.format(formatter);
+        } catch (DateTimeException e) {
+            return null;
+        }
+    }
+
+    public static String formatLocalDateTimeToString(LocalDateTime localDate, String pattern) {
+        if (localDate == null) {
+            return null;
+        }
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+            return localDate.format(formatter);
+        } catch (DateTimeException e) {
+            return null;
+        }
+    }
+
 
 }
