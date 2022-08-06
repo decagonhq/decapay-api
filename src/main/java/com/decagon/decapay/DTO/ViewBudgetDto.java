@@ -30,7 +30,4 @@ public class ViewBudgetDto {
     private LocalDateTime displayEndDate;
     @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)
     private LocalDateTime displayStartDate;
-    private Collection<BudgetLineItemDetailsDto> lineItems = new ArrayList<>();
-
-
 }
