@@ -22,9 +22,9 @@ public class BudgetController {
     private final BudgetService budgetService;
 
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = USER_SUCCESSFULLY_REGISTERED),
+            @ApiResponse(responseCode = "200", description = RESOURCE_RETRIEVED_SUCCESSFULLY),
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS) })
+            @ApiResponse(responseCode = "404", description = NOT_FOUND) })
     @Operation(summary = "View Budget", description = "View Budget Details")
     @GetMapping("/budgets/{budgetId}")
     public ResponseEntity<ApiDataResponse<ViewBudgetDto>> fetchBudgetDetails(@PathVariable Long budgetId) {
