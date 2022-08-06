@@ -24,11 +24,4 @@ public class EmailSenderConfig {
             default -> (EmailSender) context.getBean("defaultEmailSenderImpl");
         };
     }
-
-    @Bean
-    public JavaMailSender javaMailSender() {
-        return new JavaMailSenderImpl();
-    }
-
-
 }
