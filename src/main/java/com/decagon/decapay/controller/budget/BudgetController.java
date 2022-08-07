@@ -3,7 +3,7 @@ package com.decagon.decapay.controller.budget;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.ViewBudgetDto;
-import com.decagon.decapay.service.budget.BudgetService;
+import com.decagon.decapay.service.budget.ViewBudgetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,12 +21,12 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 @RequestMapping(value = "${api.basepath-api}")
 public class BudgetController {
 
-    private final BudgetService budgetService;
+    private final ViewBudgetService budgetService;
 
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = USER_SUCCESSFULLY_REGISTERED),
+            @ApiResponse(responseCode = "200", description = RESOURCE_RETRIEVED_SUCCESSFULLY),
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS) })
+            @ApiResponse(responseCode = "404", description = NOT_FOUND) })
     @Operation(summary = "View Budget", description = "View Budget Details")
     @GetMapping("/budgets/{budgetId}")
     public ResponseEntity<ApiDataResponse<ViewBudgetDto>> fetchBudgetDetails(@PathVariable Long budgetId) {

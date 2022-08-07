@@ -1,6 +1,6 @@
 package com.decagon.decapay.service.impl;
 
-import com.decagon.decapay.DTO.UserDTO;
+import com.decagon.decapay.dto.UserDTO;
 import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;

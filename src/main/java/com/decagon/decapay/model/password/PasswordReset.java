@@ -8,7 +8,6 @@ import com.decagon.decapay.utils.CommonUtil;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -17,8 +16,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_PASSWORD_RESET
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @EntityListeners(AuditListener.class)
 @Entity
 @Table(name = TABLE_PASSWORD_RESET, uniqueConstraints = {

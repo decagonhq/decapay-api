@@ -5,7 +5,7 @@ import com.decagon.decapay.dto.LoginDto;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 
-import com.decagon.decapay.util.TestUtils;
+import com.decagon.decapay.utils.TestUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class SigninTest {
+public class SignInTest {
 
     @Autowired
     UserRepository userRepository;
