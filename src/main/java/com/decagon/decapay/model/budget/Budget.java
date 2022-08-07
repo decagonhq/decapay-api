@@ -77,6 +77,7 @@ public class Budget implements Auditable, Serializable {
         this.budgetLineItems.remove(budgetLineItem);
     }
 
+
     public BigDecimal calculatePercentageAmountSpent(){
         if (this.getTotalAmountSpentSoFar() == null){
             return BigDecimal.ZERO.setScale(1, RoundingMode.CEILING);

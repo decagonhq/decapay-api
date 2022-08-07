@@ -15,6 +15,8 @@ public class ResponseMessageConstants {
     public static final String SIGN_IN_SUCCESSFULLY = "Sign In Successfully";
     public static final String PASSWORD_RESET_CODE_VERIFIED_SUCCESSFULLY = "Password Reset Code Verified Successfully";
     public static final String SIGN_OUT_SUCCESSFULLY = "Sign Out Successfully";
+    public static final String RETURN_BUDGET_LISTS_SUCCESSFULLY = "Returns list of a user's budget successfully if the user has budget " +
+                                                                  "or empty list if the user does not have budget";
 
     //FAILURE MESSAGES
     public static final String UNABLE_TO_PROCESS_TEMPLATE = "Unable to process template";
