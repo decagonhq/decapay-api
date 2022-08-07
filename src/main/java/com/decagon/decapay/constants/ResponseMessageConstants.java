@@ -18,6 +18,8 @@ public class ResponseMessageConstants {
     public static final String RETURN_BUDGET_LISTS_SUCCESSFULLY = "Returns list of a user's budget successfully if the user has budget " +
                                                                   "or empty list if the user does not have budget";
 
+    public static final String BUDGET_SUCCESSFULLY_CREATED = "Budget successfully created";
+
     //FAILURE MESSAGES
     public static final String UNABLE_TO_PROCESS_TEMPLATE = "Unable to process template";
     public static final String INVALID_REQUEST = "Invalid Request!";

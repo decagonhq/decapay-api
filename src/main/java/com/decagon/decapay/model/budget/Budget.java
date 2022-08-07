@@ -1,5 +1,6 @@
 package com.decagon.decapay.model.budget;
 
+import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.enumTypes.BudgetPeriod;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
@@ -15,6 +16,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +34,7 @@ public class Budget implements Auditable, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100)
+    @Column(length = SchemaConstants.BUDGET_TITLE_SIZE)
     private String title;
 
     @Column(columnDefinition = "decimal(10,2) default (0)")
@@ -48,12 +50,15 @@ public class Budget implements Auditable, Serializable {
     @Column(length = 100)
     private String notificationThreshold;
 
+    @Column(length = SchemaConstants.BUDGET_DESC_SIZE)
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "parent_budget_id")
     private Budget parentBudget;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
     @Enumerated(EnumType.STRING)

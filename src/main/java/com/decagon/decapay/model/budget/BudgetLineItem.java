@@ -5,9 +5,8 @@ import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,8 +18,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET_LINE_IT
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @EntityListeners(AuditListener.class)
 @Entity
 @Table(name = TABLE_BUDGET_LINE_ITEM)
