@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,12 +35,12 @@ public class BudgetRepositoryCustomImpl implements BudgetRepositoryCustom{
 
         StringBuilder whereClauseQry = new StringBuilder(" WHERE b.user.id =:uid AND b.auditSection.delF <> '1' ");
 
-        LocalDateTime now = null;
+        LocalDate now = null;
 
         if (CollectionUtils.isNotEmpty(searchCriterias)){
         for (SearchCriteria criteria : searchCriterias) {
                 if (criteria.getKey().equals("state") && EnumUtils.isValidEnumIgnoreCase(BudgetState.class, String.valueOf(criteria.getValue()))){
-                    now = LocalDateTime.now();
+                    now = LocalDate.now();
                     BudgetState budgetState = BudgetState.valueOf(String.valueOf(criteria.getValue()).toUpperCase());
                     switch (budgetState){
                         case CURRENT:

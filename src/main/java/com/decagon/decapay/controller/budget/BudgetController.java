@@ -3,7 +3,7 @@ package com.decagon.decapay.controller.budget;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.ViewBudgetDto;
-import com.decagon.decapay.service.budget.BudgetService;
+import com.decagon.decapay.service.budget.ViewBudgetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,7 +21,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 @RequestMapping(value = "${api.basepath-api}")
 public class BudgetController {
 
-    private final BudgetService budgetService;
+    private final ViewBudgetService budgetService;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = RESOURCE_RETRIEVED_SUCCESSFULLY),

@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class BudgetServiceImpl implements BudgetService{
+public class ViewBudgetServiceImpl implements ViewBudgetService {
     private final UserInfoUtills userInfoUtills;
     private final UserRepository userRepository;
     private final BudgetRepository budgetRepository;

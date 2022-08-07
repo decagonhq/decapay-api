@@ -26,10 +26,10 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 @SecurityRequirements
 @RestController
 @RequestMapping(value = "${api.basepath-api}")
-public class BudgetController {
+public class CreateBudgetController {
 	private final BudgetService budgetService;
 
-	public BudgetController(final BudgetService budgetService) {
+	public CreateBudgetController(final BudgetService budgetService) {
 		this.budgetService = budgetService;
 	}
 

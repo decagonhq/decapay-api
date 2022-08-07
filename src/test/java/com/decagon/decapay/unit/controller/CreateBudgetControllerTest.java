@@ -2,7 +2,7 @@ package com.decagon.decapay.unit.controller;
 
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.constants.SchemaConstants;
-import com.decagon.decapay.controller.BudgetController;
+import com.decagon.decapay.controller.CreateBudgetController;
 import com.decagon.decapay.dto.CreateBudgetRequestDTO;
 import com.decagon.decapay.enumTypes.BudgetPeriod;
 import com.decagon.decapay.service.BudgetService;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@WebMvcTest(controllers = BudgetController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+@WebMvcTest(controllers = CreateBudgetController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
         WebSecurityConfigurer.class, Filter.class}), excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @ActiveProfiles("test")
 class CreateBudgetControllerTest {

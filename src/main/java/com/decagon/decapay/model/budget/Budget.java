@@ -43,9 +43,9 @@ public class Budget implements Auditable, Serializable {
     @Column(columnDefinition = "decimal(10,2) default (0)")
     private BigDecimal projectedAmount;
 
-    private LocalDateTime budgetStartDate;
+    private LocalDate budgetStartDate;
 
-    private LocalDateTime budgetEndDate;
+    private LocalDate budgetEndDate;
 
     @Column(length = 100)
     private String notificationThreshold;
