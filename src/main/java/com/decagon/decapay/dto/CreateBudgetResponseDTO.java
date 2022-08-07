@@ -1,14 +1,11 @@
 package com.decagon.decapay.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
+import com.decagon.decapay.dto.common.IdResponseDto;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-public class CreateBudgetResponseDTO {
-	@Schema(description = "Budget Id for successfully created budget")
-	private long budgetID;
+public class CreateBudgetResponseDTO extends IdResponseDto {
+	public CreateBudgetResponseDTO(long id) {
+		super(id);
+	}
 }

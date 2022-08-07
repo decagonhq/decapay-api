@@ -15,4 +15,14 @@ public class TestUtils {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public static short getNonCurrentMonth(int currMonth){
+		if(currMonth==12){
+			return 1;
+		}else if(currMonth==0){
+			return 2;
+		}
+		return (short)currMonth;
+	}
+
 }

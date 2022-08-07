@@ -1,30 +1,23 @@
 package com.decagon.decapay.service.impl;
 
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
-import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-
-import javax.transaction.Transactional;
-
-import org.springframework.stereotype.Service;
-
 import com.decagon.decapay.dto.CreateBudgetRequestDTO;
 import com.decagon.decapay.dto.CreateBudgetResponseDTO;
-import com.decagon.decapay.enumTypes.BudgetPeriod;
-import com.decagon.decapay.enumTypes.UserStatus;
-import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.service.BudgetService;
+import com.decagon.decapay.service.budget.period.BudgetPeriodHandler;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 
 @Service
 public class BudgetServiceImpl implements BudgetService {
-
 	private final BudgetRepository budgetRepository;
+
+	//TODO: replace with  userService or userInfo component
 	private final  CustomUserDetailsService userDetailsService;
 
 	public BudgetServiceImpl(final BudgetRepository budgetRepository, final CustomUserDetailsService userDetailsService) {
@@ -32,6 +25,32 @@ public class BudgetServiceImpl implements BudgetService {
 		this.userDetailsService = userDetailsService;
 	}
 
+	@Transactional
+	@Override
+	public CreateBudgetResponseDTO createBudget(CreateBudgetRequestDTO budgetRequest, BudgetPeriodHandler budgetPeriodHandler) {
+
+		User user = userDetailsService.getLoggedInUser();
+		Budget budget =this.createModelEntity(budgetRequest,budgetPeriodHandler);
+		this.saveBudget(budget,user);
+		return new CreateBudgetResponseDTO(budget.getId());
+	}
+
+	private void saveBudget(Budget budget, User user) {
+		//user.addBudget(budget);
+		budget.setUser(user);
+		budgetRepository.save(budget);
+	}
+
+	private Budget createModelEntity(CreateBudgetRequestDTO budgetRequest,BudgetPeriodHandler budgetPeriodHandler) {
+		Budget budget=new Budget();
+		CreateBudgetPopulator populator=new CreateBudgetPopulator();
+		populator.setBudgetPeriodHandler(budgetPeriodHandler);
+		populator.populate(budgetRequest,budget);
+		return budget;
+	}
+
+
+/*
 	@Override
 	@Transactional
 	public CreateBudgetResponseDTO createBudget(final CreateBudgetRequestDTO budgetRequest) {
@@ -48,9 +67,9 @@ public class BudgetServiceImpl implements BudgetService {
 		BudgetPeriod period = BudgetPeriod.valueOf(budgetRequest.getPeriod());
 
 		if (BudgetPeriod.CUSTOM == period ){
-			budgetRequest.isValidForCustomPeriod();
-			budget.setBudgetStartDate(budgetRequest.getBudgetStartDate());
-			budget.setBudgetEndDate(budgetRequest.getBudgetEndDate());
+			//budgetRequest.isValidForCustomPeriod();
+			//budget.setBudgetStartDate(budgetRequest.getBudgetStartDate());
+			//budget.setBudgetEndDate(budgetRequest.getBudgetEndDate());
 		} else {
 			budget.setBudgetStartDate(LocalDate.now());
 			budget.setBudgetEndDate(getEndDateFromPeriod(period));
@@ -72,5 +91,5 @@ public class BudgetServiceImpl implements BudgetService {
 			case MONTHLY -> now.with(lastDayOfMonth());
 			default -> now.with(lastDayOfYear());
 		};
-	}
+	}*/
 }
