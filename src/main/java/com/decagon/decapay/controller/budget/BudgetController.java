@@ -75,11 +75,11 @@ public class BudgetController {
     @Parameters({
             @Parameter(in = ParameterIn.QUERY
                     , description = "Page you want to retrieve (0..N)"
-                    , name = "pageNo"
+                    , name = "page"
                     , content = @Content(schema = @Schema(type = "integer", defaultValue = "0"))),
             @Parameter(in = ParameterIn.QUERY
                     , description = "Number of records per page."
-                    , name = "pageSize"
+                    , name = "size"
                     , content = @Content(schema = @Schema(type = "integer", defaultValue = "10"))),
             @Parameter(in = ParameterIn.QUERY
                     , description = """
@@ -91,7 +91,7 @@ public class BudgetController {
     })
     @GetMapping("/budgets")
     public ResponseEntity<ApiDataResponse<Page<BudgetResponseDto>>> getAllBudgetsForAParticularUser(
-            @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10") int pageSize
+            @RequestParam(name="page" ,defaultValue = "0") int pageNo, @RequestParam(name="size" ,defaultValue = "10") int pageSize
             , @RequestParam(name = "state", required = false) String state) {
         List<SearchCriteria> searchCriterias = null;
         if (StringUtils.isNotEmpty(state)) {

@@ -696,7 +696,7 @@ public class BudgetTest {
 
 
         this.mockMvc
-                .perform(get(path + "/budgets").param("pageNo", "1").param("pageSize", "2")
+                .perform(get(path + "/budgets").param("page", "1").param("size", "2")
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -704,7 +704,7 @@ public class BudgetTest {
                 .andExpect(jsonPath("$.data.content[*].id", Matchers.containsInRelativeOrder(budget.getId().intValue(), budget2.getId().intValue())));
 
         this.mockMvc
-                .perform(get(path + "/budgets").param("pageNo", "2").param("pageSize", "2")
+                .perform(get(path + "/budgets").param("page", "2").param("size", "2")
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
