@@ -2,11 +2,11 @@ package com.decagon.decapay.service.auth;
 
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
-import com.decagon.decapay.model.password.PasswordReset;
+import com.decagon.decapay.model.auth.PasswordReset;
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.payloads.request.auth.CreatePasswordRequestDto;
-import com.decagon.decapay.payloads.request.auth.ForgotPasswordRequestDto;
-import com.decagon.decapay.payloads.request.auth.VerifyPasswordResetCodeRequest;
+import com.decagon.decapay.dto.auth.CreatePasswordRequestDto;
+import com.decagon.decapay.dto.auth.ForgotPasswordRequestDto;
+import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.EmailTemplateUtil;
@@ -22,7 +22,7 @@ import java.util.UUID;
 
 import static com.decagon.decapay.constants.AppConstants.*;
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
-import static com.decagon.decapay.enumTypes.ResetCodeStatus.*;
+import static com.decagon.decapay.model.auth.ResetCodeStatus.*;
 import static com.decagon.decapay.utils.CommonUtil.generateOTP;
 
 @Slf4j

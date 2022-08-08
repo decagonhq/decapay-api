@@ -1,7 +1,6 @@
 package com.decagon.decapay.model.user;
 
 
-import com.decagon.decapay.enumTypes.UserStatus;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
@@ -20,8 +19,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_USER;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = TABLE_USER)
 @EntityListeners(AuditListener.class)

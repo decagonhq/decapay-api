@@ -3,18 +3,18 @@ package com.decagon.decapay.integration.budget;
 
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
-import com.decagon.decapay.enumTypes.BudgetPeriod;
-import com.decagon.decapay.enumTypes.UserStatus;
+import com.decagon.decapay.model.budget.BudgetPeriod;
+import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.utils.CustomDateUtil;
-import com.decagon.decapay.utils.JwtUtil;
+import com.decagon.decapay.security.JwtUtil;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import org.junit.jupiter.api.BeforeEach;
-import com.decagon.decapay.enumTypes.BudgetState;
+import com.decagon.decapay.model.budget.BudgetState;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -86,7 +86,7 @@ public class BudgetTest {
     }
 
 
-    private Budget budget(LocalDateTime startDate, LocalDateTime endDate){
+    private Budget budget(LocalDate startDate, LocalDate endDate){
         Budget budget = new Budget();
         budget.setTitle("Transport");
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200000));
@@ -128,7 +128,7 @@ public class BudgetTest {
         user.setUserStatus(UserStatus.ACTIVE);
 
         Budget budget = new Budget();
-        LocalDateTime today = LocalDateTime.now();
+        LocalDate today = LocalDate.now();
         budget.setTitle("Transportation Budget");
         budget.setNotificationThreshold("Notification Trashold");
         budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
@@ -153,7 +153,7 @@ public class BudgetTest {
     @Test
     void shouldReturnEmptyCollectionWhenBudgetLineItemDoesNotExist() throws Exception {
 
-        LocalDateTime today = LocalDateTime.now();
+        LocalDate today = LocalDate.now();
 
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
@@ -217,8 +217,8 @@ public class BudgetTest {
         budget.setTitle("Transport");
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200000));
         budget.setProjectedAmount(BigDecimal.valueOf(400000));
-        budget.setBudgetStartDate(LocalDateTime.now().minusDays(1));
-        budget.setBudgetEndDate(LocalDateTime.MAX);
+        budget.setBudgetStartDate(LocalDate.now().minusDays(1));
+        budget.setBudgetEndDate(LocalDate.MAX);
         budget.setUser(user);
         budget.setBudgetPeriod(BudgetPeriod.ANNUAL);
         budgetRepository.save(budget);
@@ -227,8 +227,8 @@ public class BudgetTest {
         budget1.setTitle("Education");
         budget1.setTotalAmountSpentSoFar(BigDecimal.valueOf(200000));
         budget1.setProjectedAmount(BigDecimal.valueOf(400000));
-        budget1.setBudgetStartDate(LocalDateTime.now());
-        budget1.setBudgetEndDate(LocalDateTime.MAX);
+        budget1.setBudgetStartDate(LocalDate.now());
+        budget1.setBudgetEndDate(LocalDate.MAX);
         budget1.setUser(user);
         budget1.setBudgetPeriod(BudgetPeriod.ANNUAL);
         budgetRepository.save(budget1);
@@ -305,8 +305,8 @@ public class BudgetTest {
         budget.setTitle("Transport");
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200000));
         budget.setProjectedAmount(BigDecimal.valueOf(400000));
-        budget.setBudgetStartDate(LocalDateTime.now());
-        budget.setBudgetEndDate(LocalDateTime.MAX);
+        budget.setBudgetStartDate(LocalDate.now());
+        budget.setBudgetEndDate(LocalDate.MAX);
         budget.setUser(user);
         budget.setBudgetPeriod(BudgetPeriod.ANNUAL);
         budgetRepository.save(budget);
@@ -324,8 +324,8 @@ public class BudgetTest {
         budget2.setTitle("Utiliy");
         budget2.setTotalAmountSpentSoFar(BigDecimal.valueOf(200000));
         budget2.setProjectedAmount(BigDecimal.valueOf(400000));
-        budget2.setBudgetStartDate(LocalDateTime.now());
-        budget2.setBudgetEndDate(LocalDateTime.now().plusDays(30));
+        budget2.setBudgetStartDate(LocalDate.now());
+        budget2.setBudgetEndDate(LocalDate.now().plusDays(30));
         budget2.setUser(user2);
         budget2.setBudgetPeriod(BudgetPeriod.ANNUAL);
         budgetRepository.save(budget2);
@@ -334,8 +334,8 @@ public class BudgetTest {
         budget3.setTitle("Utiliy");
         budget3.setTotalAmountSpentSoFar(BigDecimal.valueOf(300000));
         budget3.setProjectedAmount(BigDecimal.valueOf(400000));
-        budget3.setBudgetStartDate(LocalDateTime.now());
-        budget3.setBudgetEndDate(LocalDateTime.MAX);
+        budget3.setBudgetStartDate(LocalDate.now());
+        budget3.setBudgetEndDate(LocalDate.MAX);
         budget3.setUser(user2);
         budget3.setBudgetPeriod(BudgetPeriod.ANNUAL);
         budgetRepository.save(budget3);
@@ -388,8 +388,8 @@ public class BudgetTest {
         budget.setTitle("Transport");
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200000));
         budget.setProjectedAmount(BigDecimal.valueOf(400000));
-        budget.setBudgetStartDate(LocalDateTime.now().minusDays(30));
-        budget.setBudgetEndDate(LocalDateTime.now().minusDays(2));
+        budget.setBudgetStartDate(LocalDate.now().minusDays(30));
+        budget.setBudgetEndDate(LocalDate.now().minusDays(2));
         budget.setUser(user);
         budget.setBudgetPeriod(BudgetPeriod.ANNUAL);
         budgetRepository.save(budget);
@@ -414,8 +414,8 @@ public class BudgetTest {
     @Test
     void testShouldNotListUpcommingWhenListingActiveBudget() throws Exception {
 
-        Budget budget = budget(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10));
-        Budget budget2 = budget(LocalDateTime.now().plusDays(4), LocalDateTime.now().plusDays(20));
+        Budget budget = budget(LocalDate.now().plusDays(1), LocalDate.now().plusDays(10));
+        Budget budget2 = budget(LocalDate.now().plusDays(4), LocalDate.now().plusDays(20));
 
         User user = new User();
         user.setEmail("o2g@gmail.com");
@@ -441,8 +441,8 @@ public class BudgetTest {
     @Test
     void testShouldListCurrentBudgetSuccessfully() throws Exception {
 
-        Budget budget = budget(LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(10));
-        Budget budget2 = budget(LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(20));
+        Budget budget = budget(LocalDate.now().minusDays(2), LocalDate.now().plusDays(10));
+        Budget budget2 = budget(LocalDate.now().minusDays(3), LocalDate.now().plusDays(20));
 
         User user = new User();
         user.setEmail("o2g@gmail.com");
@@ -468,8 +468,8 @@ public class BudgetTest {
     @Test
     void testShouldNotListCurrentWhenListingPastBudget() throws Exception {
 
-        Budget budget = budget(LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(10));
-        Budget budget2 = budget(LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(20));
+        Budget budget = budget(LocalDate.now().minusDays(1), LocalDate.now().plusDays(10));
+        Budget budget2 = budget(LocalDate.now().minusDays(2), LocalDate.now().plusDays(20));
 
         User user = new User();
         user.setEmail("o2g@gmail.com");
@@ -494,8 +494,8 @@ public class BudgetTest {
     @Test
     void testShouldNotListUpcommingWhenListingPastBudget() throws Exception {
 
-        Budget budget = budget(LocalDateTime.now().plusDays(5), LocalDateTime.now().plusDays(10));
-        Budget budget2 = budget(LocalDateTime.now().plusDays(10), LocalDateTime.now().plusDays(20));
+        Budget budget = budget(LocalDate.now().plusDays(5), LocalDate.now().plusDays(10));
+        Budget budget2 = budget(LocalDate.now().plusDays(10), LocalDate.now().plusDays(20));
 
         User user = new User();
         user.setEmail("o2g@gmail.com");
@@ -521,8 +521,8 @@ public class BudgetTest {
     @Test
     void testShouldListPastBudgetSuccessfully() throws Exception {
 
-        Budget budget = budget(LocalDateTime.now().minusDays(10), LocalDateTime.now().minusDays(1));
-        Budget budget2 = budget(LocalDateTime.now().minusDays(15), LocalDateTime.now().minusDays(5));
+        Budget budget = budget(LocalDate.now().minusDays(10), LocalDate.now().minusDays(1));
+        Budget budget2 = budget(LocalDate.now().minusDays(15), LocalDate.now().minusDays(5));
 
         User user = new User();
         user.setEmail("o2g@gmail.com");
@@ -548,8 +548,8 @@ public class BudgetTest {
     @Test
     void testShouldNotListCurrentWhenListingUpcommingBudget() throws Exception {
 
-        Budget budget = budget(LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(10));
-        Budget budget2 = budget(LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(20));
+        Budget budget = budget(LocalDate.now().minusDays(1), LocalDate.now().plusDays(10));
+        Budget budget2 = budget(LocalDate.now().minusDays(2), LocalDate.now().plusDays(20));
 
         User user = new User();
         user.setEmail("o2g@gmail.com");
@@ -574,8 +574,8 @@ public class BudgetTest {
     @Test
     void testShouldNotListPastWhenListingUpcommingBudget() throws Exception {
 
-        Budget budget = budget(LocalDateTime.now().minusDays(10), LocalDateTime.now().minusDays(1));
-        Budget budget2 = budget(LocalDateTime.now().minusDays(15), LocalDateTime.now().minusDays(5));
+        Budget budget = budget(LocalDate.now().minusDays(10), LocalDate.now().minusDays(1));
+        Budget budget2 = budget(LocalDate.now().minusDays(15), LocalDate.now().minusDays(5));
 
         User user = new User();
         user.setEmail("o2g@gmail.com");
@@ -608,7 +608,7 @@ public class BudgetTest {
                     passwordEncoder.encode("password"), "08067644805");
             user.setUserStatus(UserStatus.ACTIVE);
 
-            LocalDateTime today = LocalDateTime.now();
+            LocalDate today = LocalDate.now();
 
             Budget budget = new Budget();
             budget.setTitle("Transportation Budget");
@@ -630,10 +630,10 @@ public class BudgetTest {
                     .andExpect(jsonPath("$.data.displayProjectedAmount").value(currency.getSymbol(locale) + "5,000.00"))
                     .andExpect(jsonPath("$.data.notificationThreshold").value("Notification Trashold"))
                     .andExpect(jsonPath("$.data.title").value("Transportation Budget"))
-                    .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateTimeToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                    .andExpect(jsonPath("$.data.displayStartDate").value(CustomDateUtil.formatLocalDateTimeToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
-                    .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateTimeToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                    .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateTimeToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                    .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                    .andExpect(jsonPath("$.data.displayStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                    .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                    .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
                     .andExpect(jsonPath("$.data.totalAmountSpentSoFar").value(2500.00))
                     .andExpect(jsonPath("$.data.displayTotalAmountSpentSoFar").value(currency.getSymbol(locale) + "2,500.00"))
                     .andExpect(jsonPath("$.data.percentageSpentSoFar").value(50.0))
@@ -645,8 +645,8 @@ public class BudgetTest {
     @Test
     void testShouldListUpcommingBudgetSuccessfully() throws Exception {
 
-        Budget budget = budget(LocalDateTime.now().plusDays(5), LocalDateTime.now().plusDays(10));
-        Budget budget2 = budget(LocalDateTime.now().plusDays(10), LocalDateTime.now().plusDays(20));
+        Budget budget = budget(LocalDate.now().plusDays(5), LocalDate.now().plusDays(10));
+        Budget budget2 = budget(LocalDate.now().plusDays(10), LocalDate.now().plusDays(20));
 
         User user = new User();
         user.setEmail("o2g@gmail.com");
@@ -671,13 +671,13 @@ public class BudgetTest {
     @Test
     void testShouldReturnPaginatedListBudget() throws Exception {
 
-        Budget budget = budget(LocalDateTime.now().minusDays(30), LocalDateTime.now().plusDays(1));
+        Budget budget = budget(LocalDate.now().minusDays(30), LocalDate.now().plusDays(1));
         budget.setTitle("Education");
-        Budget budget2 = budget(LocalDateTime.now().minusDays(25), LocalDateTime.now().plusDays(1));
+        Budget budget2 = budget(LocalDate.now().minusDays(25), LocalDate.now().plusDays(1));
         budget2.setTitle("Food");
-        Budget budget3 = budget(LocalDateTime.now().minusDays(22), LocalDateTime.now().plusDays(1));
+        Budget budget3 = budget(LocalDate.now().minusDays(22), LocalDate.now().plusDays(1));
         budget3.setTitle("Cloth");
-        Budget budget4 = budget(LocalDateTime.now().minusDays(19), LocalDateTime.now().plusDays(1));
+        Budget budget4 = budget(LocalDate.now().minusDays(19), LocalDate.now().plusDays(1));
         budget4.setTitle("Land");
 
         User user = new User();

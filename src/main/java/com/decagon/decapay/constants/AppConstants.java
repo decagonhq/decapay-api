@@ -40,4 +40,5 @@ public class AppConstants {
     public final static Currency DEFAULT_CURRENCY = Currency.getInstance("NGN");
     public static final String DEFAULT_COUNTRY = "NG";
     public static final String DEFAULT_LANGUAGE = "en";
+    public static final short NUM_DAYS_IN_WEEK = 7;
 }

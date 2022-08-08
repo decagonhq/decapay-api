@@ -1,6 +1,6 @@
 package com.decagon.decapay.utils;
 
-import com.decagon.decapay.model.password.PasswordReset;
+import com.decagon.decapay.model.auth.PasswordReset;
 import com.decagon.decapay.model.user.User;
 
 
@@ -14,6 +14,10 @@ public class TestModels {
         user.setPassword(password);
         user.setPhoneNumber(phoneNo);
         return user;
+    }
+
+    public static User aUSer() {
+        return user("firstName","lastName", "a@b.com", "password", "0123456789");
     }
 
     public static PasswordReset passwordReset(String email, String token) {

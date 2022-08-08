@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.decagon.decapay.DTO.UserDTO;
+import com.decagon.decapay.dto.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
-import com.decagon.decapay.service.UserService;
+import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -61,7 +61,7 @@ class UserControllerTest {
 	@Test
 	void registerUser() throws Exception {
 		ResultActions response = mockMvc.perform(
-			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(
+			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
 				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(201));
 
 		User user = userRepository.findByEmail(userDTO.getEmail()).get();
@@ -79,14 +79,14 @@ class UserControllerTest {
 	@Test
 	void registerUserFailsWithIncompleteDTO() throws Exception {
 		mockMvc.perform(
-			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(
+			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
 				objectMapper.writeValueAsString(new UserDTO()))).andExpect(status().is(400));
 	}
 
 	@Test
 	void registerUserFailsWhenUserAlreadyExists() throws Exception {
 
-		User user=new User();
+		User user = new User();
 		user.setFirstName("firstName");
 		user.setLastName("lastName");
 		user.setEmail("a@b.com");
@@ -95,7 +95,7 @@ class UserControllerTest {
 		userRepository.save(user);
 
 		mockMvc.perform(
-			post(path+"/register").contentType(MediaType.APPLICATION_JSON).content(
+			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
 				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(409));
 	}
 }

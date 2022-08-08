@@ -1,14 +1,14 @@
 package com.decagon.decapay.integration.auth;
 
 
-import com.decagon.decapay.dto.SignOutRequestDto;
-import com.decagon.decapay.model.user.TokenBlacklist;
+import com.decagon.decapay.dto.auth.SignOutRequestDto;
+import com.decagon.decapay.model.auth.TokenBlacklist;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.auth.TokenBlacklistRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
-import com.decagon.decapay.util.TestUtils;
-import com.decagon.decapay.utils.JwtUtil;
+import com.decagon.decapay.utils.TestUtils;
+import com.decagon.decapay.security.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;

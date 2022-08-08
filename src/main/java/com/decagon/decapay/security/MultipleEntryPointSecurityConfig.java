@@ -1,6 +1,5 @@
 package com.decagon.decapay.security;
 
-import com.decagon.decapay.utils.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

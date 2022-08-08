@@ -1,7 +1,6 @@
 package com.decagon.decapay.service.email;
 
 import com.decagon.decapay.config.email.EmailConfig;
-import com.decagon.decapay.payloads.request.email.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;

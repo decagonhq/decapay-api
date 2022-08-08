@@ -1,8 +1,7 @@
 package com.decagon.decapay.model.audit;
 
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -12,8 +11,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Embeddable
-@Getter
-@Setter
+@Data
 public class AuditSection implements Serializable {
     @CreatedDate
     @Column(name = "date_created")

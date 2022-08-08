@@ -1,14 +1,14 @@
 package com.decagon.decapay.dto;
 
 import com.decagon.decapay.constants.DateDisplayConstants;
-import com.decagon.decapay.model.budget.BudgetLineItem;
+import com.decagon.decapay.dto.budget.BudgetLineItemDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -27,8 +27,8 @@ public class ViewBudgetDto {
 
     @Digits(integer = 15,fraction =2)
     private BigDecimal percentageSpentSoFar;
+    
     @JsonFormat(pattern = DateDisplayConstants.DATE_DB_FORMAT)
-
     @ApiModelProperty(notes = "Date format: " +DateDisplayConstants.DATE_DB_FORMAT)
     private LocalDateTime startDate;
 
@@ -36,6 +36,7 @@ public class ViewBudgetDto {
     @ApiModelProperty(notes = "Date format: " +DateDisplayConstants.DATE_DB_FORMAT)
     private LocalDateTime endDate;
 
+ 
     private String notificationThreshold;
 
     private String budgetPeriod;
@@ -59,4 +60,5 @@ public class ViewBudgetDto {
 
     @ApiModelProperty(notes="Display the budget line item if exist")
     Collection<BudgetLineItem> lineItems = new ArrayList<>();
+
 }

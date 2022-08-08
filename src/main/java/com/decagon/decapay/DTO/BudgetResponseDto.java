@@ -1,7 +1,7 @@
 package com.decagon.decapay.dto;
 
 
-import com.decagon.decapay.enumTypes.BudgetPeriod;
+import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.math.BigDecimal;
