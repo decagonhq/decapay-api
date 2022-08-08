@@ -1,7 +1,6 @@
 package com.decagon.decapay.dto.budget;
 
 import com.decagon.decapay.constants.DateDisplayConstants;
-import com.decagon.decapay.dto.budget.BudgetLineItemDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -30,10 +29,8 @@ public class ViewBudgetDto {
     private String displayTotalAmountSpentSoFar;
     private String displayPercentageSpentSoFar;
     @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)
-   // private LocalDateTime displayEndDate;
     private LocalDate displayEndDate;
     @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)
-    //private LocalDateTime displayStartDate;
     private LocalDate displayStartDate;
     Collection<BudgetLineItemDto> lineItems = new ArrayList<>();
 }
