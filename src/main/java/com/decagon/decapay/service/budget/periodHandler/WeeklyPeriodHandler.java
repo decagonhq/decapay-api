@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 
-public class WeeklyPeriodHandler extends BudgetPeriodHandler {
+public class WeeklyPeriodHandler extends AbstractBudgetPeriodHandler {
     /*
      for weekly period, start date and duration required and
      duration must be a positive number
