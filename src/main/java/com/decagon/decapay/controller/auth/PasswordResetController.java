@@ -7,6 +7,7 @@ import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.service.auth.PasswordResetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -32,8 +33,8 @@ public class PasswordResetController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = FORGOT_PASSWORD_INITIATED_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Publish forgot password email", description = "Publish forgot password email with RequestHeader key = DVC_KY_HDR and value = MOBILE_DEVICE_ID = 1 | WEB_DEVICE_ID = 2")
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiDataResponse<Object>> initiateForgotPassword(@Valid @RequestBody ForgotPasswordRequestDto forgotPasswordRequestDto,
@@ -44,8 +45,8 @@ public class PasswordResetController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = PASSWORD_RESET_CODE_VERIFIED_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Verify password reset code", description = "Verify password reset code with RequestHeader key = DVC_KY_HDR and value = MOBILE_DEVICE_ID = 1")
     @PostMapping("/verify-code")
     public ResponseEntity<ApiDataResponse<Object>> verifyPasswordResetCode(@Valid @RequestBody VerifyPasswordResetCodeRequest verifyPasswordResetCodeRequest,
@@ -56,8 +57,8 @@ public class PasswordResetController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = PASSWORD_CREATED_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Create new Password", description = "Create new password | RequestHeader key = 'DVC_KY_HDR' and value = 'MOBILE_DEVICE_ID = 1 | WEB_DEVICE_ID = 2'")
     @PostMapping("/reset-password")
     public ResponseEntity<ApiDataResponse<Object>> resetPassword(@Valid @RequestBody CreatePasswordRequestDto createPasswordRequestDto,
