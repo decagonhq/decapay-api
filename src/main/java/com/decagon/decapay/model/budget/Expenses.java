@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static com.decagon.decapay.constants.SchemaConstants.TABLE_EXPENSES;
 
@@ -29,6 +30,8 @@ public class Expenses implements Auditable, Serializable {
 
     @Column(columnDefinition = "decimal(10,2) default (0)")
     private BigDecimal amount;
+
+    private LocalDateTime transactionDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "budget_line_item_id")

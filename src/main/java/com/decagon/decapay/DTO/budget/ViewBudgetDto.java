@@ -1,4 +1,4 @@
-package com.decagon.decapay.dto.budget;
+package com.decagon.decapay.DTO.budget;
 
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -32,5 +32,5 @@ public class ViewBudgetDto {
     private LocalDate displayEndDate;
     @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)
     private LocalDate displayStartDate;
-    Collection<BudgetLineItemDto> lineItems = new ArrayList<>();
+    Collection<com.decagon.decapay.dto.budget.BudgetLineItemDto> lineItems = new ArrayList<>();
 }

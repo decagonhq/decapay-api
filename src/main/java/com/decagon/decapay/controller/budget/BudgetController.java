@@ -1,12 +1,13 @@
 package com.decagon.decapay.controller.budget;
 
 
+import com.decagon.decapay.DTO.SearchCriteria;
+import com.decagon.decapay.DTO.budget.BudgetResponseDto;
+import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.DTO.budget.CreateBudgetResponseDTO;
+import com.decagon.decapay.DTO.budget.ViewBudgetDto;
+import com.decagon.decapay.DTO.common.IdResponseDto;
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.dto.SearchCriteria;
-import com.decagon.decapay.dto.budget.BudgetResponseDto;
-import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
-import com.decagon.decapay.dto.budget.ViewBudgetDto;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
 import com.decagon.decapay.utils.ApiResponseUtil;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import com.decagon.decapay.payloads.request.budget.UpdateBudgetRequestDto;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -107,5 +109,14 @@ public class BudgetController {
         budgetPeriodHandler.validateRequest(createBudgetRequest);
     }
 
-
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = BUDGET_UPDATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+    @Operation(summary = "Update Budget", description = "Update User Budget")
+    @PutMapping("/{userId}/budget/{budgetId}")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> updateBudget(@PathVariable Long userId, @PathVariable Long budgetId, @RequestBody UpdateBudgetRequestDto budgetRequestDto) {
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.updateBudget(userId, budgetId, budgetRequestDto), BUDGET_UPDATED_SUCCESSFULLY);
+    }
 }

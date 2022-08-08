@@ -1,6 +1,6 @@
-package com.decagon.decapay.dto.budget;
+package com.decagon.decapay.DTO.budget;
 
-import com.decagon.decapay.dto.common.IdResponseDto;
+import com.decagon.decapay.DTO.common.IdResponseDto;
 import lombok.Data;
 
 @Data

@@ -1,10 +1,13 @@
 package com.decagon.decapay.service.budget;
 
-import com.decagon.decapay.dto.*;
-import com.decagon.decapay.dto.budget.BudgetResponseDto;
-import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
-import com.decagon.decapay.dto.budget.ViewBudgetDto;
+
+import com.decagon.decapay.DTO.SearchCriteria;
+import com.decagon.decapay.DTO.budget.BudgetResponseDto;
+import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.DTO.budget.CreateBudgetResponseDTO;
+import com.decagon.decapay.DTO.budget.ViewBudgetDto;
+import com.decagon.decapay.DTO.common.IdResponseDto;
+import com.decagon.decapay.payloads.request.budget.UpdateBudgetRequestDto;
 import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
 import org.springframework.data.domain.Page;
 
@@ -17,5 +20,6 @@ public interface BudgetService {
     Page<BudgetResponseDto> getBudgets(int pageSize, int pageNo, List<SearchCriteria> searchCriterias);
 
     ViewBudgetDto viewBudgetDetails(Long budgetId);
+    IdResponseDto updateBudget(Long userId, Long budgetId, UpdateBudgetRequestDto budgetRequestDto);
 
 }

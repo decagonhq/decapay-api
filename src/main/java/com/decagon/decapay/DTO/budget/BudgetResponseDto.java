@@ -1,4 +1,4 @@
-package com.decagon.decapay.dto.budget;
+package com.decagon.decapay.DTO.budget;
 
 
 import com.decagon.decapay.model.budget.BudgetPeriod;

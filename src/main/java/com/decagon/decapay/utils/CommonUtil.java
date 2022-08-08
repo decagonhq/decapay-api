@@ -24,6 +24,10 @@ public class CommonUtil {
         return random.nextInt(max-min) + min;
     }
 
+    public static int parseToInt(String value){
+        return Integer.parseInt(value);
+    }
+
 }
 
 

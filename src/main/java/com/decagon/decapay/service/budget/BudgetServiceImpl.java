@@ -1,16 +1,19 @@
 package com.decagon.decapay.service.budget;
 
-import com.decagon.decapay.dto.*;
-import com.decagon.decapay.dto.budget.BudgetResponseDto;
-import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
-import com.decagon.decapay.dto.budget.ViewBudgetDto;
+import com.decagon.decapay.DTO.SearchCriteria;
+import com.decagon.decapay.DTO.budget.BudgetResponseDto;
+import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.DTO.budget.CreateBudgetResponseDTO;
+import com.decagon.decapay.DTO.budget.ViewBudgetDto;
+import com.decagon.decapay.DTO.common.IdResponseDto;
 import com.decagon.decapay.exception.InvalidCredentialException;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.exception.UnAuthorizedException;
 import com.decagon.decapay.model.budget.Budget;
+import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.payloads.request.budget.UpdateBudgetRequestDto;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
@@ -29,7 +32,11 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
+import static com.decagon.decapay.utils.CustomDateUtil.*;
+import static java.time.temporal.TemporalAdjusters.*;
 
 @Service
 public class BudgetServiceImpl implements BudgetService {
@@ -148,6 +155,133 @@ public class BudgetServiceImpl implements BudgetService {
 		return user.get();
 	}
 
+    @Override
+    public IdResponseDto updateBudget(Long userId, Long budgetId, UpdateBudgetRequestDto budgetRequestDto) {
+        User user = this.getAuthenticatedUser();
 
+        if (!Objects.equals(user.getId(), userId)) {
+            throw new UnAuthorizedException("You are not authorized to update this budget");
+        }
+
+
+        Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+        this.processBudgetsBasedOnPeriod(budgetRequestDto, budget);
+
+        System.out.println("@@@@@@@@@ impl start date: " + budgetRequestDto.getBudgetStartDate());
+        System.out.println("@@@@@@@@@ impl end date: " + budgetRequestDto.getBudgetEndDate());
+
+
+        boolean isExpenseTransactionDateWithinPeriod = this.budgetRepository.expenseExistsBetweenStartAndEndPeriod(budgetId, userId, budgetRequestDto.getBudgetStartDate(), budgetRequestDto.getBudgetEndDate());
+
+        System.out.println("####### isExpenseTransactionDateWithinPeriod: " + isExpenseTransactionDateWithinPeriod);
+
+        if (!isExpenseTransactionDateWithinPeriod) {
+            throw new InvalidRequestException("Budget period cannot be outside of the current period");
+        }
+
+        if (!Objects.equals(budgetRequestDto.getTotalAmountSpentSoFar(), budget.getTotalAmountSpentSoFar())){
+            throw new InvalidRequestException("Budget amount cannot be less/greater than line items total amount edit line item and try again");
+        }
+
+        return this.processBudgetUpdate(budget, budgetRequestDto);
+
+    }
+
+    private IdResponseDto processBudgetUpdate(Budget budget, UpdateBudgetRequestDto budgetRequestDto) {
+        budget.setTitle(budgetRequestDto.getTitle());
+        budget.setProjectedAmount(budgetRequestDto.getProjectedAmount());
+        budget.setTotalAmountSpentSoFar(budgetRequestDto.getTotalAmountSpentSoFar());
+        budget = this.budgetRepository.save(budget);
+        return new IdResponseDto(budget.getId());
+    }
+
+    private void processBudgetsBasedOnPeriod(UpdateBudgetRequestDto requestDto, Budget budget){
+        switch (BudgetPeriod.valueOf(requestDto.getBudgetPeriod())) {
+            case DAILY -> processDailyBudget(requestDto, budget);
+            case WEEKLY -> processWeeklyBudget(requestDto, budget);
+            case MONTHLY -> processMonthlyBudget(requestDto, budget);
+            case ANNUAL -> processAnnualBudget(requestDto, budget);
+            case CUSTOM -> processCustomBudget(requestDto, budget);
+            default -> throw new InvalidRequestException("Invalid budget period");
+        }
+    }
+
+    private void processAnnualBudget(UpdateBudgetRequestDto budgetRequestDto, Budget budget) {
+        this.validateInput(budgetRequestDto.getYear(), "year");
+
+        short year = budgetRequestDto.getYear();
+
+        budgetRequestDto.setBudgetStartDate(getDateFromYear(year, firstDayOfYear()).toString());
+        budgetRequestDto.setBudgetEndDate(getDateFromYear(year, lastDayOfYear()).toString());
+        this.processBudgetPeriodUpdate(budgetRequestDto, budget);
+    }
+
+
+
+    private void processMonthlyBudget(UpdateBudgetRequestDto budgetRequestDto, Budget budget) {
+        this.validateInput(budgetRequestDto.getYear(), "year");
+        this.validateInput(budgetRequestDto.getMonth(), "month");
+
+        short year = budgetRequestDto.getYear();
+        short month = budgetRequestDto.getMonth();
+
+        budgetRequestDto.setBudgetStartDate(getDateFromMonth(year, month, firstDayOfMonth()).toString());
+        budgetRequestDto.setBudgetEndDate(getDateFromMonth(year, month, lastDayOfMonth()).toString());
+
+        this.processBudgetPeriodUpdate(budgetRequestDto, budget);
+    }
+
+    private void processWeeklyBudget(UpdateBudgetRequestDto budgetRequestDto, Budget budget) {
+        this.validateInput(budgetRequestDto.getYear(), "year");
+        this.validateInput(budgetRequestDto.getMonth(), "month");
+        this.validateInput(budgetRequestDto.getWeek(), "week");
+
+        short year = budgetRequestDto.getYear();
+        short month = budgetRequestDto.getMonth();
+        short week = budgetRequestDto.getWeek();
+
+        budgetRequestDto.setBudgetStartDate(getDateFromWeek(year, month, week, (short) 1).toString());
+        budgetRequestDto.setBudgetEndDate(getDateFromWeek(year, month, week, (short) 7).toString());
+        this.processBudgetPeriodUpdate(budgetRequestDto, budget);
+
+    }
+
+    private void validateInput(int input, String name) {
+        if (Optional.of(input).isEmpty()) {
+            throw new InvalidRequestException(String.format("%s is required", name));
+        }
+    }
+
+
+    private void processCustomBudget(UpdateBudgetRequestDto budgetRequestDto, Budget budget) {
+        this.validateDate(budgetRequestDto);
+//        if(!budgetRequestDto.getBudgetEndDate().i(budgetRequestDto.getBudgetStartDate())){
+//            throw new InvalidRequestException("End date must be after start date");
+//        }
+        this.processBudgetPeriodUpdate(budgetRequestDto, budget);
+    }
+
+    private void processDailyBudget(UpdateBudgetRequestDto budgetRequestDto, Budget budget) {
+        this.validateDate(budgetRequestDto);
+        if (budgetRequestDto.getBudgetStartDate() != budgetRequestDto.getBudgetEndDate()){
+            throw new InvalidRequestException("Start date and end date must be the same for daily budget");
+        }
+        this.processBudgetPeriodUpdate(budgetRequestDto, budget);
+
+    }
+
+    private void processBudgetPeriodUpdate(UpdateBudgetRequestDto budgetRequestDto, Budget budget) {
+        budget.setBudgetPeriod(BudgetPeriod.valueOf(budgetRequestDto.getBudgetPeriod()));
+//        budget.setBudgetStartDate(budgetRequestDto.getBudgetStartDate());
+//        budget.setBudgetEndDate(budgetRequestDto.setBudgetEndDate());
+    }
+
+    private void validateDate(UpdateBudgetRequestDto budgetRequestDto) {
+        if(budgetRequestDto.getBudgetStartDate() == null || budgetRequestDto.getBudgetEndDate() == null) {
+            throw new InvalidRequestException("Start and end date are required for daily budget");
+        }
+    }
 
 }

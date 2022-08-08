@@ -1,6 +1,6 @@
 package com.decagon.decapay.populator;
 
-import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
