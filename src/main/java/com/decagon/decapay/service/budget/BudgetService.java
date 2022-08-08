@@ -20,6 +20,6 @@ public interface BudgetService {
     Page<BudgetResponseDto> getBudgets(int pageSize, int pageNo, List<SearchCriteria> searchCriterias);
 
     ViewBudgetDto viewBudgetDetails(Long budgetId);
-    IdResponseDto updateBudget(Long userId, Long budgetId, UpdateBudgetRequestDto budgetRequestDto);
+    IdResponseDto updateBudget(Long budgetId, UpdateBudgetRequestDto budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler);
 
 }

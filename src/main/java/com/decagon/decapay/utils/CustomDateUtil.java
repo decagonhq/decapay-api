@@ -4,14 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
 import java.time.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.WeekFields;
 import java.util.Date;
-import java.util.Locale;
 
 @Slf4j
 public class CustomDateUtil {
@@ -122,35 +116,6 @@ public class CustomDateUtil {
             log.error("Cannot string to date",e);
             return null;
         }
-    }
-
-    public static LocalDateTime getDateFromWeek(short year, short month, short week, short dayOfWeek) {
-        // FIXME: 05/08/2022
-        WeekFields weekFields = WeekFields.of(Locale.ENGLISH);
-
-        return LocalDateTime.now()
-                .with(weekFields.dayOfWeek(), dayOfWeek)
-                .with(weekFields.weekOfYear(), week)
-                .withMonth(month)
-                .withYear(year)
-                .atZone(ZoneId.of("UTC")).toLocalDateTime();
-    }
-
-    //TODO: Add comments
-    public static LocalDateTime getDateFromMonth(short year, short month, TemporalAdjuster adjuster) {
-        return LocalDate.now()
-                .withMonth(month)
-                .withYear(year)
-                .with(adjuster)
-                .atStartOfDay();
-    }
-
-    //TODO: Add comments
-    public static LocalDateTime getDateFromYear(short year, TemporalAdjuster adjuster) {
-        return LocalDate.now()
-                .withYear(year)
-                .with(adjuster)
-                .atStartOfDay();
     }
 
 }

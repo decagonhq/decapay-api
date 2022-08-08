@@ -1,38 +1,25 @@
 package com.decagon.decapay.integration.budget;
 
-<<<<<<< HEAD
 
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
-import com.decagon.decapay.model.budget.BudgetPeriod;
-import com.decagon.decapay.model.user.UserStatus;
-import com.decagon.decapay.model.budget.Budget;
-import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.repositories.user.UserRepository;
-import com.decagon.decapay.security.CustomUserDetailsService;
-import com.decagon.decapay.utils.CustomDateUtil;
-import com.decagon.decapay.security.JwtUtil;
-import com.decagon.decapay.utils.TestModels;
-import com.decagon.decapay.utils.extensions.DBCleanerExtension;
-import org.junit.jupiter.api.BeforeEach;
-import com.decagon.decapay.model.budget.BudgetState;
-import com.decagon.decapay.repositories.budget.BudgetRepository;
-import org.hamcrest.Matchers;
-=======
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetLineItem;
+import com.decagon.decapay.model.budget.BudgetState;
 import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.payloads.request.budget.UpdateBudgetRequestDto;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
+import com.decagon.decapay.security.CustomUserDetailsService;
+import com.decagon.decapay.security.JwtUtil;
+import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.TestUtils;
-import com.decagon.decapay.utils.UserDetails;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
-import org.junit.jupiter.api.BeforeAll;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
->>>>>>> e263b2f (feat: Edit Budget)
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,53 +29,37 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-<<<<<<< HEAD
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
-
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.Currency;
 import java.util.Locale;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
-
-
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-=======
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.BUDGET_UPDATED_SUCCESSFULLY;
-import static com.decagon.decapay.enumTypes.BudgetPeriod.ANNUAL;
-import static com.decagon.decapay.enumTypes.BudgetPeriod.MONTHLY;
-import static com.decagon.decapay.utils.CustomDateUtil.getDateFromMonth;
-import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
+import static com.decagon.decapay.model.budget.BudgetPeriod.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
->>>>>>> e263b2f (feat: Edit Budget)
+
+
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @ExtendWith(DBCleanerExtension.class)
-<<<<<<< HEAD
 public class BudgetTest {
 
     @Value("${api.basepath-api}")
@@ -113,34 +84,10 @@ public class BudgetTest {
 
     @BeforeEach
     public void runBeforeAllTestMethods() throws Exception {
-=======
-class BudgetTest {
-
-    @Value("${api.basepath-user}")
-    private String path;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private BudgetRepository repository;
-
-    @Autowired
-    private UserDetails userDetails;
-
-    private HttpHeaders headers;
-
-    @BeforeEach
-    public void setUpBeforeEach() {
->>>>>>> e263b2f (feat: Edit Budget)
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
     }
 
-<<<<<<< HEAD
     public void setUpAuthUser(User user){
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
         String token = jwtUtil.generateToken(userDetails);
@@ -154,7 +101,7 @@ class BudgetTest {
         budget.setProjectedAmount(BigDecimal.valueOf(400000));
         budget.setBudgetStartDate(startDate);
         budget.setBudgetEndDate(endDate);
-        budget.setBudgetPeriod(BudgetPeriod.ANNUAL);
+        budget.setBudgetPeriod(ANNUAL);
         return budget;
     }
 
@@ -162,21 +109,20 @@ class BudgetTest {
     private void setAuthHeader(User user){
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
         String token = jwtUtil.generateToken(userDetails);
-=======
-    @BeforeAll
-    public void setup() {
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + token);
     }
 
-    private void buildHeader(String email) {
-        String token = userDetails.getLoggedInToken(email);
->>>>>>> e263b2f (feat: Edit Budget)
+    private void buildHeader(String email){
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+        String token = jwtUtil.generateToken(userDetails);
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + token);
     }
 
     @Test
-<<<<<<< HEAD
     void shouldReturn404WhenViewBudgetAndBudgetNotExist() throws Exception {
 
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
@@ -187,47 +133,10 @@ class BudgetTest {
         setAuthHeader(user);;
 
         this.mockMvc.perform(get(path + "/budgets/{budgetId}", 2).headers(headers))
-=======
-    void shouldThrow403ForbiddenWhenTryingToUpdateBudgetAndUserIsNotSignedIn() throws Exception {
-        //arrange
-        User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
-        user = this.userRepository.save(user);
-
-        Budget budget = TestModels.budget(user, MONTHLY, LocalDateTime.now(), LocalDateTime.now().plusMonths(1));
-        budget = this.repository.save(budget);
-
-        //input
-        UpdateBudgetRequestDto dto = UpdateBudgetRequestDto
-                .builder()
-                .build();
-        //act
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.put(path + "/{userId}/budget/{budgetId}", user.getId(), budget.getId()).content(TestUtils.asJsonString(dto))
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void shouldThrow404NotFoundWhenTryingToUpdateBudgetAndBudgetDoesNotExist() throws Exception {
-        //arrange
-        User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
-        user = this.userRepository.save(user);
-
-        //input
-        UpdateBudgetRequestDto dto = UpdateBudgetRequestDto
-                .builder()
-                .build();
-        //act
-        buildHeader(user.getEmail());
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.put(path + "/{userId}/budget/{budgetId}", user.getId(), 0L).content(TestUtils.asJsonString(dto))
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
->>>>>>> e263b2f (feat: Edit Budget)
                 .andExpect(status().isNotFound());
     }
 
     @Test
-<<<<<<< HEAD
     void shouldReturn400InvalidRequestWhenAUserViewBudgetUserDidNotCreate() throws Exception {
 
         User user = TestModels.user("ola", "dip", "o@b.com",
@@ -238,7 +147,7 @@ class BudgetTest {
         LocalDate today = LocalDate.now();
         budget.setTitle("Transportation Budget");
         budget.setNotificationThreshold("Notification Trashold");
-        budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
+        budget.setBudgetPeriod(MONTHLY);
         budget.setBudgetStartDate(today);
         budget.setBudgetEndDate(today.plusWeeks(3));
 
@@ -269,7 +178,7 @@ class BudgetTest {
         Budget budget = new Budget();
         budget.setTitle("Transportation Budget");
         budget.setNotificationThreshold("Notification Trashold");
-        budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
+        budget.setBudgetPeriod(MONTHLY);
         budget.setBudgetStartDate(today);
         budget.setBudgetEndDate(today.plusWeeks(3));
 
@@ -327,7 +236,7 @@ class BudgetTest {
         budget.setBudgetStartDate(LocalDate.now().minusDays(1));
         budget.setBudgetEndDate(LocalDate.MAX);
         budget.setUser(user);
-        budget.setBudgetPeriod(BudgetPeriod.ANNUAL);
+        budget.setBudgetPeriod(ANNUAL);
         budgetRepository.save(budget);
 
         Budget budget1 = new Budget();
@@ -337,7 +246,7 @@ class BudgetTest {
         budget1.setBudgetStartDate(LocalDate.now());
         budget1.setBudgetEndDate(LocalDate.MAX);
         budget1.setUser(user);
-        budget1.setBudgetPeriod(BudgetPeriod.ANNUAL);
+        budget1.setBudgetPeriod(ANNUAL);
         budgetRepository.save(budget1);
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername("o2g@gmail.com");
@@ -362,7 +271,7 @@ class BudgetTest {
                 .andExpect(jsonPath("$.data.content[0].displayTotalAmountSpentSoFar").value(currency.getSymbol(locale) + "200,000.00"))
                 .andExpect(jsonPath("$.data.content[0].projectedAmount").value(400000.00))
                 .andExpect(jsonPath("$.data.content[0].displayProjectedAmount").value(currency.getSymbol(locale) + "400,000.00"))
-                .andExpect(jsonPath("$.data.content[0].period").value(BudgetPeriod.ANNUAL.name()))
+                .andExpect(jsonPath("$.data.content[0].period").value(ANNUAL.name()))
                 .andExpect(jsonPath("$.data.content[0].percentageSpentSoFar").value(50.00))
                 .andExpect(jsonPath("$.data.content[0].displayPercentageSpentSoFar").value("50.0%"));
     }
@@ -415,7 +324,7 @@ class BudgetTest {
         budget.setBudgetStartDate(LocalDate.now());
         budget.setBudgetEndDate(LocalDate.MAX);
         budget.setUser(user);
-        budget.setBudgetPeriod(BudgetPeriod.ANNUAL);
+        budget.setBudgetPeriod(ANNUAL);
         budgetRepository.save(budget);
 
 
@@ -434,7 +343,7 @@ class BudgetTest {
         budget2.setBudgetStartDate(LocalDate.now());
         budget2.setBudgetEndDate(LocalDate.now().plusDays(30));
         budget2.setUser(user2);
-        budget2.setBudgetPeriod(BudgetPeriod.ANNUAL);
+        budget2.setBudgetPeriod(ANNUAL);
         budgetRepository.save(budget2);
 
         Budget budget3 = new Budget();
@@ -444,7 +353,7 @@ class BudgetTest {
         budget3.setBudgetStartDate(LocalDate.now());
         budget3.setBudgetEndDate(LocalDate.MAX);
         budget3.setUser(user2);
-        budget3.setBudgetPeriod(BudgetPeriod.ANNUAL);
+        budget3.setBudgetPeriod(ANNUAL);
         budgetRepository.save(budget3);
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername("o5g@gmail.com");
@@ -498,7 +407,7 @@ class BudgetTest {
         budget.setBudgetStartDate(LocalDate.now().minusDays(30));
         budget.setBudgetEndDate(LocalDate.now().minusDays(2));
         budget.setUser(user);
-        budget.setBudgetPeriod(BudgetPeriod.ANNUAL);
+        budget.setBudgetPeriod(ANNUAL);
         budgetRepository.save(budget);
 
 
@@ -708,45 +617,45 @@ class BudgetTest {
 
     @Test
     void shouldViewBudgetDetailsSuccessfully() throws Exception {
-            Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
-            Currency currency = AppConstants.DEFAULT_CURRENCY;
+        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
+        Currency currency = AppConstants.DEFAULT_CURRENCY;
 
-            User user = TestModels.user("ola", "dip", "ola@gmail.com",
-                    passwordEncoder.encode("password"), "08067644805");
-            user.setUserStatus(UserStatus.ACTIVE);
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
 
-            LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now();
 
-            Budget budget = new Budget();
-            budget.setTitle("Transportation Budget");
-            budget.setNotificationThreshold("Notification Trashold");
-            budget.setBudgetPeriod(BudgetPeriod.MONTHLY);
-            budget.setBudgetStartDate(today);
-            budget.setBudgetEndDate(today.plusWeeks(3));
-            budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
-            budget.setProjectedAmount(BigDecimal.valueOf(5000));
+        Budget budget = new Budget();
+        budget.setTitle("Transportation Budget");
+        budget.setNotificationThreshold("Notification Trashold");
+        budget.setBudgetPeriod(MONTHLY);
+        budget.setBudgetStartDate(today);
+        budget.setBudgetEndDate(today.plusWeeks(3));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
+        budget.setProjectedAmount(BigDecimal.valueOf(5000));
 
-            user.addBudget(budget);
-            userRepository.save(user);
+        user.addBudget(budget);
+        userRepository.save(user);
 
-            setAuthHeader(user);;
+        setAuthHeader(user);;
 
-            this.mockMvc.perform(get(path + "/budgets/{budgetId}", budget.getId()).headers(headers))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.data.projectedAmount").value(5000.00))
-                    .andExpect(jsonPath("$.data.displayProjectedAmount").value(currency.getSymbol(locale) + "5,000.00"))
-                    .andExpect(jsonPath("$.data.notificationThreshold").value("Notification Trashold"))
-                    .andExpect(jsonPath("$.data.title").value("Transportation Budget"))
-                    .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                    .andExpect(jsonPath("$.data.displayStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
-                    .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                    .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
-                    .andExpect(jsonPath("$.data.totalAmountSpentSoFar").value(2500.00))
-                    .andExpect(jsonPath("$.data.displayTotalAmountSpentSoFar").value(currency.getSymbol(locale) + "2,500.00"))
-                    .andExpect(jsonPath("$.data.percentageSpentSoFar").value(50.0))
-                    .andExpect(jsonPath("$.data.displayPercentageSpentSoFar").value("50.0%"))
-                    .andExpect(jsonPath("$.data.budgetPeriod").value(BudgetPeriod.MONTHLY.name()));
-        }
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}", budget.getId()).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.projectedAmount").value(5000.00))
+                .andExpect(jsonPath("$.data.displayProjectedAmount").value(currency.getSymbol(locale) + "5,000.00"))
+                .andExpect(jsonPath("$.data.notificationThreshold").value("Notification Trashold"))
+                .andExpect(jsonPath("$.data.title").value("Transportation Budget"))
+                .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.displayStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                .andExpect(jsonPath("$.data.totalAmountSpentSoFar").value(2500.00))
+                .andExpect(jsonPath("$.data.displayTotalAmountSpentSoFar").value(currency.getSymbol(locale) + "2,500.00"))
+                .andExpect(jsonPath("$.data.percentageSpentSoFar").value(50.0))
+                .andExpect(jsonPath("$.data.displayPercentageSpentSoFar").value("50.0%"))
+                .andExpect(jsonPath("$.data.budgetPeriod").value(MONTHLY.name()));
+    }
 
 
     @Test
@@ -818,37 +727,42 @@ class BudgetTest {
                 .andExpect(jsonPath("$.data.content.size()").value(2))
                 .andExpect(jsonPath("$.data.content[*].id", Matchers.containsInRelativeOrder(budget3.getId().intValue(), budget4.getId().intValue())));
     }
-=======
+
+    @Test
     void shouldThrowInvalidRequestWhenTryingToUpdateBudgetAndBudgetAmountDoesNotEqualLineItemsTotalAmount() throws Exception {
         //arrange
         User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
         user = this.userRepository.save(user);
 
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(200), LocalDateTime.now());
+        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.now());
 
-        BudgetLineItem lineItem = TestModels.budgetLineItem(Set.of(expense1), BigDecimal.valueOf(250), BigDecimal.valueOf(200));
+        BudgetLineItem lineItem = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+        lineItem.addExpense(expense1);
 
 
-        Budget budget = TestModels.budget(user, MONTHLY, LocalDateTime.now(), LocalDateTime.now().plusMonths(1));
+        Budget budget = TestModels.budget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
         budget.setTitle("title");
-        budget.setBudgetPeriod(MONTHLY);
         budget.setBudgetLineItems(Set.of(lineItem));
-        budget = this.repository.save(budget);
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
+        budget = this.budgetRepository.save(budget);
+
+        YearMonth ym = YearMonth.from(Instant.now().atZone(ZoneId.of("UTC")));
 
         //input
-        UpdateBudgetRequestDto dto = UpdateBudgetRequestDto
-                .builder()
-                .title("New Title")
-                .description("New Description")
-                .budgetPeriod(String.valueOf(MONTHLY))
-                .projectedAmount(BigDecimal.valueOf(250))
-                .totalAmountSpentSoFar(BigDecimal.valueOf(300))
-                .notificationThreshold("50")
-                .build();
+        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+                dto.setTitle("New Title");
+                dto.setDescription("New Description");
+                dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
+                dto.setAmount(BigDecimal.valueOf(300));
+                dto.setPeriod(ANNUAL.name());
+        dto.setMonth((short) ym.getMonthValue());
+        dto.setYear((short) ym.getYear());
         //act
         buildHeader(user.getEmail());
         this.mockMvc
-                .perform(MockMvcRequestBuilders.put(path + "/{userId}/budget/{budgetId}", user.getId(), budget.getId()).content(TestUtils.asJsonString(dto))
+                .perform(put(path + "/budgets/{budgetId}", budget.getId()).content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -859,33 +773,36 @@ class BudgetTest {
         User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
         user = this.userRepository.save(user);
 
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(200), LocalDateTime.now().minusMonths(4));
+        YearMonth ym = YearMonth.from(Instant.now().atZone(ZoneId.of("UTC")));
 
-        BudgetLineItem lineItem = TestModels.budgetLineItem(Set.of(expense1), BigDecimal.valueOf(250), BigDecimal.valueOf(200));
+        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 3, 1));
+
+        BudgetLineItem lineItem = TestModels.budgetLineItem( BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+        lineItem.addExpense(expense1);
 
 
-        Budget budget = TestModels.budget(user, ANNUAL, LocalDateTime.now().minusYears(1), LocalDateTime.now());
+        Budget budget = TestModels.budget( MONTHLY, LocalDate.of(2022, 2, 1), LocalDate.of(2022, 3, 1));
+        budget.setUser(user);
         budget.setTitle("title");
-        budget.setBudgetPeriod(MONTHLY);
         budget.setBudgetLineItems(Set.of(lineItem));
-        budget = this.repository.save(budget);
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
+        budget = this.budgetRepository.save(budget);
+
 
         //input
-        UpdateBudgetRequestDto dto = UpdateBudgetRequestDto
-                .builder()
-                .title("New Title")
-                .description("New Description")
-                .budgetPeriod(String.valueOf(MONTHLY))
-                .month((short) LocalDateTime.now().plusMonths(1).getMonthValue())
-                .year((short) LocalDateTime.now().getYear())
-                .projectedAmount(BigDecimal.valueOf(250))
-                .totalAmountSpentSoFar(BigDecimal.valueOf(300))
-                .notificationThreshold("50")
-                .build();
+        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+        dto.setTitle("New Title");
+        dto.setDescription("New Description");
+        dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
+        dto.setAmount(BigDecimal.valueOf(300));
+        dto.setPeriod(MONTHLY.name());
+        dto.setMonth((short) ym.plusMonths(1).getMonthValue());
+        dto.setYear((short) ym.getYear());
         //act
         buildHeader(user.getEmail());
         this.mockMvc
-                .perform(MockMvcRequestBuilders.put(path + "/{userId}/budget/{budgetId}", user.getId(), budget.getId()).content(TestUtils.asJsonString(dto))
+                .perform(put(path + "/budgets/{budgetId}", budget.getId()).content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -896,45 +813,78 @@ class BudgetTest {
         User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
         user = this.userRepository.save(user);
 
-        short currentYear = (short) LocalDateTime.now().getYear();
-        short currentMonth = (short) LocalDateTime.now().getMonthValue();
+        YearMonth ym = YearMonth.from(Instant.now().atZone(ZoneId.of("UTC")));
 
-        var startDate = getDateFromMonth(currentYear, currentMonth, firstDayOfMonth());
-        var endDate = getDateFromMonth(currentYear, currentMonth, lastDayOfMonth());
+        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.now().plusDays(3));
 
-        System.out.println("@@@@@@@@@ test month startDate: " + startDate);
-        System.out.println("@@@@@@@@@ test month endDate: " + endDate);
+        BudgetLineItem lineItem = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+        lineItem.addExpense(expense1);
 
 
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(200), startDate.plusDays(5));
-//        Expenses expense2 = TestModels.expenses(BigDecimal.valueOf(200), endDate.minusDays(3));
-        System.out.println("@@@@@@@@@ test expense transanction date: " + expense1.getTransactionDate());
-
-        BudgetLineItem lineItem = TestModels.budgetLineItem(Set.of(expense1), BigDecimal.valueOf(250), BigDecimal.valueOf(200));
-
-
-        Budget budget = TestModels.budget(user, MONTHLY, startDate, endDate);
+        Budget budget = TestModels.budget(MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
         budget.setTitle("title");
-        budget.setBudgetPeriod(MONTHLY);
-        budget.setBudgetLineItems(Set.of(lineItem));
-        budget = this.repository.save(budget);
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
+        budget.addBudgetLineItem(lineItem);
+        budget = this.budgetRepository.save(budget);
 
         //input
-        UpdateBudgetRequestDto dto = UpdateBudgetRequestDto
-                .builder()
-                .title("New Title")
-                .description("New Description")
-                .budgetPeriod(String.valueOf(ANNUAL))
-                .month(currentMonth)
-                .year(currentYear)
-                .projectedAmount(BigDecimal.valueOf(250))
-                .totalAmountSpentSoFar(BigDecimal.valueOf(300))
-                .notificationThreshold("50")
-                .build();
+        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+        dto.setTitle("New Title");
+        dto.setDescription("New Description");
+        dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
+        dto.setAmount(BigDecimal.valueOf(300));
+        dto.setPeriod(ANNUAL.name());
+        dto.setMonth((short) ym.getMonthValue());
+        dto.setYear((short) ym.getYear());
         //act
         buildHeader(user.getEmail());
         this.mockMvc
-                .perform(MockMvcRequestBuilders.put(path + "/{userId}/budget/{budgetId}", user.getId(), budget.getId()).content(TestUtils.asJsonString(dto))
+                .perform(put(path + "/budgets/{budgetId}", budget.getId()).content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(BUDGET_UPDATED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.id").value(budget.getId()));
+    }
+
+
+    @Test
+    void shouldUpdateWeeklyBudgetToMonthlyBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        YearMonth ym = YearMonth.from(Instant.now().atZone(ZoneId.of("UTC")));
+
+        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.now().plusDays(3));
+
+
+        BudgetLineItem lineItem = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+        lineItem.addExpense(expense1);
+
+
+        Budget budget = TestModels.budget(WEEKLY, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
+        budget.setTitle("title");
+        budget.setBudgetLineItems(Set.of(lineItem));
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
+        budget = this.budgetRepository.save(budget);
+
+        //input
+        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+        dto.setTitle("New Title");
+        dto.setDescription("New Description");
+        dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
+        dto.setAmount(BigDecimal.valueOf(300));
+        dto.setPeriod(MONTHLY.name());
+        dto.setMonth((short) ym.getMonthValue());
+        dto.setYear((short) ym.getYear());
+        //act
+        buildHeader(user.getEmail());
+        this.mockMvc
+                .perform(put(path + "/budgets/{budgetId}", budget.getId()).content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(BUDGET_UPDATED_SUCCESSFULLY))
@@ -942,121 +892,51 @@ class BudgetTest {
     }
 
     @Test
-    void shouldUpdateAnnualBudgetSuccessfully() throws Exception {
+    void shouldUpdateToCustomBudgetSuccessfully() throws Exception {
         //arrange
         User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
         user = this.userRepository.save(user);
 
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(200), LocalDateTime.now().plusDays(1));
+        YearMonth ym = YearMonth.from(Instant.now().atZone(ZoneId.of("UTC")));
 
-        BudgetLineItem lineItem = TestModels.budgetLineItem(Set.of(expense1), BigDecimal.valueOf(250), BigDecimal.valueOf(200));
+        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 3, 5));
+
+        BudgetLineItem lineItem = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+        lineItem.addExpense(expense1);
 
 
-        Budget budget = TestModels.budget(user, MONTHLY, LocalDateTime.now(), LocalDateTime.now().plusDays(30));
+        Budget budget = TestModels.budget(WEEKLY, LocalDate.of(2022, 3, 1), LocalDate.of(2022, 3, 7));
         budget.setTitle("title");
-        budget.setBudgetPeriod(MONTHLY);
-        budget.setBudgetLineItems(Set.of(lineItem));
-        budget = this.repository.save(budget);
+        budget.setUser(user);
+        budget.addBudgetLineItem(lineItem);
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
+        budget = this.budgetRepository.save(budget);
 
         //input
-        UpdateBudgetRequestDto dto = UpdateBudgetRequestDto
-                .builder()
-                .title("New Title")
-                .description("New Description")
-                .budgetPeriod(String.valueOf(MONTHLY))
-                .month((short) LocalDateTime.now().getMonthValue())
-                .year((short) LocalDateTime.now().getYear())
-                .projectedAmount(BigDecimal.valueOf(250))
-                .totalAmountSpentSoFar(BigDecimal.valueOf(300))
-                .notificationThreshold("50")
-                .build();
+        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+        dto.setTitle("New Title");
+        dto.setDescription("New Description");
+        dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
+        dto.setAmount(BigDecimal.valueOf(300));
+        dto.setPeriod(CUSTOM.name());
+        dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 4, 30), DateDisplayConstants.DATE_INPUT_FORMAT));
         //act
         buildHeader(user.getEmail());
         this.mockMvc
-                .perform(MockMvcRequestBuilders.put(path + "/{userId}/budget/{budgetId}", user.getId(), budget.getId()).content(TestUtils.asJsonString(dto))
+                .perform(put(path + "/budgets/{budgetId}", budget.getId()).content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(BUDGET_UPDATED_SUCCESSFULLY))
                 .andExpect(jsonPath("$.data.id").value(budget.getId()));
+
+        Budget updatedBudget = this.budgetRepository.findById(budget.getId()).get();
+        assertEquals(CUSTOM, updatedBudget.getBudgetPeriod());
+        assertEquals(LocalDate.of(2022, 1, 1), updatedBudget.getBudgetStartDate());
+        assertEquals(LocalDate.of(2022, 4, 30), updatedBudget.getBudgetEndDate());
+        assertEquals(dto.getTitle(), updatedBudget.getTitle());
+        assertEquals(dto.getDescription(), updatedBudget.getDescription());
     }
 
-    @Test
-    void shouldUpdateCustomBudgetSuccessfully() throws Exception {
-        //arrange
-        User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
-        user = this.userRepository.save(user);
-
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(200), LocalDateTime.now().plusDays(1));
-
-        BudgetLineItem lineItem = TestModels.budgetLineItem(Set.of(expense1), BigDecimal.valueOf(250), BigDecimal.valueOf(200));
-
-
-        Budget budget = TestModels.budget(user, MONTHLY, LocalDateTime.now(), LocalDateTime.now().plusDays(30));
-        budget.setTitle("title");
-        budget.setBudgetPeriod(MONTHLY);
-        budget.setBudgetLineItems(Set.of(lineItem));
-        budget = this.repository.save(budget);
-
-        //input
-        UpdateBudgetRequestDto dto = UpdateBudgetRequestDto
-                .builder()
-                .title("New Title")
-                .description("New Description")
-                .budgetPeriod(String.valueOf(MONTHLY))
-                .month((short) LocalDateTime.now().getMonthValue())
-                .year((short) LocalDateTime.now().getYear())
-                .projectedAmount(BigDecimal.valueOf(250))
-                .totalAmountSpentSoFar(BigDecimal.valueOf(300))
-                .notificationThreshold("50")
-                .build();
-        //act
-        buildHeader(user.getEmail());
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.put(path + "/{userId}/budget/{budgetId}", user.getId(), budget.getId()).content(TestUtils.asJsonString(dto))
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(BUDGET_UPDATED_SUCCESSFULLY))
-                .andExpect(jsonPath("$.data.id").value(budget.getId()));
-    }
-
-    @Test
-    void shouldUpdateWeeklyBudgetSuccessfully() throws Exception {
-        //arrange
-        User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
-        user = this.userRepository.save(user);
-
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(200), LocalDateTime.now().plusDays(1));
-
-        BudgetLineItem lineItem = TestModels.budgetLineItem(Set.of(expense1), BigDecimal.valueOf(250), BigDecimal.valueOf(200));
-
-
-        Budget budget = TestModels.budget(user, MONTHLY, LocalDateTime.now(), LocalDateTime.now().plusDays(30));
-        budget.setTitle("title");
-        budget.setBudgetPeriod(MONTHLY);
-        budget.setBudgetLineItems(Set.of(lineItem));
-        budget = this.repository.save(budget);
-
-        //input
-        UpdateBudgetRequestDto dto = UpdateBudgetRequestDto
-                .builder()
-                .title("New Title")
-                .description("New Description")
-                .budgetPeriod(String.valueOf(MONTHLY))
-                .month((short) LocalDateTime.now().getMonthValue())
-                .year((short) LocalDateTime.now().getYear())
-                .projectedAmount(BigDecimal.valueOf(250))
-                .totalAmountSpentSoFar(BigDecimal.valueOf(300))
-                .notificationThreshold("50")
-                .build();
-        //act
-        buildHeader(user.getEmail());
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.put(path + "/{userId}/budget/{budgetId}", user.getId(), budget.getId()).content(TestUtils.asJsonString(dto))
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(BUDGET_UPDATED_SUCCESSFULLY))
-                .andExpect(jsonPath("$.data.id").value(budget.getId()));
-    }
-
->>>>>>> e263b2f (feat: Edit Budget)
 }

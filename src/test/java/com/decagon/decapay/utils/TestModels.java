@@ -1,22 +1,15 @@
 package com.decagon.decapay.utils;
 
-<<<<<<< HEAD
 import com.decagon.decapay.model.auth.PasswordReset;
-import com.decagon.decapay.model.user.User;
-
-=======
-import com.decagon.decapay.enumTypes.BudgetPeriod;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetLineItem;
+import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.model.budget.Expenses;
-import com.decagon.decapay.model.password.PasswordReset;
 import com.decagon.decapay.model.user.User;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Collection;
+import java.time.LocalDate;
 import java.util.Set;
->>>>>>> e263b2f (feat: Edit Budget)
 
 public class TestModels {
 
@@ -41,11 +34,8 @@ public class TestModels {
         return passwordReset;
     }
 
-<<<<<<< HEAD
-=======
-    public static Budget budget(User user, BudgetPeriod period, LocalDateTime start, LocalDateTime end) {
+    public static Budget budget(BudgetPeriod period, LocalDate start, LocalDate end) {
         Budget budget = new Budget();
-        budget.setUser(user);
         budget.setTitle("Budget");
         budget.setBudgetPeriod(period);
         budget.setBudgetStartDate(start);
@@ -53,19 +43,17 @@ public class TestModels {
         return budget;
     }
 
-    public static Expenses expenses(BigDecimal amount, LocalDateTime transactionDate) {
+    public static Expenses expenses(BigDecimal amount, LocalDate transactionDate) {
         Expenses expenses = new Expenses();
         expenses.setAmount(amount);
         expenses.setTransactionDate(transactionDate);
         return expenses;
     }
 
-    public static BudgetLineItem budgetLineItem(Set<Expenses> expenses, BigDecimal projectedAmount, BigDecimal amountSpent) {
+    public static BudgetLineItem budgetLineItem(BigDecimal projectedAmount, BigDecimal amountSpent) {
         BudgetLineItem budgetLineItem = new BudgetLineItem();
-        budgetLineItem.setExpenses(expenses);
         budgetLineItem.setProjectedAmount(projectedAmount);
         budgetLineItem.setTotalAmountSpentSoFar(amountSpent);
         return budgetLineItem;
     }
->>>>>>> e263b2f (feat: Edit Budget)
 }

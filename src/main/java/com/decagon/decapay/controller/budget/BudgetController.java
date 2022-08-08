@@ -1,6 +1,7 @@
 package com.decagon.decapay.controller.budget;
 
 
+import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
 import com.decagon.decapay.DTO.SearchCriteria;
 import com.decagon.decapay.DTO.budget.BudgetResponseDto;
 import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
@@ -115,8 +116,10 @@ public class BudgetController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED),
             @ApiResponse(responseCode = "404", description = NOT_FOUND)})
     @Operation(summary = "Update Budget", description = "Update User Budget")
-    @PutMapping("/{userId}/budget/{budgetId}")
-    public ResponseEntity<ApiDataResponse<IdResponseDto>> updateBudget(@PathVariable Long userId, @PathVariable Long budgetId, @RequestBody UpdateBudgetRequestDto budgetRequestDto) {
-        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.updateBudget(userId, budgetId, budgetRequestDto), BUDGET_UPDATED_SUCCESSFULLY);
+    @PutMapping("/budgets/{budgetId}")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> updateBudget(@PathVariable Long budgetId, @RequestBody UpdateBudgetRequestDto budgetRequestDto) {
+        BudgetPeriodHandler budgetPeriodHandler = BudgetPeriodHandler.getHandler(budgetRequestDto.getPeriod());
+        this.validateRequest(budgetRequestDto, budgetPeriodHandler);
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.updateBudget(budgetId, budgetRequestDto, budgetPeriodHandler), BUDGET_UPDATED_SUCCESSFULLY);
     }
 }

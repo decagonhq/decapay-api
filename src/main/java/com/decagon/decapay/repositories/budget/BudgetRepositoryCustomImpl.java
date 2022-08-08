@@ -25,7 +25,7 @@ public class BudgetRepositoryCustomImpl implements BudgetRepositoryCustom{
 
     @Override
     public Page<BudgetResponseDto> findBudgetsByUserId(Pageable pageable, Long id, List<SearchCriteria> searchCriterias) {
-        StringBuilder resultQuery = new StringBuilder("select new com.decagon.decapay.dto.budget.BudgetResponseDto(b.id, b.title, b.totalAmountSpentSoFar, b.projectedAmount, b.budgetPeriod) " +
+        StringBuilder resultQuery = new StringBuilder("select new com.decagon.decapay.DTO.budget.BudgetResponseDto(b.id, b.title, b.totalAmountSpentSoFar, b.projectedAmount, b.budgetPeriod) " +
                 "from Budget b ");
         StringBuilder countQuery = new StringBuilder(" select count(*)  from Budget b ");
 

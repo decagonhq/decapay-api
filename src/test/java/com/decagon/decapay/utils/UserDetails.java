@@ -1,9 +1,10 @@
 package com.decagon.decapay.utils;
 
-import com.decagon.decapay.enumTypes.UserStatus;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
+import com.decagon.decapay.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

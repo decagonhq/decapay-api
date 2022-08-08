@@ -1,6 +1,6 @@
 package com.decagon.decapay.service.period;
 
-import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.service.budget.periodHandler.MonthPeriodHandler;
@@ -31,7 +31,7 @@ public class MonthPeriodTest {
     @InjectMocks
     MonthPeriodHandler monthPeriod;
 
-    static  CreateBudgetRequestDTO req(short month, short year){
+    static CreateBudgetRequestDTO req(short month, short year){
         CreateBudgetRequestDTO budgetRequest = new CreateBudgetRequestDTO();
         budgetRequest.setTitle("Title");
         budgetRequest.setAmount(BigDecimal.TEN);
