@@ -1,11 +1,8 @@
 package com.decagon.decapay.service.email;
 
 import com.decagon.decapay.config.email.EmailConfig;
-import com.decagon.decapay.payloads.request.email.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.util.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ByteArrayResource;

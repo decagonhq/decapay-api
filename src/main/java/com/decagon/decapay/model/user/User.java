@@ -1,7 +1,6 @@
 package com.decagon.decapay.model.user;
 
 
-import com.decagon.decapay.enumTypes.UserStatus;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;

@@ -1,9 +1,9 @@
 package com.decagon.decapay.populator;
 
-import com.decagon.decapay.dto.CreateBudgetRequestDTO;
-import com.decagon.decapay.enumTypes.BudgetPeriod;
+import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.model.budget.Budget;
-import com.decagon.decapay.service.budget.period.BudgetPeriodHandler;
+import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
-import com.decagon.decapay.service.UserService;
+import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -1,11 +1,11 @@
 package com.decagon.decapay.integration.auth;
 
 
-import com.decagon.decapay.dto.LoginDto;
-import com.decagon.decapay.model.password.PasswordReset;
+import com.decagon.decapay.dto.auth.LoginDto;
+import com.decagon.decapay.model.auth.PasswordReset;
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.payloads.request.auth.CreatePasswordRequestDto;
-import com.decagon.decapay.payloads.request.auth.VerifyPasswordResetCodeRequest;
+import com.decagon.decapay.dto.auth.CreatePasswordRequestDto;
+import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.TestModels;
@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 
 import static com.decagon.decapay.constants.AppConstants.*;
 import static com.decagon.decapay.constants.ResponseMessageConstants.PASSWORD_CREATED_SUCCESSFULLY;
-import static com.decagon.decapay.enumTypes.ResetCodeStatus.*;
+import static com.decagon.decapay.model.auth.ResetCodeStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

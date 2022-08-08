@@ -1,9 +1,9 @@
 package com.decagon.decapay.service.period;
 
-import com.decagon.decapay.dto.CreateBudgetRequestDTO;
-import com.decagon.decapay.enumTypes.BudgetPeriod;
+import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.exception.InvalidRequestException;
-import com.decagon.decapay.service.budget.period.MonthPeriodHandler;
+import com.decagon.decapay.service.budget.periodHandler.MonthPeriodHandler;
 import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.TestUtils;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,6 @@
 package com.decagon.decapay.model.budget;
 
 import com.decagon.decapay.constants.SchemaConstants;
-import com.decagon.decapay.enumTypes.BudgetPeriod;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
@@ -15,7 +14,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;

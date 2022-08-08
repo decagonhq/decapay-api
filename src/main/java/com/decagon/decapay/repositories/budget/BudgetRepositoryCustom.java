@@ -1,8 +1,7 @@
 package com.decagon.decapay.repositories.budget;
 
-import com.decagon.decapay.dto.BudgetResponseDto;
+import com.decagon.decapay.dto.budget.BudgetResponseDto;
 import com.decagon.decapay.dto.SearchCriteria;
-import com.decagon.decapay.model.budget.Budget;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

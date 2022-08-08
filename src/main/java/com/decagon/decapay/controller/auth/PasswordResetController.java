@@ -1,9 +1,9 @@
 package com.decagon.decapay.controller.auth;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.payloads.request.auth.CreatePasswordRequestDto;
-import com.decagon.decapay.payloads.request.auth.ForgotPasswordRequestDto;
-import com.decagon.decapay.payloads.request.auth.VerifyPasswordResetCodeRequest;
+import com.decagon.decapay.dto.auth.CreatePasswordRequestDto;
+import com.decagon.decapay.dto.auth.ForgotPasswordRequestDto;
+import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.service.auth.PasswordResetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
