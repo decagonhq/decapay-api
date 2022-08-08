@@ -1,7 +1,7 @@
 package com.decagon.decapay.integration.auth;
 
 
-import com.decagon.decapay.dto.LoginDto;
+import com.decagon.decapay.dto.auth.LoginDto;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 

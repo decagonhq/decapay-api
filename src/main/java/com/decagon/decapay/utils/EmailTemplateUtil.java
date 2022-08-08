@@ -2,7 +2,7 @@ package com.decagon.decapay.utils;
 
 
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.payloads.request.email.Email;
+import com.decagon.decapay.service.email.Email;
 import com.decagon.decapay.service.email.EmailService;
 import com.decagon.decapay.service.email.templateEngine.TemplateEngine;
 import lombok.RequiredArgsConstructor;

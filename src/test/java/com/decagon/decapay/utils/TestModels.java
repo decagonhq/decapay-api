@@ -1,6 +1,6 @@
 package com.decagon.decapay.utils;
 
-import com.decagon.decapay.model.password.PasswordReset;
+import com.decagon.decapay.model.auth.PasswordReset;
 import com.decagon.decapay.model.user.User;
 
 

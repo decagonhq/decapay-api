@@ -1,8 +1,8 @@
 package com.decagon.decapay.repositories.budget;
 
-import com.decagon.decapay.dto.BudgetResponseDto;
+import com.decagon.decapay.dto.budget.BudgetResponseDto;
 import com.decagon.decapay.dto.SearchCriteria;
-import com.decagon.decapay.enumTypes.BudgetState;
+import com.decagon.decapay.model.budget.BudgetState;
 import com.decagon.decapay.utils.RepositoryHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.EnumUtils;
@@ -14,7 +14,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class BudgetRepositoryCustomImpl implements BudgetRepositoryCustom{
@@ -26,7 +25,7 @@ public class BudgetRepositoryCustomImpl implements BudgetRepositoryCustom{
 
     @Override
     public Page<BudgetResponseDto> findBudgetsByUserId(Pageable pageable, Long id, List<SearchCriteria> searchCriterias) {
-        StringBuilder resultQuery = new StringBuilder("select new com.decagon.decapay.dto.BudgetResponseDto(b.id, b.title, b.totalAmountSpentSoFar, b.projectedAmount, b.budgetPeriod) " +
+        StringBuilder resultQuery = new StringBuilder("select new com.decagon.decapay.dto.budget.BudgetResponseDto(b.id, b.title, b.totalAmountSpentSoFar, b.projectedAmount, b.budgetPeriod) " +
                 "from Budget b ");
         StringBuilder countQuery = new StringBuilder(" select count(*)  from Budget b ");
 

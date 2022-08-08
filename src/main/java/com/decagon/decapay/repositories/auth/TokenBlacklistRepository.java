@@ -1,6 +1,6 @@
 package com.decagon.decapay.repositories.auth;
 
-import com.decagon.decapay.model.user.TokenBlacklist;
+import com.decagon.decapay.model.auth.TokenBlacklist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

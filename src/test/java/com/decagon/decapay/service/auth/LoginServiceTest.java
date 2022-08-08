@@ -1,10 +1,9 @@
 package com.decagon.decapay.service.auth;
 
-import com.decagon.decapay.dto.LoginDto;
+import com.decagon.decapay.dto.auth.LoginDto;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.security.CustomUserDetailsService;
-import com.decagon.decapay.service.LoginService;
-import com.decagon.decapay.utils.JwtUtil;
+import com.decagon.decapay.security.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -35,7 +34,7 @@ class LoginServiceTest {
     private CustomUserDetailsService signInService;
 
     @InjectMocks
-    private LoginService loginService;
+    private LoginServiceImpl loginService;
 
     @Test
     void authenticate() throws Exception {

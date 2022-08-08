@@ -1,8 +1,8 @@
 package com.decagon.decapay.service.auth;
 
-import com.decagon.decapay.payloads.request.auth.CreatePasswordRequestDto;
-import com.decagon.decapay.payloads.request.auth.ForgotPasswordRequestDto;
-import com.decagon.decapay.payloads.request.auth.VerifyPasswordResetCodeRequest;
+import com.decagon.decapay.dto.auth.CreatePasswordRequestDto;
+import com.decagon.decapay.dto.auth.ForgotPasswordRequestDto;
+import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;
 
 public interface PasswordResetService {
     void publishForgotPassword(ForgotPasswordRequestDto forgotPasswordRequestDto, String deviceId);

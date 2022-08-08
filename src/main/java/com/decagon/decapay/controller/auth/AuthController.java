@@ -2,12 +2,12 @@ package com.decagon.decapay.controller.auth;
 
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.dto.AuthResponse;
-import com.decagon.decapay.dto.LoginDto;
-import com.decagon.decapay.dto.SignOutRequestDto;
+import com.decagon.decapay.dto.auth.AuthResponse;
+import com.decagon.decapay.dto.auth.LoginDto;
+import com.decagon.decapay.dto.auth.SignOutRequestDto;
 import com.decagon.decapay.repositories.user.UserRepository;
-import com.decagon.decapay.service.LoginService;
-import com.decagon.decapay.service.auth.TokenBlacklistService;
+import com.decagon.decapay.service.auth.LoginServiceImpl;
+import com.decagon.decapay.service.auth.TokenBlacklistServiceImpl;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,8 +32,8 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 @RestController
 public class AuthController {
 
-    private final LoginService loginService;
-    private final TokenBlacklistService tokenBlacklistService;
+    private final LoginServiceImpl loginService;
+    private final TokenBlacklistServiceImpl tokenBlacklistService;
     private final UserRepository userRepository;
 
     @SecurityRequirements
@@ -57,7 +57,7 @@ public class AuthController {
     @Operation(summary = "Sign out user successfully")
     @PostMapping("/signout")
     public ResponseEntity<ApiDataResponse<AuthResponse>> signOut(@RequestBody SignOutRequestDto signOutRequestDto){
-        tokenBlacklistService.blackListToken(signOutRequestDto.getToken());
+        loginService.logOut(signOutRequestDto);
         return ApiResponseUtil.response(HttpStatus.OK,"Sign Out successfully");
     }
 }

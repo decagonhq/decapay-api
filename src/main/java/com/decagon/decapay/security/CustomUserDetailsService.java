@@ -1,7 +1,7 @@
 package com.decagon.decapay.security;
 
 
-import com.decagon.decapay.enumTypes.UserStatus;
+import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 
