@@ -85,7 +85,7 @@ public class BudgetController {
                     , description = """
                     past | current | upcomming  \s
 
-                    When set to 'past', past budgets will be listed, when set to 'upcomming', will list future budgets, when 'current', only active budgets wil be listed, when null all budgets will be listed. Default to empty value"""
+                    When set to 'past', past budgets will be listed, when set to 'upcomming', will list future budgets, when 'current', only active budgets wil be listed, when empty or not present all budgets will be listed. Default to empty value"""
                     , name = "state"
                     , content = @Content(schema = @Schema(type = "string", defaultValue = "")))
     })
