@@ -796,7 +796,7 @@ public class BudgetTest {
         dto.setDescription("New Description");
         dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         dto.setAmount(BigDecimal.valueOf(300));
-        dto.setPeriod(MONTHLY.name());
+        dto.setPeriod(WEEKLY.name());
         dto.setMonth((short) ym.plusMonths(1).getMonthValue());
         dto.setYear((short) ym.getYear());
         //act
