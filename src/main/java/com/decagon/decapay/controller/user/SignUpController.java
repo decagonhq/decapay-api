@@ -7,6 +7,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.USER_SUCCES
 import javax.validation.Valid;
 
 import com.decagon.decapay.dto.UserDTO;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -38,8 +39,8 @@ public class SignUpController {
 
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "201", description = USER_SUCCESSFULLY_REGISTERED),
-		@ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-		@ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS) })
+		@ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+		@ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS,content = @Content) })
 	@Operation(summary = "Register user", description = "Register new user account with all mandatory fields.")
 	@PostMapping("/register")
 	public ResponseEntity<ApiDataResponse<User>> registerUser(@Valid @RequestBody UserDTO userRegistrationRequest) {

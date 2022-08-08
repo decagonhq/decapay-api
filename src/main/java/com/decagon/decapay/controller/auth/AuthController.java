@@ -10,6 +10,7 @@ import com.decagon.decapay.service.auth.LoginServiceImpl;
 import com.decagon.decapay.service.auth.TokenBlacklistServiceImpl;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -39,8 +40,8 @@ public class AuthController {
     @SecurityRequirements
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = SIGN_IN_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Validate User credentials to authenticate sign-in and generate token")
     @PostMapping("/signin")
     public ResponseEntity<ApiDataResponse<AuthResponse>> signIn(@Validated @RequestBody LoginDto loginDto) throws Exception {
@@ -52,8 +53,8 @@ public class AuthController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = SIGN_OUT_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Sign out user successfully")
     @PostMapping("/signout")
     public ResponseEntity<ApiDataResponse<AuthResponse>> signOut(@RequestBody SignOutRequestDto signOutRequestDto){

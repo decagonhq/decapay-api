@@ -42,8 +42,8 @@ public class BudgetController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = BUDGET_SUCCESSFULLY_CREATED),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "403", description = REQUEST_FORBIDDEN)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "403", description = REQUEST_FORBIDDEN,content = @Content)})
     @Operation(summary = "Create budget", description = "Create new user budget for with all mandatory fields.")
     @PostMapping("/budgets")
     public ResponseEntity<ApiDataResponse<CreateBudgetResponseDTO>> createBudget(@Valid @RequestBody CreateBudgetRequestDTO createBudgetRequest) {
@@ -58,8 +58,8 @@ public class BudgetController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = RESOURCE_RETRIEVED_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "View Budget", description = "View Budget Details")
     @GetMapping("/budgets/{budgetId}")
     public ResponseEntity<ApiDataResponse<ViewBudgetDto>> fetchBudgetDetails(@PathVariable Long budgetId) {
@@ -69,8 +69,8 @@ public class BudgetController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = RETURN_BUDGET_LISTS_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Returns user's budget list successfully")
     @Parameters({
             @Parameter(in = ParameterIn.QUERY
