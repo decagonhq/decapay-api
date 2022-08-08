@@ -37,7 +37,7 @@ public class CreateBudgetRequestDTO {
 	@Schema(description = "Budget start date in format "+ DateDisplayConstants.DATE_INPUT_FORMAT +". Required for CUSTOM,DAILY,WEEKLY period")
 	private String budgetStartDate;
 
-	@Schema(description = "Budget end date in format "+DateDisplayConstants.DATE_INPUT_FORMAT+".  Required for CUSTOM,DAILY period, Same value for DAILY")
+	@Schema(description = "Budget end date in format "+DateDisplayConstants.DATE_INPUT_FORMAT+".  Required for CUSTOM,DAILY period, Same value as budget start date for DAILY")
 	private String budgetEndDate;
 
 	@Schema(description = "budget description")
