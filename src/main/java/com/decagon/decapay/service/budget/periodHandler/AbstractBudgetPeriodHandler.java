@@ -6,8 +6,8 @@ import com.decagon.decapay.exception.InvalidRequestException;
 
 import java.time.LocalDate;
 
-public abstract class BudgetPeriodHandler {
-    public static BudgetPeriodHandler getHandler(String period) {
+public abstract class AbstractBudgetPeriodHandler {
+    public static AbstractBudgetPeriodHandler getHandler(String period) {
 
         BudgetPeriod budgetPeriod = BudgetPeriod.valueOf(period);
         switch (budgetPeriod) {

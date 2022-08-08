@@ -8,7 +8,7 @@ import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
 import com.decagon.decapay.dto.budget.ViewBudgetDto;
 import com.decagon.decapay.service.budget.BudgetService;
-import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
+import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,7 +48,7 @@ public class BudgetController {
     @PostMapping("/budgets")
     public ResponseEntity<ApiDataResponse<CreateBudgetResponseDTO>> createBudget(@Valid @RequestBody CreateBudgetRequestDTO createBudgetRequest) {
         //todo: use strategy
-        BudgetPeriodHandler budgetPeriodHandler = BudgetPeriodHandler.getHandler(createBudgetRequest.getPeriod());
+        AbstractBudgetPeriodHandler budgetPeriodHandler = AbstractBudgetPeriodHandler.getHandler(createBudgetRequest.getPeriod());
         this.validateRequest(createBudgetRequest, budgetPeriodHandler);
 
         return ApiResponseUtil.response(HttpStatus.CREATED, budgetService.createBudget(createBudgetRequest, budgetPeriodHandler),
@@ -103,7 +103,7 @@ public class BudgetController {
     }
 
 
-    private void validateRequest(CreateBudgetRequestDTO createBudgetRequest, BudgetPeriodHandler budgetPeriodHandler) {
+    private void validateRequest(CreateBudgetRequestDTO createBudgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
         budgetPeriodHandler.validateRequest(createBudgetRequest);
     }
 

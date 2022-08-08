@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.INVALID_REQUEST;
 
-public class AnnualPeriodHandler extends BudgetPeriodHandler {
+public class AnnualPeriodHandler extends AbstractBudgetPeriodHandler {
 
     /**
      * if current year, then startdate is current date and enddate last date of year
