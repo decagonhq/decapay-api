@@ -40,9 +40,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String token = extractBearerToken(request);
-            if (StringUtils.isNotEmpty(token) && !tokenBlacklistService.isTokenBlacklisted(token) && SecurityContextHolder.getContext().getAuthentication() == null){
+            if (StringUtils.isNotEmpty(token) && !tokenBlacklistService.isTokenBlacklisted(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 String username = jwtUtil.extractUsername(token);
-                if (username != null){
+                if (username != null) {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     if (jwtUtil.validateToken(token, userDetails)) {
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
@@ -54,16 +54,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     }
                 }
             }
-            filterChain.doFilter(request, response);
         } catch (JwtException e) {
-                this.writeErrorResponse("Invalid token", response, HttpStatus.UNAUTHORIZED);
+            //this.writeErrorResponse("Invalid token", response, HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            this.writeErrorResponse("Unknown error has occurred", response, HttpStatus.INTERNAL_SERVER_ERROR);
+            LOGGER.error("Unknown error", e);
+            return;
         }
+        filterChain.doFilter(request, response);
 
     }
 
 
-
-    private String extractBearerToken(HttpServletRequest request){
+    private String extractBearerToken(HttpServletRequest request) {
         final String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -82,7 +86,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             ObjectMapper mapper = new ObjectMapper();
             PrintWriter out = response.getWriter();
             out.write(mapper.writeValueAsString(ar));
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error("Unknown error", e);
         }
     }
