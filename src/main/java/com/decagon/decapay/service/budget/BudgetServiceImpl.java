@@ -17,7 +17,7 @@ import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.UserInfo;
-import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
+import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
 import com.decagon.decapay.utils.PageUtil;
 import com.decagon.decapay.utils.UserInfoUtills;
