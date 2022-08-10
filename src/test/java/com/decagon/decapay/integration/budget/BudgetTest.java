@@ -942,7 +942,7 @@ public class BudgetTest {
         //act
         buildHeader(user.getEmail());
         this.mockMvc
-                .perform(get(path + "/budgets/{budgetId}/fetch", 0L)
+                .perform(get(path + "/budgets/{budgetId}/edit", 0L)
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -1087,7 +1087,7 @@ public class BudgetTest {
         //act
         buildHeader(user.getEmail());
         this.mockMvc
-                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                .perform(get(path + "/budgets/edit/{budgetId}", budget.getId())
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(RESOURCE_RETRIEVED_SUCCESSFULLY))
@@ -1101,7 +1101,7 @@ public class BudgetTest {
         buildHeader(user.getEmail());
 
         var requestBuilder = this.mockMvc
-                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                .perform(get(path + "/budgets/edit/{budgetId}", budget.getId())
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
