@@ -32,5 +32,5 @@ public class ViewBudgetDto {
     private LocalDate displayEndDate;
     @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)
     private LocalDate displayStartDate;
-    Collection<com.decagon.decapay.dto.budget.BudgetLineItemDto> lineItems = new ArrayList<>();
+    Collection<BudgetLineItemDto> lineItems = new ArrayList<>();
 }
