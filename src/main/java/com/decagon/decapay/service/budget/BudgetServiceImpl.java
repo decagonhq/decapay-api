@@ -202,4 +202,30 @@ public class BudgetServiceImpl implements BudgetService {
 		populator.populate(budgetRequestDto, budget);
     }
 
+	@Override
+	public CreateBudgetRequestDTO fetchBudget(Long budgetId) {
+		User user = this.getAuthenticatedUser();
+
+		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, user.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+		if (!isUserOwnerOfBudget(user, budget)){
+			log.error(String.format("This should be an hacking attempt, userid : %s, budgetId : %s", user.getId(), budgetId));
+			throw new InvalidRequestException("Invalid Request");
+		}
+
+		return this.convertBudgetToResponseDTO(budget);
+	}
+
+	private CreateBudgetRequestDTO convertBudgetToResponseDTO(Budget budget) {
+		AbstractBudgetPeriodHandler budgetPeriodHandler = AbstractBudgetPeriodHandler.getHandler(budget.getBudgetPeriod().name());
+
+		CreateBudgetRequestDTO budgetRequestDto = new CreateBudgetRequestDTO();
+		budgetRequestDto.setAmount(budget.getProjectedAmount());
+		budgetRequestDto.setTitle(budget.getTitle());
+		budgetRequestDto.setDescription(budget.getDescription());
+		budgetRequestDto.setPeriod(budget.getBudgetPeriod().name());
+		budgetPeriodHandler.setBudgetRequestFieldsBasedOnPeriod(budgetRequestDto, budget);
+		return budgetRequestDto;
+	}
 }

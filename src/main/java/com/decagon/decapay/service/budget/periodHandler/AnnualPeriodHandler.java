@@ -1,7 +1,9 @@
 package com.decagon.decapay.service.budget.periodHandler;
 
+import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.exception.InvalidRequestException;
+import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.utils.CustomDateUtil;
 
 import java.time.LocalDate;
@@ -44,5 +46,10 @@ public class AnnualPeriodHandler extends AbstractBudgetPeriodHandler {
         if (req.getYear() < 1000 || req.getYear()>9999) {
             throw new InvalidRequestException(INVALID_REQUEST + ": Invalid value for Year (valid values 1000 - 9999): " + req.getYear());
         }
+    }
+
+    @Override
+    public void setBudgetRequestFieldsBasedOnPeriod(CreateBudgetRequestDTO dto, Budget budget) {
+        dto.setYear((short) budget.getBudgetStartDate().getYear());
     }
 }

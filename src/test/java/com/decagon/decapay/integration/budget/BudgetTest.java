@@ -45,6 +45,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.BUDGET_UPDATED_SUCCESSFULLY;
+import static com.decagon.decapay.constants.ResponseMessageConstants.RESOURCE_RETRIEVED_SUCCESSFULLY;
 import static com.decagon.decapay.model.budget.BudgetPeriod.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -932,6 +933,198 @@ public class BudgetTest {
         assertEquals(LocalDate.of(2022, 4, 30), updatedBudget.getBudgetEndDate());
         assertEquals(dto.getTitle(), updatedBudget.getTitle());
         assertEquals(dto.getDescription(), updatedBudget.getDescription());
+    }
+
+    @Test
+    void shouldThrowResourceNotFoundExceptionWhenTryingToFetchBudgetAndDoesNotExist() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        //act
+        buildHeader(user.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", 0L)
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void shouldThrowNotFoundWhenTryingToFetchBudgetAndBudgetDoesNotBelongToUser() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        User user2 = TestModels.user("John", "Doe", "user2@gmail.com", "password","08137640746");
+        user2 = this.userRepository.save(user2);
+
+        Budget budget = TestModels.budget( CUSTOM, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
+        budget.setTitle("title");
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
+        budget = this.budgetRepository.save(budget);
+
+        //act
+        buildHeader(user2.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void shouldFetchCustomBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        Budget budget = TestModels.budget( CUSTOM, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
+        budget.setTitle("title");
+        budget.setDescription("Description");
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget = this.budgetRepository.save(budget);
+
+        //act
+        buildHeader(user.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(RESOURCE_RETRIEVED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.title").value(budget.getTitle()))
+                .andExpect(jsonPath("$.data.period").value(budget.getBudgetPeriod().name()))
+                .andExpect(jsonPath("$.data.budgetStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT)))
+                .andExpect(jsonPath("$.data.budgetEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_INPUT_FORMAT)))
+                .andExpect(jsonPath("$.data.description").value(budget.getDescription()));
+    }
+
+    @Test
+    void shouldFetchDailyBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        BudgetLineItem lineItem = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+
+        Budget budget = TestModels.budget( DAILY, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
+        budget.setTitle("title");
+        budget.setDescription("Description");
+        budget.addBudgetLineItem(lineItem);
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
+        budget = this.budgetRepository.save(budget);
+
+        //act
+        buildHeader(user.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(RESOURCE_RETRIEVED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.title").value(budget.getTitle()))
+                .andExpect(jsonPath("$.data.period").value(budget.getBudgetPeriod().name()))
+                .andExpect(jsonPath("$.data.budgetStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT)))
+                .andExpect(jsonPath("$.data.budgetEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_INPUT_FORMAT)))
+                .andExpect(jsonPath("$.data.description").value(budget.getDescription()));
+    }
+
+    @Test
+    void shouldFetchWeeklyBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        BudgetLineItem lineItem = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+
+        Budget budget = TestModels.budget( WEEKLY, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
+        budget.setTitle("title");
+        budget.setDescription("Description");
+        budget.addBudgetLineItem(lineItem);
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
+        budget = this.budgetRepository.save(budget);
+
+        //act
+        buildHeader(user.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(RESOURCE_RETRIEVED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.title").value(budget.getTitle()))
+                .andExpect(jsonPath("$.data.period").value(budget.getBudgetPeriod().name()))
+                .andExpect(jsonPath("$.data.budgetStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT)))
+                .andExpect(jsonPath("$.data.budgetEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_INPUT_FORMAT)))
+                .andExpect(jsonPath("$.data.duration").value(4))
+                .andExpect(jsonPath("$.data.description").value(budget.getDescription()));
+    }
+
+    @Test
+    void shouldFetchMonthlyBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        BudgetLineItem lineItem = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+
+        Budget budget = TestModels.budget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
+        budget.setTitle("title");
+        budget.setDescription("Description");
+        budget.addBudgetLineItem(lineItem);
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
+        budget = this.budgetRepository.save(budget);
+
+        //act
+        buildHeader(user.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(RESOURCE_RETRIEVED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.title").value(budget.getTitle()))
+                .andExpect(jsonPath("$.data.period").value(budget.getBudgetPeriod().name()))
+                .andExpect(jsonPath("$.data.month").value(LocalDate.now().getMonthValue()))
+                .andExpect(jsonPath("$.data.year").value(LocalDate.now().getYear()))
+                .andExpect(jsonPath("$.data.description").value(budget.getDescription()));
+
+    }
+
+    @Test
+    void shouldFetchAnnualBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        BudgetLineItem lineItem = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+
+        Budget budget = TestModels.budget( ANNUAL, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
+        budget.setTitle("title");
+        budget.setDescription("Description");
+        budget.addBudgetLineItem(lineItem);
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
+        budget = this.budgetRepository.save(budget);
+
+        //act
+        buildHeader(user.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(RESOURCE_RETRIEVED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.title").value(budget.getTitle()))
+                .andExpect(jsonPath("$.data.period").value(budget.getBudgetPeriod().name()))
+                .andExpect(jsonPath("$.data.year").value(LocalDate.now().getYear()))
+                .andExpect(jsonPath("$.data.description").value(budget.getDescription()));
     }
 
 }
