@@ -4,10 +4,13 @@ import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.exception.InvalidRequestException;
+import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.utils.CustomDateUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 public class WeeklyPeriodHandler extends AbstractBudgetPeriodHandler {
     /*
@@ -40,4 +43,9 @@ public class WeeklyPeriodHandler extends AbstractBudgetPeriodHandler {
         return new LocalDate[]{budgetStartDate,budgetEndDate};
     }
 
+    @Override
+    public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
+        dto.setDuration((int)  (DAYS.between(budget.getBudgetStartDate(),budget.getBudgetEndDate())/AppConstants.NUM_DAYS_IN_WEEK));
+        dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT));
+    }
 }

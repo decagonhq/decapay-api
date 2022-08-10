@@ -4,10 +4,7 @@ package com.decagon.decapay.integration.budget;
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.model.budget.Budget;
-import com.decagon.decapay.model.budget.BudgetLineItem;
-import com.decagon.decapay.model.budget.BudgetState;
-import com.decagon.decapay.model.budget.Expenses;
+import com.decagon.decapay.model.budget.*;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
@@ -42,9 +39,11 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.BUDGET_UPDATED_SUCCESSFULLY;
+import static com.decagon.decapay.constants.ResponseMessageConstants.RESOURCE_RETRIEVED_SUCCESSFULLY;
 import static com.decagon.decapay.model.budget.BudgetPeriod.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -933,5 +932,201 @@ public class BudgetTest {
         assertEquals(dto.getTitle(), updatedBudget.getTitle());
         assertEquals(dto.getDescription(), updatedBudget.getDescription());
     }
+
+    @Test
+    void shouldThrowResourceNotFoundExceptionWhenTryingToFetchBudgetAndDoesNotExist() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        //act
+        buildHeader(user.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", 0L)
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void shouldThrowNotFoundWhenTryingToFetchBudgetAndBudgetDoesNotBelongToUser() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        User user2 = TestModels.user("John", "Doe", "user2@gmail.com", "password","08137640746");
+        user2 = this.userRepository.save(user2);
+
+        Budget budget = TestModels.budget( CUSTOM, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budget.setUser(user);
+        budget.setTitle("title");
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
+        budget = this.budgetRepository.save(budget);
+
+        //act
+        buildHeader(user2.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void shouldFetchCustomBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        Budget budget = this.fetchTestBudget( CUSTOM, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of(
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT),
+                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.now().plusMonths(1), DateDisplayConstants.DATE_INPUT_FORMAT)));
+
+        budget = this.fetchTestBudget( CUSTOM, LocalDate.of(1985,3,7), LocalDate.of(1985,9,20),user);
+
+        //act
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of(
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(1985,3,7), DateDisplayConstants.DATE_INPUT_FORMAT),
+                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(1985,9,20), DateDisplayConstants.DATE_INPUT_FORMAT)));
+    }
+
+    @Test
+    void shouldFetchDailyBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        Budget budget = this.fetchTestBudget( DAILY, LocalDate.now(), LocalDate.now(),user);
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of(
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT),
+                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT)));
+
+        budget = this.fetchTestBudget( DAILY, LocalDate.of(2001,4,23), LocalDate.of(2001,4,23),user);
+
+        //act
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of(
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(2001,4,23), DateDisplayConstants.DATE_INPUT_FORMAT),
+                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(2001,4,23), DateDisplayConstants.DATE_INPUT_FORMAT)));
+    }
+
+    @Test
+    void shouldFetchWeeklyBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        Budget budget = this.fetchTestBudget( WEEKLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+
+        //act
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of(
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT),
+                "duration", 4 ));
+
+        budget = this.fetchTestBudget( WEEKLY, LocalDate.of(2004,3,1), LocalDate.of(2004,3,15),user);
+
+        //act
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of(
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(2004,3,1), DateDisplayConstants.DATE_INPUT_FORMAT),
+                "duration", 2 ));
+    }
+
+    @Test
+    void shouldFetchMonthlyBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+
+        //act
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of(
+                "month", LocalDate.now().getMonthValue(),
+                "year", LocalDate.now().getYear()));
+
+
+        budget = this.fetchTestBudget( MONTHLY, LocalDate.of(1999,12,1), LocalDate.of(1999,12, 31),user);
+        //act
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of(
+                "month", LocalDate.of(1999,12,1).getMonthValue(),
+                "year", LocalDate.of(1999,12,1).getYear()));
+
+    }
+
+    @Test
+    void shouldFetchAnnualBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        // Budget 1
+        Budget budget = this.fetchTestBudget(ANNUAL, LocalDate.now(), LocalDate.now().plusMonths(1), user);
+        //act
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of("year", LocalDate.now().getYear()));
+
+        // Budget 2
+        budget = this.fetchTestBudget( ANNUAL, LocalDate.of(2000,1, 1), LocalDate.of(2000,12, 31), user);
+        this.assertFetchObjectsSuccessfully(budget, user, Map.of("year", 2000));
+    }
+
+    @Test
+    void shouldFetchBudgetSuccessfully() throws Exception {
+        //arrange
+        User user = TestModels.user("John", "Doe", "user1@gmail.com", "password","08137640746");
+        user = this.userRepository.save(user);
+
+        Budget budget = TestModels.budget( DAILY, LocalDate.now(), LocalDate.now());
+        budget.setUser(user);
+        budget.setTitle("title");
+        budget.setDescription("Description");
+        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
+        budget = this.budgetRepository.save(budget);
+
+        //act
+        buildHeader(user.getEmail());
+        this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(RESOURCE_RETRIEVED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.title").value(budget.getTitle()))
+                .andExpect(jsonPath("$.data.period").value(budget.getBudgetPeriod().name()))
+                .andExpect(jsonPath("$.data.description").value(budget.getDescription()));
+    }
+
+
+    private void assertFetchObjectsSuccessfully(Budget budget, User user, Map<String, Object> expectedResult) throws Exception {
+        buildHeader(user.getEmail());
+
+        var requestBuilder = this.mockMvc
+                .perform(get(path + "/budgets/{budgetId}/fetch", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        switch (budget.getBudgetPeriod()) {
+            case CUSTOM, DAILY ->
+                    requestBuilder
+                            .andExpect(jsonPath("$.data.budgetStartDate").value(expectedResult.get("startDate")))
+                            .andExpect(jsonPath("$.data.budgetEndDate").value(expectedResult.get("endDate")));
+            case WEEKLY -> requestBuilder
+                    .andExpect(jsonPath("$.data.budgetStartDate").value(expectedResult.get("startDate")))
+                    .andExpect(jsonPath("$.data.duration").value(expectedResult.get("duration")));
+            case MONTHLY -> requestBuilder
+                    .andExpect(jsonPath("$.data.month").value(expectedResult.get("month")))
+                    .andExpect(jsonPath("$.data.year").value(expectedResult.get("year")));
+            case ANNUAL -> requestBuilder
+                    .andExpect(jsonPath("$.data.year").value(expectedResult.get("year")));
+        }
+    }
+
+    private Budget fetchTestBudget(BudgetPeriod period, LocalDate startDate, LocalDate endDate, User user){
+        Budget budget = TestModels.budget( period, startDate, endDate);
+        budget.setUser(user);
+        return this.budgetRepository.save(budget);
+    }
+
+
 
 }

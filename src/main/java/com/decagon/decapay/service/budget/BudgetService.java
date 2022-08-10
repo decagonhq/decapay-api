@@ -21,4 +21,5 @@ public interface BudgetService {
     ViewBudgetDto viewBudgetDetails(Long budgetId);
     IdResponseDto updateBudget(Long budgetId, CreateBudgetRequestDTO budgetRequestDto, AbstractBudgetPeriodHandler budgetPeriodHandler);
 
+    CreateBudgetRequestDTO fetchBudget(Long budgetId);
 }
