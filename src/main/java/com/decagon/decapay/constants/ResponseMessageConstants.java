@@ -44,4 +44,5 @@ public class ResponseMessageConstants {
     public static final String PASSWORD_SHOULD_NOT_BE_EMPTY = "Password Should Not be Empty";
     public static final String PASSWORDS_DONT_MATCH = "Passwords Dont Match";
     public static final String UNEXPECTED_VALUE = "Unexpected value: ";
+    public static final String BUDGET_FETCHED_SUCCESSFULLY = "Budget fetched sucessfully";
 }
