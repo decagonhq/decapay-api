@@ -38,7 +38,7 @@ public class CustomPeriodHandler extends AbstractBudgetPeriodHandler {
     }
 
     @Override
-    public void setBudgetRequestFieldsBasedOnPeriod(CreateBudgetRequestDTO dto, Budget budget) {
+    public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
         dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT));
         dto.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_INPUT_FORMAT));
     }

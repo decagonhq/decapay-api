@@ -49,7 +49,7 @@ public class AnnualPeriodHandler extends AbstractBudgetPeriodHandler {
     }
 
     @Override
-    public void setBudgetRequestFieldsBasedOnPeriod(CreateBudgetRequestDTO dto, Budget budget) {
+    public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
         dto.setYear((short) budget.getBudgetStartDate().getYear());
     }
 }

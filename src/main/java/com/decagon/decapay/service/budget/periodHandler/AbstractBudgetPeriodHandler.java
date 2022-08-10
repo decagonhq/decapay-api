@@ -36,7 +36,7 @@ public abstract class AbstractBudgetPeriodHandler {
 
     public abstract void validateRequest(CreateBudgetRequestDTO req);
 
-    public abstract void setBudgetRequestFieldsBasedOnPeriod(CreateBudgetRequestDTO dto, Budget budget);
+    public abstract void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget);
 
 
 }

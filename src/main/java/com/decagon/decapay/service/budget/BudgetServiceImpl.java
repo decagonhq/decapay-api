@@ -225,7 +225,7 @@ public class BudgetServiceImpl implements BudgetService {
 		budgetRequestDto.setTitle(budget.getTitle());
 		budgetRequestDto.setDescription(budget.getDescription());
 		budgetRequestDto.setPeriod(budget.getBudgetPeriod().name());
-		budgetPeriodHandler.setBudgetRequestFieldsBasedOnPeriod(budgetRequestDto, budget);
+		budgetPeriodHandler.setBudgetPeriodMetaData(budgetRequestDto, budget);
 		return budgetRequestDto;
 	}
 }
