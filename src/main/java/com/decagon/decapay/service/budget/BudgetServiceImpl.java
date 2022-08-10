@@ -168,7 +168,7 @@ public class BudgetServiceImpl implements BudgetService {
         }
 
 		LocalDate[] targetdDateRange= budgetPeriodHandler.calculateBudgetDateRange(budgetRequestDto);
-        boolean expenseTransactionDateExistsOutsideStartAndEndPeriod = this.budgetRepository.expenseExistsOutsideStartAndEndPeriod(budgetId,targetdDateRange[0], targetdDateRange[1]);
+        boolean expenseTransactionDateExistsOutsideStartAndEndPeriod = this.budgetRepository.expenseExistsForPeriod(budgetId,targetdDateRange[0], targetdDateRange[1]);
 
 		if (expenseTransactionDateExistsOutsideStartAndEndPeriod) {
             throw new InvalidRequestException("Budget period cannot be outside of the current period");

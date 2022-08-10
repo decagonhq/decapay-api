@@ -31,6 +31,6 @@ public interface BudgetRepository extends JpaRepository<Budget, Long>, BudgetRep
             "where b.id = ?1 " +
             "and b.auditSection.delF = '0' " +
             "and e.transactionDate < ?2 or e.transactionDate > ?3 ")
-    boolean expenseExistsOutsideStartAndEndPeriod(Long id, LocalDate startDate, LocalDate endDate);
+    boolean expenseExistsForPeriod(Long id, LocalDate startDate, LocalDate endDate);
 
 }
