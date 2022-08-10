@@ -17,7 +17,7 @@ import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.UserInfo;
-import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
+import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
 import com.decagon.decapay.utils.PageUtil;
 import com.decagon.decapay.utils.UserInfoUtills;
@@ -154,7 +154,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Transactional
     @Override
-    public IdResponseDto updateBudget(Long budgetId, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
+    public IdResponseDto updateBudget(Long budgetId, CreateBudgetRequestDTO budgetRequestDto, AbstractBudgetPeriodHandler budgetPeriodHandler) {
         User user = this.getAuthenticatedUser();
 
 		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, user.getId())
@@ -178,7 +178,7 @@ public class BudgetServiceImpl implements BudgetService {
 		return new IdResponseDto(budget.getId());
     }
 
-	private void updateBudget(Budget budget, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
+	private void updateBudget(Budget budget, CreateBudgetRequestDTO budgetRequestDto, AbstractBudgetPeriodHandler budgetPeriodHandler) {
 		this.updateBudgetModel(budget, budgetRequestDto, budgetPeriodHandler);
 	}
 
@@ -190,13 +190,13 @@ public class BudgetServiceImpl implements BudgetService {
 		return newProjectedAmount.compareTo(budget.calculateBudgetLineItemsTotalAmount()) < 0;
 	}
 
-	private boolean transactionExistsOutsideOfNewBudgetPeriod(CreateBudgetRequestDTO budgetRequestDto, Budget budget, BudgetPeriodHandler budgetPeriodHandler) {
+	private boolean transactionExistsOutsideOfNewBudgetPeriod(CreateBudgetRequestDTO budgetRequestDto, Budget budget, AbstractBudgetPeriodHandler budgetPeriodHandler) {
 		LocalDate[] targetdDateRange= budgetPeriodHandler.calculateBudgetDateRange(budgetRequestDto);
 		return this.budgetRepository.expenseExistsForPeriod(budget.getId(), targetdDateRange[0], targetdDateRange[1]);
 
 	}
 
-    private void updateBudgetModel(Budget budget, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
+    private void updateBudgetModel(Budget budget, CreateBudgetRequestDTO budgetRequestDto, AbstractBudgetPeriodHandler budgetPeriodHandler) {
 		CreateBudgetPopulator populator=new CreateBudgetPopulator();
 		populator.setBudgetPeriodHandler(budgetPeriodHandler);
 		populator.populate(budgetRequestDto, budget);

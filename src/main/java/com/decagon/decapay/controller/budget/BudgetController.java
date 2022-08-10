@@ -116,7 +116,7 @@ public class BudgetController {
     @Operation(summary = "Update Budget", description = "Update User Budget")
     @PutMapping("/budgets/{budgetId}")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> updateBudget(@PathVariable Long budgetId, @RequestBody CreateBudgetRequestDTO budgetRequestDto) {
-        BudgetPeriodHandler budgetPeriodHandler = BudgetPeriodHandler.getHandler(budgetRequestDto.getPeriod());
+        AbstractBudgetPeriodHandler budgetPeriodHandler = AbstractBudgetPeriodHandler.getHandler(budgetRequestDto.getPeriod());
         this.validateRequest(budgetRequestDto, budgetPeriodHandler);
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.updateBudget(budgetId, budgetRequestDto, budgetPeriodHandler), BUDGET_UPDATED_SUCCESSFULLY);
     }
