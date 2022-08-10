@@ -14,7 +14,6 @@ import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.payloads.request.budget.UpdateBudgetRequestDto;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
-import com.decagon.decapay.populator.UpdateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
@@ -178,7 +177,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     private IdResponseDto processBudgetUpdate(Budget budget, UpdateBudgetRequestDto budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
-		UpdateBudgetPopulator populator=new UpdateBudgetPopulator();
+		CreateBudgetPopulator populator=new CreateBudgetPopulator();
 		populator.setBudgetPeriodHandler(budgetPeriodHandler);
 		budget = populator.populate(budgetRequestDto, budget);
 		budget = this.budgetRepository.save(budget);
