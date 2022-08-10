@@ -3,13 +3,13 @@ package com.decagon.decapay.integration.budget;
 
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetLineItem;
 import com.decagon.decapay.model.budget.BudgetState;
 import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
-import com.decagon.decapay.payloads.request.budget.UpdateBudgetRequestDto;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
@@ -751,10 +751,9 @@ public class BudgetTest {
         YearMonth ym = YearMonth.from(Instant.now().atZone(ZoneId.of("UTC")));
 
         //input
-        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+        CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
                 dto.setTitle("New Title");
                 dto.setDescription("New Description");
-                dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
                 dto.setAmount(BigDecimal.valueOf(300));
                 dto.setPeriod(ANNUAL.name());
         dto.setMonth((short) ym.getMonthValue());
@@ -791,10 +790,9 @@ public class BudgetTest {
 
 
         //input
-        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+        CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
         dto.setTitle("New Title");
         dto.setDescription("New Description");
-        dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         dto.setAmount(BigDecimal.valueOf(300));
         dto.setPeriod(WEEKLY.name());
         dto.setMonth((short) ym.plusMonths(1).getMonthValue());
@@ -830,10 +828,9 @@ public class BudgetTest {
         budget = this.budgetRepository.save(budget);
 
         //input
-        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+        CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
         dto.setTitle("New Title");
         dto.setDescription("New Description");
-        dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         dto.setAmount(BigDecimal.valueOf(250));
         dto.setPeriod(ANNUAL.name());
         dto.setMonth((short) ym.getMonthValue());
@@ -873,10 +870,9 @@ public class BudgetTest {
         budget = this.budgetRepository.save(budget);
 
         //input
-        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+        CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
         dto.setTitle("New Title");
         dto.setDescription("New Description");
-        dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         dto.setAmount(BigDecimal.valueOf(250));
         dto.setPeriod(MONTHLY.name());
         dto.setMonth((short) ym.getMonthValue());
@@ -914,10 +910,9 @@ public class BudgetTest {
         budget = this.budgetRepository.save(budget);
 
         //input
-        UpdateBudgetRequestDto dto = new UpdateBudgetRequestDto();
+        CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
         dto.setTitle("New Title");
         dto.setDescription("New Description");
-        dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         dto.setAmount(BigDecimal.valueOf(250));
         dto.setPeriod(CUSTOM.name());
         dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateDisplayConstants.DATE_INPUT_FORMAT));

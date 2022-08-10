@@ -12,7 +12,6 @@ import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.exception.UnAuthorizedException;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.payloads.request.budget.UpdateBudgetRequestDto;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;

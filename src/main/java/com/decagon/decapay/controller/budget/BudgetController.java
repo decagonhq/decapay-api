@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import com.decagon.decapay.payloads.request.budget.UpdateBudgetRequestDto;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -116,7 +115,7 @@ public class BudgetController {
             @ApiResponse(responseCode = "404", description = NOT_FOUND)})
     @Operation(summary = "Update Budget", description = "Update User Budget")
     @PutMapping("/budgets/{budgetId}")
-    public ResponseEntity<ApiDataResponse<IdResponseDto>> updateBudget(@PathVariable Long budgetId, @RequestBody UpdateBudgetRequestDto budgetRequestDto) {
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> updateBudget(@PathVariable Long budgetId, @RequestBody CreateBudgetRequestDTO budgetRequestDto) {
         BudgetPeriodHandler budgetPeriodHandler = BudgetPeriodHandler.getHandler(budgetRequestDto.getPeriod());
         this.validateRequest(budgetRequestDto, budgetPeriodHandler);
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.updateBudget(budgetId, budgetRequestDto, budgetPeriodHandler), BUDGET_UPDATED_SUCCESSFULLY);

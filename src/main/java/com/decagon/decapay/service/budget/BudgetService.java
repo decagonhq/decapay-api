@@ -7,7 +7,6 @@ import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
 import com.decagon.decapay.dto.budget.ViewBudgetDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.payloads.request.budget.UpdateBudgetRequestDto;
 import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
 import org.springframework.data.domain.Page;
 
@@ -20,6 +19,6 @@ public interface BudgetService {
     Page<BudgetResponseDto> getBudgets(int pageSize, int pageNo, List<SearchCriteria> searchCriterias);
 
     ViewBudgetDto viewBudgetDetails(Long budgetId);
-    IdResponseDto updateBudget(Long budgetId, UpdateBudgetRequestDto budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler);
+    IdResponseDto updateBudget(Long budgetId, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler);
 
 }
