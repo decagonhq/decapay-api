@@ -127,7 +127,7 @@ public class BudgetController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED),
             @ApiResponse(responseCode = "404", description = NOT_FOUND)})
     @Operation(summary = "Fetch Budget for edit", description = "Fetch User Budget for edit")
-    @GetMapping("/budgets/{budgetId}")
+    @GetMapping("/budgets/edit/{budgetId}")
     public ResponseEntity<ApiDataResponse<CreateBudgetRequestDTO>> fetchBudget(@PathVariable Long budgetId) {
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.fetchBudget(budgetId), RESOURCE_RETRIEVED_SUCCESSFULLY);
     }
