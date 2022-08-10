@@ -21,6 +21,7 @@ import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
 import com.decagon.decapay.utils.PageUtil;
 import com.decagon.decapay.utils.UserInfoUtills;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class BudgetServiceImpl implements BudgetService {
 	private final BudgetRepository budgetRepository;
 	private final UserRepository userRepository;
@@ -155,33 +157,49 @@ public class BudgetServiceImpl implements BudgetService {
     public IdResponseDto updateBudget(Long budgetId, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
         User user = this.getAuthenticatedUser();
 
-		Budget budget = this.budgetRepository.findBudgetDetailsById(budgetId)
+		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
 
-		if (!user.getId().equals(budget.getUser().getId())){
+		if (!isUserOwnerOfBudget(user, budget)){
+			log.error(String.format("This should be an hacking attempt, userid : %s, budgetId : %s", user.getId(), budgetId));
 			throw new InvalidRequestException("Invalid Request");
 		}
 
-        if (budgetRequestDto.getAmount().compareTo(budget.calculateBudgetLineItemsTotalAmount()) != 0){
-            throw new InvalidRequestException("Budget amount cannot be less/greater than line items total amount edit line item and try again");
+        if (isNewBudgetAmountLessThanOriginalLineItemsTotalAmount(budgetRequestDto.getAmount(), budget)){
+            throw new InvalidRequestException("Budget amount cannot be less than line items total amount edit line item and try again");
         }
 
-		LocalDate[] targetdDateRange= budgetPeriodHandler.calculateBudgetDateRange(budgetRequestDto);
-        boolean transactionExistsOuOfPeriod = this.budgetRepository.expenseExistsForPeriod(budgetId,targetdDateRange[0], targetdDateRange[1]);
-
-		if (transactionExistsOuOfPeriod) {
+		if (transactionExistsOutsideOfNewBudgetPeriod(budgetRequestDto, budget, budgetPeriodHandler)) {
             throw new InvalidRequestException("Budget period cannot be outside of the current period");
         }
 
-        return this.processBudgetUpdate(budget, budgetRequestDto, budgetPeriodHandler);
+        this.updateBudget(budget, budgetRequestDto, budgetPeriodHandler);
+
+		return new IdResponseDto(budget.getId());
     }
 
-    private IdResponseDto processBudgetUpdate(Budget budget, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
+	private void updateBudget(Budget budget, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
+		this.updateBudgetModel(budget, budgetRequestDto, budgetPeriodHandler);
+	}
+
+	private boolean isUserOwnerOfBudget(User user, Budget budget) {
+		return user.getId().equals(budget.getUser().getId());
+	}
+
+	private boolean isNewBudgetAmountLessThanOriginalLineItemsTotalAmount(BigDecimal newProjectedAmount, Budget budget){
+		return newProjectedAmount.compareTo(budget.calculateBudgetLineItemsTotalAmount()) < 0;
+	}
+
+	private boolean transactionExistsOutsideOfNewBudgetPeriod(CreateBudgetRequestDTO budgetRequestDto, Budget budget, BudgetPeriodHandler budgetPeriodHandler) {
+		LocalDate[] targetdDateRange= budgetPeriodHandler.calculateBudgetDateRange(budgetRequestDto);
+		return this.budgetRepository.expenseExistsForPeriod(budget.getId(), targetdDateRange[0], targetdDateRange[1]);
+
+	}
+
+    private void updateBudgetModel(Budget budget, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
 		CreateBudgetPopulator populator=new CreateBudgetPopulator();
 		populator.setBudgetPeriodHandler(budgetPeriodHandler);
-		budget = populator.populate(budgetRequestDto, budget);
-		budget = this.budgetRepository.save(budget);
-        return new IdResponseDto(budget.getId());
+		populator.populate(budgetRequestDto, budget);
     }
 
 }
