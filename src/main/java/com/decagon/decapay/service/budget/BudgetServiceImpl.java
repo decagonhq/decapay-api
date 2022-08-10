@@ -166,11 +166,11 @@ public class BudgetServiceImpl implements BudgetService {
 		}
 
         if (isNewBudgetAmountLessThanOriginalLineItemsTotalAmount(budgetRequestDto.getAmount(), budget)){
-            throw new InvalidRequestException("Budget amount cannot be less than line items total amount edit line item and try again");
+            throw new InvalidRequestException("Budget amount must be greater or equal to existing line items total amount");
         }
 
 		if (transactionExistsOutsideOfNewBudgetPeriod(budgetRequestDto, budget, budgetPeriodHandler)) {
-            throw new InvalidRequestException("Budget period cannot be outside of the current period");
+            throw new InvalidRequestException("Unable to update budget, transaction exists that are outside the new budget's start and end date");
         }
 
         this.updateBudget(budget, budgetRequestDto, budgetPeriodHandler);
