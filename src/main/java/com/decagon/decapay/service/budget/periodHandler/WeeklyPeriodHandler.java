@@ -45,8 +45,7 @@ public class WeeklyPeriodHandler extends AbstractBudgetPeriodHandler {
 
     @Override
     public void setBudgetRequestFieldsBasedOnPeriod(CreateBudgetRequestDTO dto, Budget budget) {
-        dto.setDuration((int) (DAYS.between(budget.getBudgetStartDate(),budget.getBudgetEndDate())/AppConstants.NUM_DAYS_IN_WEEK));
+        dto.setDuration((int)  (DAYS.between(budget.getBudgetStartDate(),budget.getBudgetEndDate())/AppConstants.NUM_DAYS_IN_WEEK));
         dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT));
-        dto.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_INPUT_FORMAT));
     }
 }
