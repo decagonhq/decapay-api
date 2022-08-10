@@ -30,7 +30,7 @@ public class AnnualPeriodTest {
     @InjectMocks
     AnnualPeriodHandler annualPeriod;
 
-    static  CreateBudgetRequestDTO req(short year){
+    static CreateBudgetRequestDTO req(short year){
 
         CreateBudgetRequestDTO budgetRequest = new CreateBudgetRequestDTO();
         budgetRequest.setTitle("Title");

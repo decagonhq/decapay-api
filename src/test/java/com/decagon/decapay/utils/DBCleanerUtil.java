@@ -25,10 +25,10 @@ public class DBCleanerUtil {
     public static void clearDb(JdbcTemplate jdbcTemplate){
 
         List<String> tables = new ArrayList<>();
+        tables.add(TABLE_EXPENSES);
         tables.add(TABLE_BUDGET_CATEGORY);
         tables.add(TABLE_BUDGET_LINE_ITEM);
         tables.add(TABLE_BUDGET);
-        tables.add(TABLE_EXPENSES);
         tables.add(TABLE_PASSWORD_RESET);
         tables.add(TABLE_USER);
 

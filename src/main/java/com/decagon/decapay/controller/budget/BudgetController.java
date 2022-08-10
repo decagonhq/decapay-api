@@ -1,12 +1,13 @@
 package com.decagon.decapay.controller.budget;
 
 
-import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.SearchCriteria;
 import com.decagon.decapay.dto.budget.BudgetResponseDto;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
 import com.decagon.decapay.dto.budget.ViewBudgetDto;
+import com.decagon.decapay.dto.common.IdResponseDto;
+import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.utils.ApiResponseUtil;
@@ -107,5 +108,16 @@ public class BudgetController {
         budgetPeriodHandler.validateRequest(createBudgetRequest);
     }
 
-
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = BUDGET_UPDATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+    @Operation(summary = "Update Budget", description = "Update User Budget")
+    @PutMapping("/budgets/{budgetId}")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> updateBudget(@PathVariable Long budgetId, @RequestBody CreateBudgetRequestDTO budgetRequestDto) {
+        AbstractBudgetPeriodHandler budgetPeriodHandler = AbstractBudgetPeriodHandler.getHandler(budgetRequestDto.getPeriod());
+        this.validateRequest(budgetRequestDto, budgetPeriodHandler);
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.updateBudget(budgetId, budgetRequestDto, budgetPeriodHandler), BUDGET_UPDATED_SUCCESSFULLY);
+    }
 }
