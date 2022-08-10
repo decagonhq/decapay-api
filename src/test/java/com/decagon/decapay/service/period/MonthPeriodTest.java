@@ -31,7 +31,7 @@ public class MonthPeriodTest {
     @InjectMocks
     MonthPeriodHandler monthPeriod;
 
-    static  CreateBudgetRequestDTO req(short month, short year){
+    static CreateBudgetRequestDTO req(short month, short year){
         CreateBudgetRequestDTO budgetRequest = new CreateBudgetRequestDTO();
         budgetRequest.setTitle("Title");
         budgetRequest.setAmount(BigDecimal.TEN);

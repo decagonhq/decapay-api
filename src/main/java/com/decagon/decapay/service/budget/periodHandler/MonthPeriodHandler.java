@@ -2,6 +2,7 @@ package com.decagon.decapay.service.budget.periodHandler;
 
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.exception.InvalidRequestException;
+import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.utils.CustomDateUtil;
 
 import java.time.LocalDate;
@@ -59,4 +60,9 @@ public class MonthPeriodHandler extends AbstractBudgetPeriodHandler {
         return new LocalDate[]{startDate, endDate};
     }
 
+    @Override
+    public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
+        dto.setMonth((short) budget.getBudgetStartDate().getMonthValue());
+        dto.setYear((short) budget.getBudgetStartDate().getYear());
+    }
 }

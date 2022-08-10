@@ -1,7 +1,7 @@
 package com.decagon.decapay.service.period;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.service.budget.periodHandler.DailyPeriodHandler;
@@ -27,7 +27,7 @@ public class DailyPeriodTest {
     @InjectMocks
     DailyPeriodHandler dailyPeriod;
 
-    static  CreateBudgetRequestDTO req(String startDate,String endDate){
+    static CreateBudgetRequestDTO req(String startDate, String endDate){
 
         CreateBudgetRequestDTO budgetRequest = new CreateBudgetRequestDTO();
         budgetRequest.setTitle("Title");

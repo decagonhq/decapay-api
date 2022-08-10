@@ -1,6 +1,7 @@
 package com.decagon.decapay.service.budget.periodHandler;
 
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.exception.InvalidRequestException;
 
@@ -34,6 +35,8 @@ public abstract class AbstractBudgetPeriodHandler {
     public abstract LocalDate[] calculateBudgetDateRange(CreateBudgetRequestDTO dto);
 
     public abstract void validateRequest(CreateBudgetRequestDTO req);
+
+    public abstract void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget);
 
 
 }

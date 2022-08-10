@@ -1,8 +1,9 @@
 package com.decagon.decapay.service.budget.periodHandler;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.exception.InvalidRequestException;
+import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.utils.CustomDateUtil;
 
 import java.time.LocalDate;
@@ -36,4 +37,9 @@ public class CustomPeriodHandler extends AbstractBudgetPeriodHandler {
                 CustomDateUtil.formatStringToLocalDate(budgetRequestEndDate,DateDisplayConstants.DATE_INPUT_FORMAT)};
     }
 
+    @Override
+    public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
+        dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_INPUT_FORMAT));
+    }
 }
