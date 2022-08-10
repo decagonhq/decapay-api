@@ -151,8 +151,9 @@ public class BudgetServiceImpl implements BudgetService {
 		return user.get();
 	}
 
+	@Transactional
     @Override
-    public IdResponseDto updateBudget(Long budgetId, UpdateBudgetRequestDto budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
+    public IdResponseDto updateBudget(Long budgetId, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
         User user = this.getAuthenticatedUser();
 
 		Budget budget = this.budgetRepository.findBudgetDetailsById(budgetId)
@@ -162,7 +163,7 @@ public class BudgetServiceImpl implements BudgetService {
 			throw new InvalidRequestException("Invalid Request");
 		}
 
-        if (budgetRequestDto.getTotalAmountSpentSoFar().compareTo(budget.getTotalAmountSpentSoFar()) != 0){
+        if (budgetRequestDto.getAmount().compareTo(budget.calculateBudgetLineItemsTotalAmount()) != 0){
             throw new InvalidRequestException("Budget amount cannot be less/greater than line items total amount edit line item and try again");
         }
 
@@ -176,7 +177,7 @@ public class BudgetServiceImpl implements BudgetService {
         return this.processBudgetUpdate(budget, budgetRequestDto, budgetPeriodHandler);
     }
 
-    private IdResponseDto processBudgetUpdate(Budget budget, UpdateBudgetRequestDto budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
+    private IdResponseDto processBudgetUpdate(Budget budget, CreateBudgetRequestDTO budgetRequestDto, BudgetPeriodHandler budgetPeriodHandler) {
 		CreateBudgetPopulator populator=new CreateBudgetPopulator();
 		populator.setBudgetPeriodHandler(budgetPeriodHandler);
 		budget = populator.populate(budgetRequestDto, budget);

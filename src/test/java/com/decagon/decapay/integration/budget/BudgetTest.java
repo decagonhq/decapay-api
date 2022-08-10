@@ -734,16 +734,16 @@ public class BudgetTest {
         User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
         user = this.userRepository.save(user);
 
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.now());
-
         BudgetLineItem lineItem = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
-        lineItem.addExpense(expense1);
-
+        BudgetLineItem lineItem2 = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
+        BudgetLineItem lineItem3 = TestModels.budgetLineItem(BigDecimal.valueOf(250), BigDecimal.valueOf(250));
 
         Budget budget = TestModels.budget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1));
         budget.setUser(user);
         budget.setTitle("title");
-        budget.setBudgetLineItems(Set.of(lineItem));
+        budget.addBudgetLineItem(lineItem);
+        budget.addBudgetLineItem(lineItem2);
+        budget.addBudgetLineItem(lineItem3);
         budget.setProjectedAmount(BigDecimal.valueOf(500));
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
         budget = this.budgetRepository.save(budget);
@@ -834,7 +834,7 @@ public class BudgetTest {
         dto.setTitle("New Title");
         dto.setDescription("New Description");
         dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
-        dto.setAmount(BigDecimal.valueOf(300));
+        dto.setAmount(BigDecimal.valueOf(250));
         dto.setPeriod(ANNUAL.name());
         dto.setMonth((short) ym.getMonthValue());
         dto.setYear((short) ym.getYear());
@@ -867,8 +867,8 @@ public class BudgetTest {
         Budget budget = TestModels.budget(WEEKLY, LocalDate.now(), LocalDate.now().plusMonths(1));
         budget.setUser(user);
         budget.setTitle("title");
-        budget.setBudgetLineItems(Set.of(lineItem));
-        budget.setProjectedAmount(BigDecimal.valueOf(500));
+        budget.addBudgetLineItem(lineItem);
+        budget.setProjectedAmount(BigDecimal.valueOf(250));
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         budget = this.budgetRepository.save(budget);
 
@@ -877,7 +877,7 @@ public class BudgetTest {
         dto.setTitle("New Title");
         dto.setDescription("New Description");
         dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
-        dto.setAmount(BigDecimal.valueOf(300));
+        dto.setAmount(BigDecimal.valueOf(250));
         dto.setPeriod(MONTHLY.name());
         dto.setMonth((short) ym.getMonthValue());
         dto.setYear((short) ym.getYear());
@@ -918,7 +918,7 @@ public class BudgetTest {
         dto.setTitle("New Title");
         dto.setDescription("New Description");
         dto.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
-        dto.setAmount(BigDecimal.valueOf(300));
+        dto.setAmount(BigDecimal.valueOf(250));
         dto.setPeriod(CUSTOM.name());
         dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateDisplayConstants.DATE_INPUT_FORMAT));
         dto.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 4, 30), DateDisplayConstants.DATE_INPUT_FORMAT));
