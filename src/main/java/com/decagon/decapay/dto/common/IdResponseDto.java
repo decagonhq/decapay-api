@@ -1,4 +1,4 @@
-package com.decagon.decapay.DTO.common;
+package com.decagon.decapay.dto.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

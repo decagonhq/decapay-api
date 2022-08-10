@@ -1,13 +1,12 @@
 package com.decagon.decapay.controller.budget;
 
 
-import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
-import com.decagon.decapay.DTO.SearchCriteria;
-import com.decagon.decapay.DTO.budget.BudgetResponseDto;
-import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.DTO.budget.CreateBudgetResponseDTO;
-import com.decagon.decapay.DTO.budget.ViewBudgetDto;
-import com.decagon.decapay.DTO.common.IdResponseDto;
+import com.decagon.decapay.dto.SearchCriteria;
+import com.decagon.decapay.dto.budget.BudgetResponseDto;
+import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
+import com.decagon.decapay.dto.budget.ViewBudgetDto;
+import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;

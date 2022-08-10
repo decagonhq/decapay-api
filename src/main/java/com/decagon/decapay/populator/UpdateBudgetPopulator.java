@@ -1,6 +1,5 @@
 package com.decagon.decapay.populator;
 
-import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.exception.ConversionRuntimeException;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetPeriod;

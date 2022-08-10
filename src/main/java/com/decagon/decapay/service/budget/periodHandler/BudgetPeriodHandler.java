@@ -1,6 +1,6 @@
 package com.decagon.decapay.service.budget.periodHandler;
 
-import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.exception.InvalidRequestException;
 

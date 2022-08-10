@@ -1,6 +1,6 @@
 package com.decagon.decapay.unit.controller;
 
-import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.controller.budget.BudgetController;

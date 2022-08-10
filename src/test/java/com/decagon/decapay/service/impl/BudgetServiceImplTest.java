@@ -2,7 +2,7 @@ package com.decagon.decapay.service.impl;
 
 import static org.mockito.Mockito.verify;
 
-import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
+import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.service.budget.BudgetServiceImpl;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

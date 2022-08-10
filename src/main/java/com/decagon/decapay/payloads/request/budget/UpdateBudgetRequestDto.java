@@ -1,11 +1,9 @@
 package com.decagon.decapay.payloads.request.budget;
 
 
-import com.decagon.decapay.DTO.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.constants.SchemaConstants;
+import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
