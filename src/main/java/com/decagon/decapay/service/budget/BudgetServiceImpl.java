@@ -17,7 +17,7 @@ import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.UserInfo;
-import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
+import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
 import com.decagon.decapay.utils.PageUtil;
 import com.decagon.decapay.utils.UserInfoUtills;
@@ -55,7 +55,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Transactional
 	@Override
-	public CreateBudgetResponseDTO createBudget(CreateBudgetRequestDTO budgetRequest, BudgetPeriodHandler budgetPeriodHandler) {
+	public CreateBudgetResponseDTO createBudget(CreateBudgetRequestDTO budgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
 
 		User user = userDetailsService.getLoggedInUser();
 		Budget budget =this.createModelEntity(budgetRequest,budgetPeriodHandler);
@@ -69,7 +69,7 @@ public class BudgetServiceImpl implements BudgetService {
 		budgetRepository.save(budget);
 	}
 
-	private Budget createModelEntity(CreateBudgetRequestDTO budgetRequest, BudgetPeriodHandler budgetPeriodHandler) {
+	private Budget createModelEntity(CreateBudgetRequestDTO budgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
 
 		Budget budget=new Budget();
 		CreateBudgetPopulator populator=new CreateBudgetPopulator();

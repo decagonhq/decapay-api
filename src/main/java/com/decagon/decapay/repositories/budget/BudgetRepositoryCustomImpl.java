@@ -41,16 +41,13 @@ public class BudgetRepositoryCustomImpl implements BudgetRepositoryCustom{
                 if (criteria.getKey().equals("state") && EnumUtils.isValidEnumIgnoreCase(BudgetState.class, String.valueOf(criteria.getValue()))){
                     now = LocalDate.now();
                     BudgetState budgetState = BudgetState.valueOf(String.valueOf(criteria.getValue()).toUpperCase());
-                    switch (budgetState){
-                        case CURRENT:
-                            whereClauseQry.append(" and b.budgetStartDate<:currDate and b.budgetEndDate>:currDate ");
-                            break;
-                        case PAST:
-                            whereClauseQry.append(" and b.budgetStartDate<:currDate and b.budgetEndDate<:currDate ");
-                            break;
-                        case UPCOMMING:
-                            whereClauseQry.append(" and b.budgetStartDate>:currDate and b.budgetEndDate>:currDate ");
-                        break;
+                    switch (budgetState) {
+                        case CURRENT ->
+                                whereClauseQry.append(" and b.budgetStartDate<=:currDate and b.budgetEndDate>=:currDate ");
+                        case PAST ->
+                                whereClauseQry.append(" and b.budgetStartDate<:currDate and b.budgetEndDate<:currDate ");
+                        case UPCOMMING ->
+                                whereClauseQry.append(" and b.budgetStartDate>:currDate and b.budgetEndDate>:currDate ");
                     }
                 }
             }

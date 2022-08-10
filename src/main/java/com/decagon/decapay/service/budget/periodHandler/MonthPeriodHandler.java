@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import static com.decagon.decapay.constants.ResponseMessageConstants.INVALID_REQUEST;
 
 
-public class MonthPeriodHandler extends BudgetPeriodHandler {
+public class MonthPeriodHandler extends AbstractBudgetPeriodHandler {
     /*
       for monthly period, year and month are both required
                          year must be a number and 4xters in len and

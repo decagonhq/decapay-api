@@ -3,7 +3,7 @@ package com.decagon.decapay.populator;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.model.budget.Budget;
-import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
+import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Setter
 public class CreateBudgetPopulator extends
         AbstractDataPopulator<CreateBudgetRequestDTO, Budget> {
-        BudgetPeriodHandler budgetPeriodHandler;
+        AbstractBudgetPeriodHandler budgetPeriodHandler;
     @Override
     public Budget populate(CreateBudgetRequestDTO source, Budget target) {
         

@@ -9,7 +9,7 @@ import com.decagon.decapay.dto.budget.ViewBudgetDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.service.budget.BudgetService;
-import com.decagon.decapay.service.budget.periodHandler.BudgetPeriodHandler;
+import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,13 +43,13 @@ public class BudgetController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = BUDGET_SUCCESSFULLY_CREATED),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "403", description = REQUEST_FORBIDDEN)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "403", description = REQUEST_FORBIDDEN,content = @Content)})
     @Operation(summary = "Create budget", description = "Create new user budget for with all mandatory fields.")
     @PostMapping("/budgets")
     public ResponseEntity<ApiDataResponse<CreateBudgetResponseDTO>> createBudget(@Valid @RequestBody CreateBudgetRequestDTO createBudgetRequest) {
         //todo: use strategy
-        BudgetPeriodHandler budgetPeriodHandler = BudgetPeriodHandler.getHandler(createBudgetRequest.getPeriod());
+        AbstractBudgetPeriodHandler budgetPeriodHandler = AbstractBudgetPeriodHandler.getHandler(createBudgetRequest.getPeriod());
         this.validateRequest(createBudgetRequest, budgetPeriodHandler);
 
         return ApiResponseUtil.response(HttpStatus.CREATED, budgetService.createBudget(createBudgetRequest, budgetPeriodHandler),
@@ -59,8 +59,8 @@ public class BudgetController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = RESOURCE_RETRIEVED_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "View Budget", description = "View Budget Details")
     @GetMapping("/budgets/{budgetId}")
     public ResponseEntity<ApiDataResponse<ViewBudgetDto>> fetchBudgetDetails(@PathVariable Long budgetId) {
@@ -70,8 +70,8 @@ public class BudgetController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = RETURN_BUDGET_LISTS_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Returns user's budget list successfully")
     @Parameters({
             @Parameter(in = ParameterIn.QUERY
@@ -104,7 +104,7 @@ public class BudgetController {
     }
 
 
-    private void validateRequest(CreateBudgetRequestDTO createBudgetRequest, BudgetPeriodHandler budgetPeriodHandler) {
+    private void validateRequest(CreateBudgetRequestDTO createBudgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
         budgetPeriodHandler.validateRequest(createBudgetRequest);
     }
 

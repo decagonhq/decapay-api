@@ -7,7 +7,7 @@ import com.decagon.decapay.utils.CustomDateUtil;
 
 import java.time.LocalDate;
 
-public class DailyPeriodHandler extends BudgetPeriodHandler {
+public class DailyPeriodHandler extends AbstractBudgetPeriodHandler {
 
     @Override
     public void validateRequest(CreateBudgetRequestDTO req) {
