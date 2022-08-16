@@ -63,23 +63,23 @@ public class Budget implements Auditable, Serializable {
     @Column(nullable = false)
     private BudgetPeriod budgetPeriod;
 
-    @OneToMany(mappedBy = "budget", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "budget", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE}, orphanRemoval = true)
     private Set<BudgetLineItem> budgetLineItems = new HashSet<>();
-
 
     @Embedded
     private AuditSection auditSection = new AuditSection();
 
-    public void addBudgetLineItem(BudgetLineItem budgetLineItem) {
-        budgetLineItem.setBudget(this);
+    public void addBudgetLineItem(BudgetCategory budgetCategory,BigDecimal projectedAmount) {
+        BudgetLineItem budgetLineItem = new BudgetLineItem(this, budgetCategory, projectedAmount);
+        budgetLineItem.setId(new BudgetLineItemId(this.getId(), budgetCategory.getId()));
         this.budgetLineItems.add(budgetLineItem);
     }
 
-    public void removeBudgetLineItem(BudgetLineItem budgetLineItem) {
-        budgetLineItem.setBudget(null);
+    public void removeBudgetLineItem(BudgetCategory budgetCategory) {
+        BudgetLineItem budgetLineItem = new BudgetLineItem(this, budgetCategory, null);
         this.budgetLineItems.remove(budgetLineItem);
+        budgetCategory.removeBudgetLineItem(budgetLineItem);
     }
-
 
     public BigDecimal calculatePercentageAmountSpent(){
         if (this.getTotalAmountSpentSoFar() == null){
@@ -95,5 +95,13 @@ public class Budget implements Auditable, Serializable {
             totalAmount = totalAmount.add(budgetLineItem.getProjectedAmount());
         }
         return totalAmount;
+    }
+
+    public void addExpense(BudgetCategory category, Expenses expense) {
+        this.budgetLineItems.forEach(budgetLineItem -> {
+            if(budgetLineItem.getBudgetCategory().equals(category)){
+                budgetLineItem.addExpense(expense);
+            }
+        });
     }
 }

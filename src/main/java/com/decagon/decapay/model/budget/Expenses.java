@@ -23,6 +23,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_EXPENSES;
 @Entity
 @Table(name = TABLE_EXPENSES)
 public class Expenses implements Auditable, Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,7 +36,10 @@ public class Expenses implements Auditable, Serializable {
     private LocalDate transactionDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "budget_line_item_id")
+    @JoinColumns({
+            @JoinColumn(name = "budget_id", referencedColumnName = "budget_id"),
+            @JoinColumn(name = "budget_category_id", referencedColumnName = "budget_category_id")
+    })
     private BudgetLineItem budgetLineItem;
 
     @Embedded

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET_CATEGORY;
 
@@ -33,4 +35,12 @@ public class BudgetCategory implements Auditable, Serializable {
 
     @Embedded
     private AuditSection auditSection = new AuditSection();
+
+    @OneToMany(mappedBy = "budgetCategory", cascade = CascadeType.ALL)
+    private Set<BudgetLineItem> budgetLineItems = new HashSet<>();
+
+    public void removeBudgetLineItem(BudgetLineItem budgetLineItem){
+        this.budgetLineItems.remove(budgetLineItem);
+    }
+
 }
