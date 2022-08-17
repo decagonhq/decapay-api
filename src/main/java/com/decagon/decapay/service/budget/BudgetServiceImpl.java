@@ -140,15 +140,15 @@ public class BudgetServiceImpl implements BudgetService {
 		budgetViewDto.setPercentageSpentSoFar(percentageSpentSoFar);
 		budgetViewDto.setDisplayPercentageSpentSoFar(percentageSpentSoFar+"%");
 		//convert budget line items
-		Collection<ViewBudgetDto.BudgetLineItem> lineItems=convertBudgetLineItemToDto(budget.getBudgetLineItems());
+		Collection<ViewBudgetDto.LineItemDto> lineItems=convertBudgetLineItemToDto(budget.getBudgetLineItems());
 		budgetViewDto.setLineItems(lineItems);
 		return budgetViewDto;
 	}
 
-	private Collection<ViewBudgetDto.BudgetLineItem> convertBudgetLineItemToDto(Set<BudgetLineItem> budgetLineItems) {
+	private Collection<ViewBudgetDto.LineItemDto> convertBudgetLineItemToDto(Set<BudgetLineItem> budgetLineItems) {
 
 		return budgetLineItems.stream().map(budgetLineItem -> {
-			ViewBudgetDto.BudgetLineItem item=new ViewBudgetDto.BudgetLineItem();
+			ViewBudgetDto.LineItemDto item=new ViewBudgetDto.LineItemDto();
 			item.setBudgetId(budgetLineItem.getBudget().getId());
 			item.setCategoryId(budgetLineItem.getBudgetCategory().getId());
 			item.setCategory(budgetLineItem.getBudgetCategory().getTitle());

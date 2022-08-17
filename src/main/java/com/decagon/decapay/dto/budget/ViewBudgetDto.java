@@ -36,13 +36,13 @@ public class ViewBudgetDto {
     private LocalDate displayEndDate;
     @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)
     private LocalDate displayStartDate;
-    Collection<BudgetLineItem> lineItems = new ArrayList<>();
+    Collection<LineItemDto> lineItems = new ArrayList<>();
 
     @Setter
     @Getter
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    public static class BudgetLineItem  {
+    public static class LineItemDto {
         private long categoryId;
         private String category;
         private long budgetId;
