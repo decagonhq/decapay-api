@@ -225,7 +225,7 @@ class BudgetLineItemTest {
         this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -318,7 +318,7 @@ class BudgetLineItemTest {
                 .andExpect(jsonPath("$.message").value(LINE_ITEM_CREATED_SUCCESSFULLY))
                 .andExpect(jsonPath("$.data.id").value(budget.getId()));
 
-        budget = this.budgetRepository.findBudgetByIdAndUserId(budget.getId(), user.getId()).get();
+        budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
         assertEquals(4, budget.getBudgetLineItems().size());
 
         var lineItem = budget.getBudgetLineItems()
