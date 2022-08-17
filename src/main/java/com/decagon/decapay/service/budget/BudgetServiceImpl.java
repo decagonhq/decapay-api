@@ -31,6 +31,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -102,7 +104,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public ViewBudgetDto viewBudgetDetails(Long budgetId) {
-		User user = this.getAuthenticatedUser();
+		User currentUser = this.getAuthenticatedUser();
 
 		Optional<Budget> optionalBudget = budgetRepository.findBudgetDetailsById(budgetId);
 
@@ -111,7 +113,8 @@ public class BudgetServiceImpl implements BudgetService {
 		}
 
 		Budget budget = optionalBudget.get();
-		if (!user.getId().equals(budget.getUser().getId())){
+
+		if (!isCurrentUserOwnerOfBudget(currentUser,budget)){
 			throw new InvalidRequestException("Invalid Request");
 		}
 		return this.convertBudgetViewDto(budget);
@@ -136,8 +139,31 @@ public class BudgetServiceImpl implements BudgetService {
 		BigDecimal percentageSpentSoFar = budget.calculatePercentageAmountSpent();
 		budgetViewDto.setPercentageSpentSoFar(percentageSpentSoFar);
 		budgetViewDto.setDisplayPercentageSpentSoFar(percentageSpentSoFar+"%");
+		//convert budget line items
+		Collection<ViewBudgetDto.BudgetLineItem> lineItems=convertBudgetLineItemToDto(budget.getBudgetLineItems());
+		budgetViewDto.setLineItems(lineItems);
 		return budgetViewDto;
 	}
+
+	private Collection<ViewBudgetDto.BudgetLineItem> convertBudgetLineItemToDto(Set<BudgetLineItem> budgetLineItems) {
+
+		return budgetLineItems.stream().map(budgetLineItem -> {
+			ViewBudgetDto.BudgetLineItem item=new ViewBudgetDto.BudgetLineItem();
+			item.setBudgetId(budgetLineItem.getBudget().getId());
+			item.setCategoryId(budgetLineItem.getBudgetCategory().getId());
+			item.setCategory(budgetLineItem.getBudgetCategory().getTitle());
+			item.setProjectedAmount(budgetLineItem.getProjectedAmount());
+			item.setTotalAmountSpentSoFar(budgetLineItem.getTotalAmountSpentSoFar()==null?BigDecimal.ZERO.setScale(2,BigDecimal.ROUND_HALF_DOWN):budgetLineItem.getTotalAmountSpentSoFar());
+			item.setDisplayProjectedAmount(currencyService.formatAmount(budgetLineItem.getProjectedAmount()));
+			item.setDisplayTotalAmountSpentSoFar(currencyService.formatAmount(budgetLineItem.getTotalAmountSpentSoFar()));
+			BigDecimal percentageSpentSoFar = budgetLineItem.calculatePercentageAmountSpent();
+			item.setPercentageSpentSoFar(percentageSpentSoFar);
+			item.setDisplayPercentageSpentSoFar(percentageSpentSoFar+"%");
+			return item;
+		}).collect(Collectors.toList());
+
+	}
+
 
 	public User getAuthenticatedUser() {
 
@@ -155,13 +181,13 @@ public class BudgetServiceImpl implements BudgetService {
 	@Transactional
     @Override
     public IdResponseDto updateBudget(Long budgetId, CreateBudgetRequestDTO budgetRequestDto, AbstractBudgetPeriodHandler budgetPeriodHandler) {
-        User user = this.getAuthenticatedUser();
+        User currentUser = this.getAuthenticatedUser();
 
-		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, user.getId())
+		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
 
-		if (!isUserOwnerOfBudget(user, budget)){
-			log.error(String.format("This should be an hacking attempt, userid : %s, budgetId : %s", user.getId(), budgetId));
+		if (!isCurrentUserOwnerOfBudget(currentUser, budget)){
+			log.error(String.format("This should be an hacking attempt, userid : %s, budgetId : %s", currentUser.getId(), budgetId));
 			throw new InvalidRequestException("Invalid Request");
 		}
 
@@ -182,7 +208,7 @@ public class BudgetServiceImpl implements BudgetService {
 		this.updateBudgetModel(budget, budgetRequestDto, budgetPeriodHandler);
 	}
 
-	private boolean isUserOwnerOfBudget(User user, Budget budget) {
+	private boolean isCurrentUserOwnerOfBudget(User user, Budget budget) {
 		return user.getId().equals(budget.getUser().getId());
 	}
 
@@ -209,7 +235,7 @@ public class BudgetServiceImpl implements BudgetService {
 		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, user.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
 
-		if (!isUserOwnerOfBudget(user, budget)){
+		if (!isCurrentUserOwnerOfBudget(user, budget)){
 			log.error(String.format("This should be an hacking attempt, userid : %s, budgetId : %s", user.getId(), budgetId));
 			throw new InvalidRequestException("Invalid Request");
 		}

@@ -3,6 +3,8 @@ package com.decagon.decapay.controller.budget;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
+import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
+import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
 import com.decagon.decapay.service.budget.category.BudgetCategoryService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,10 +15,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
@@ -41,5 +42,15 @@ public class BudgetCategoryController {
         List<BudgetCategoryResponseDto> budgetCategoryResponseDtos =
                 budgetCategoryService.getListOfBudgetCategories();
         return ApiResponseUtil.response(HttpStatus.OK, budgetCategoryResponseDtos);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = BUDGET_CATEGORY_SUCCESSFULLY_CREATED),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "403", description = REQUEST_FORBIDDEN,content = @Content)})
+    @Operation(summary = "Create budget category", description = "Create new user budget category with the mandatory field.")
+    @PostMapping("/budget_categories")
+    public ResponseEntity<ApiDataResponse<CreateBudgetResponseDTO>> createBudgetCategory(@Valid @RequestBody CreateBudgetCategoryDto request) {
+        return ApiResponseUtil.response(HttpStatus.CREATED, budgetCategoryService.createBudgetCategory(request),BUDGET_CATEGORY_SUCCESSFULLY_CREATED);
     }
 }

@@ -1,6 +1,8 @@
 package com.decagon.decapay.service.budget.category;
 
 import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
+import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
+import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 
@@ -11,5 +13,7 @@ public interface BudgetCategoryService {
     Optional<BudgetCategory> findCategoryByIdAndUser(Long budgetCategoryId, User userId);
 
     List<BudgetCategoryResponseDto> getListOfBudgetCategories();
+
+    CreateBudgetResponseDTO createBudgetCategory(CreateBudgetCategoryDto request);
 
 }

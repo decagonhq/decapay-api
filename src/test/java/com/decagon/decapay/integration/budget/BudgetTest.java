@@ -165,6 +165,73 @@ public class BudgetTest {
 
 
     @Test
+    void shouldViewBudgetDetailsSuccessfully() throws Exception {
+        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
+        Currency currency = AppConstants.DEFAULT_CURRENCY;
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        LocalDate today = LocalDate.now();
+
+        Budget budget = new Budget();
+        budget.setTitle("Transportation Budget");
+        budget.setNotificationThreshold("Notification Trashold");
+        budget.setBudgetPeriod(MONTHLY);
+        budget.setBudgetStartDate(today);
+        budget.setBudgetEndDate(today.plusWeeks(3));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
+        budget.setProjectedAmount(BigDecimal.valueOf(5000));
+
+        user.addBudget(budget);
+        userRepository.save(user);
+
+        //budget line items
+        BudgetCategory category1 = TestModels.budgetCategory("Food");
+        category1.setUser(user);
+
+        BudgetCategory category2 = TestModels.budgetCategory("Water");
+        category2.setUser(user);
+
+        this.budgetCategoryRepository.saveAll(List.of(category1, category2));
+
+        budget.addBudgetLineItem(category1, BigDecimal.valueOf(2000));
+        budget.addBudgetLineItem(category2, BigDecimal.valueOf(2500));
+        this.budgetRepository.save(budget);
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}", budget.getId()).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.projectedAmount").value(5000.00))
+                .andExpect(jsonPath("$.data.displayProjectedAmount").value(currency.getSymbol(locale) + "5,000.00"))
+                .andExpect(jsonPath("$.data.notificationThreshold").value("Notification Trashold"))
+                .andExpect(jsonPath("$.data.title").value("Transportation Budget"))
+                .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.displayStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                .andExpect(jsonPath("$.data.totalAmountSpentSoFar").value(2500.00))
+                .andExpect(jsonPath("$.data.displayTotalAmountSpentSoFar").value(currency.getSymbol(locale) + "2,500.00"))
+                .andExpect(jsonPath("$.data.percentageSpentSoFar").value(50.0))
+                .andExpect(jsonPath("$.data.displayPercentageSpentSoFar").value("50.0%"))
+                .andExpect(jsonPath("$.data.budgetPeriod").value(MONTHLY.name()))
+                //line items
+                .andExpect(jsonPath("$.data.lineItems.size()").value(2))
+                .andExpect(jsonPath("$.data.lineItems[*].categoryId", Matchers.containsInAnyOrder(category1.getId().intValue(),category2.getId().intValue())))
+                .andExpect(jsonPath("$.data.lineItems[*].category", Matchers.containsInAnyOrder("Food","Water")))
+                .andExpect(jsonPath("$.data.lineItems[*].budgetId", Matchers.containsInAnyOrder(budget.getId().intValue(),budget.getId().intValue())))
+                .andExpect(jsonPath("$.data.lineItems[*].projectedAmount", Matchers.containsInAnyOrder(2000.00,2500.00)))
+                .andExpect(jsonPath("$.data.lineItems[*].displayProjectedAmount", Matchers.containsInAnyOrder(currency.getSymbol(locale) + "2,000.00",currency.getSymbol(locale) + "2,500.00")))
+                .andExpect(jsonPath("$.data.lineItems[*].totalAmountSpentSoFar", Matchers.containsInAnyOrder(0.00,0.00)))
+                .andExpect(jsonPath("$.data.lineItems[*].displayTotalAmountSpentSoFar", Matchers.containsInAnyOrder(currency.getSymbol(locale) + "0.00",currency.getSymbol(locale) + "0.00")))
+                .andExpect(jsonPath("$.data.lineItems[*].percentageSpentSoFar", Matchers.containsInAnyOrder(0.0,0.0)))
+                .andExpect(jsonPath("$.data.lineItems[*].displayPercentageSpentSoFar", Matchers.containsInAnyOrder("0.0%","0.0%")));
+    }
+
+
+    @Test
     void shouldReturnEmptyCollectionWhenBudgetLineItemDoesNotExist() throws Exception {
 
         LocalDate today = LocalDate.now();
@@ -610,49 +677,6 @@ public class BudgetTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.content.size()").value(0));
 
-    }
-
-
-    @Test
-    void shouldViewBudgetDetailsSuccessfully() throws Exception {
-        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
-        Currency currency = AppConstants.DEFAULT_CURRENCY;
-
-        User user = TestModels.user("ola", "dip", "ola@gmail.com",
-                passwordEncoder.encode("password"), "08067644805");
-        user.setUserStatus(UserStatus.ACTIVE);
-
-        LocalDate today = LocalDate.now();
-
-        Budget budget = new Budget();
-        budget.setTitle("Transportation Budget");
-        budget.setNotificationThreshold("Notification Trashold");
-        budget.setBudgetPeriod(MONTHLY);
-        budget.setBudgetStartDate(today);
-        budget.setBudgetEndDate(today.plusWeeks(3));
-        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
-        budget.setProjectedAmount(BigDecimal.valueOf(5000));
-
-        user.addBudget(budget);
-        userRepository.save(user);
-
-        setAuthHeader(user);;
-
-        this.mockMvc.perform(get(path + "/budgets/{budgetId}", budget.getId()).headers(headers))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.projectedAmount").value(5000.00))
-                .andExpect(jsonPath("$.data.displayProjectedAmount").value(currency.getSymbol(locale) + "5,000.00"))
-                .andExpect(jsonPath("$.data.notificationThreshold").value("Notification Trashold"))
-                .andExpect(jsonPath("$.data.title").value("Transportation Budget"))
-                .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                .andExpect(jsonPath("$.data.displayStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
-                .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
-                .andExpect(jsonPath("$.data.totalAmountSpentSoFar").value(2500.00))
-                .andExpect(jsonPath("$.data.displayTotalAmountSpentSoFar").value(currency.getSymbol(locale) + "2,500.00"))
-                .andExpect(jsonPath("$.data.percentageSpentSoFar").value(50.0))
-                .andExpect(jsonPath("$.data.displayPercentageSpentSoFar").value("50.0%"))
-                .andExpect(jsonPath("$.data.budgetPeriod").value(MONTHLY.name()));
     }
 
 

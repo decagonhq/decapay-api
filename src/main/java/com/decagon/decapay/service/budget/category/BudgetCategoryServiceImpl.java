@@ -1,6 +1,8 @@
 package com.decagon.decapay.service.budget.category;
 
 import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
+import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
+import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.exception.UnAuthorizedException;
 import com.decagon.decapay.model.budget.BudgetCategory;
@@ -15,9 +17,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+
 @RequiredArgsConstructor
-public class BudgetCategoryServiceImpl implements BudgetCategoryService {
+@Service
+public class BudgetCategoryServiceImpl implements BudgetCategoryService{
+
     private final BudgetCategoryRepository budgetCategoryRepository;
     private final UserRepository userRepository;
     private final UserInfoUtills userInfoUtills;
@@ -33,6 +37,22 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService {
         return budgetCategoryRepository.findCategoriesByUserId(user.getId());
     }
 
+    @Override
+    public CreateBudgetResponseDTO createBudgetCategory(CreateBudgetCategoryDto request) {
+        BudgetCategory category= createCategoryModelEntity(request.getTitle());
+        budgetCategoryRepository.save(category);
+        return new CreateBudgetResponseDTO(category.getId());
+    }
+
+    private BudgetCategory createCategoryModelEntity(String title) {
+        BudgetCategory category=new BudgetCategory();
+        User user = this.getAuthenticatedUser();
+        category.setTitle(title);
+        category.setUser(user);
+        return category;
+    }
+
+
     public User getAuthenticatedUser() {
 
         UserInfo authenticatedUserInfo = this.userInfoUtills.authenticationUserInfo();
@@ -45,5 +65,4 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService {
         }
         return user.get();
     }
-
 }
