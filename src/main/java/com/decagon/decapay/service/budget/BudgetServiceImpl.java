@@ -269,13 +269,11 @@ public class BudgetServiceImpl implements BudgetService {
 
 
 	private void validateThatBudgetLineItemDoesNotExist(Budget budget, BudgetCategory category) {
-		budget.getBudgetLineItems()
-				.stream()
-				.filter(lineItem -> lineItem.getBudgetCategory().equals(category))
-				.findAny()
-				.ifPresent(lineItem -> {
-					throw new ResourceConflictException("Budget line item already exists");
-				});
+		budget.getBudgetLineItems().forEach(budgetLineItem -> {
+			if (budgetLineItem.getBudgetCategory().getId().equals(category.getId())) {
+				throw new ResourceConflictException("Budget line item already exists");
+			}
+		});
 	}
 
 	private boolean categoryBelongsToUser(User user, BudgetCategory category) {
