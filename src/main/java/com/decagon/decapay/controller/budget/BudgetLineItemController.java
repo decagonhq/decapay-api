@@ -3,7 +3,7 @@ package com.decagon.decapay.controller.budget;
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.budget.BudgetLineItemDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.service.budget.lineitem.BudgetLineItemService;
+import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,7 +21,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 @RestController
 @RequestMapping(value = "${api.basepath-api}")
 public class BudgetLineItemController {
-    private final BudgetLineItemService budgetLineItemService;
+    private final BudgetService budgetService;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = LINE_ITEM_CREATED_SUCCESSFULLY),
@@ -31,7 +31,7 @@ public class BudgetLineItemController {
     @Operation(summary = "Create Budget Line Item", description = "Create Budget Line Item")
     @PostMapping("/budgets/{budgetId}/lineItems")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody BudgetLineItemDto budgetLineItemDto) {
-        return ApiResponseUtil.response(HttpStatus.OK, this.budgetLineItemService.createLineItem(budgetId, budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.createLineItem(budgetId, budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
     }
 
 

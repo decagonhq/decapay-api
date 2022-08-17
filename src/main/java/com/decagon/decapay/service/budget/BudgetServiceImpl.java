@@ -1,18 +1,14 @@
 package com.decagon.decapay.service.budget;
 
 import com.decagon.decapay.dto.SearchCriteria;
-import com.decagon.decapay.dto.budget.BudgetResponseDto;
-import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
-import com.decagon.decapay.dto.budget.ViewBudgetDto;
+import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.exception.InvalidCredentialException;
-import com.decagon.decapay.exception.InvalidRequestException;
-import com.decagon.decapay.exception.ResourceNotFoundException;
-import com.decagon.decapay.exception.UnAuthorizedException;
+import com.decagon.decapay.exception.*;
 import com.decagon.decapay.model.budget.Budget;
+import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
+import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
@@ -32,6 +28,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -42,14 +39,16 @@ public class BudgetServiceImpl implements BudgetService {
 	private final CurrencyService currencyService;
 	//TODO: replace with  userService or userInfo component
 	private final  CustomUserDetailsService userDetailsService;
+	private final BudgetCategoryRepository budgetCategoryRepository;
 	private final UserInfoUtills userInfoUtills;
 
 	public BudgetServiceImpl(final BudgetRepository budgetRepository, final CustomUserDetailsService userDetailsService
-			,UserRepository userRepository,CurrencyService currencyService,UserInfoUtills userInfoUtills) {
+			, UserRepository userRepository, CurrencyService currencyService, BudgetCategoryRepository budgetCategoryRepository, UserInfoUtills userInfoUtills) {
 		this.budgetRepository = budgetRepository;
 		this.userDetailsService = userDetailsService;
 		this.userRepository =userRepository;
 		this.currencyService=currencyService;
+		this.budgetCategoryRepository = budgetCategoryRepository;
 		this.userInfoUtills=userInfoUtills;
 	}
 
@@ -228,4 +227,71 @@ public class BudgetServiceImpl implements BudgetService {
 		budgetPeriodHandler.setBudgetPeriodMetaData(budgetRequestDto, budget);
 		return budgetRequestDto;
 	}
+
+	@Override
+	@Transactional
+	public IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto) {
+		User user = this.getAuthenticatedUser();
+
+		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, user.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+		BudgetCategory category = this.budgetCategoryRepository.findById(budgetLineItemDto.getBudgetCategoryId())
+				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+		this.validateThatBudgetLineItemDoesNotExist(budget, category);
+
+		if (!categoryBelongsToUser(user, category)) {
+			throw new InvalidRequestException("You are not authorized to create budget line item");
+		}
+
+		if(!isProjectedAmountValid(budget, budgetLineItemDto)){
+			throw new InvalidRequestException("Sum of Line Item Projected amount is greater than budget total amount");
+		}
+
+		budget = this.saveLineItem(budget, category, budgetLineItemDto);
+
+		return new IdResponseDto(budget.getId());
+	}
+
+	private Budget saveLineItem(Budget budget, BudgetCategory category, BudgetLineItemDto dto){
+		budget.addBudgetLineItem(category, dto.getAmount());
+		return this.budgetRepository.save(budget);
+	}
+
+	private boolean isProjectedAmountValid(Budget budget, BudgetLineItemDto budgetLineItemDto) {
+		if (budget.getBudgetLineItems().isEmpty() && budgetLineItemDto.getAmount().compareTo(budget.getProjectedAmount()) <= 0) {
+			return true;
+		}
+		BigDecimal budgetTotalAmount = budget.calculateBudgetLineItemsTotalAmount();
+		return budgetTotalAmount.add(budgetLineItemDto.getAmount()).compareTo(budget.getProjectedAmount()) <= 0;
+	}
+
+
+	private void validateThatBudgetLineItemDoesNotExist(Budget budget, BudgetCategory category) {
+		budget.getBudgetLineItems()
+				.stream()
+				.filter(lineItem -> lineItem.getBudgetCategory().equals(category))
+				.findAny()
+				.ifPresent(lineItem -> {
+					throw new ResourceConflictException("Budget line item already exists");
+				});
+	}
+
+	private boolean categoryBelongsToUser(User user, BudgetCategory category) {
+		return Objects.equals(user.getId(), category.getUser().getId());
+	}
+
+//	private User getAuthenticatedUser() {
+//		UserInfo authenticatedUserInfo = this.userInfoUtil.authenticatedUserInfo();
+//
+//		if (authenticatedUserInfo == null){
+//			throw new UnAuthorizedException("Authenticated User not found");
+//		}
+//		Optional<User> user = userRepository.findUserByEmail(authenticatedUserInfo.getUsername());
+//		if (user.isEmpty()){
+//			throw  new ResourceNotFoundException("User not found");
+//		}
+//		return user.get();
+//	}
 }
