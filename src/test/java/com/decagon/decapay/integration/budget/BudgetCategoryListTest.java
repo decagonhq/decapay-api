@@ -214,11 +214,12 @@ public class BudgetCategoryListTest {
         CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
         dto.setTitle("Transportation");
 
-        mockMvc.perform(post(path + "/category").headers(headers).contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post(path + "/budget-categories").headers(headers).contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtils.asJsonString(dto))).andExpect(status().isCreated());
 
         BudgetCategory category = budgetCategoryRepository.findAll().iterator().next();
         Assertions.assertEquals("Transportation", category.getTitle());
+        Assertions.assertNotNull(category.getUser());
     }
 
     @Test
