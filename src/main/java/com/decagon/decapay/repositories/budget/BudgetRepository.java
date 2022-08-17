@@ -38,6 +38,6 @@ public interface BudgetRepository extends JpaRepository<Budget, Long>, BudgetRep
            "left join fetch i.budgetCategory " +
            "where b.id = ?1 and b.user.id = ?2 " +
            "and b.auditSection.delF = '0' ")
-    Optional<Budget> findBudgetDetailsByIdAndUserId(Long budgetId, Long userId);
+    Optional<Budget> findBudgetWithLineItems(Long budgetId, Long userId);
 
 }
