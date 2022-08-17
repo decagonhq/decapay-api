@@ -245,7 +245,7 @@ public class BudgetServiceImpl implements BudgetService {
 			throw new InvalidRequestException("You are not authorized to create budget line item");
 		}
 
-		if(!isProjectedAmountValid(budget, budgetLineItemDto)){
+		if(!isProjectedAmountGreaterThanLineItemsTotalAmount(budget, budgetLineItemDto)){
 			throw new InvalidRequestException("Sum of Line Item Projected amount is greater than budget total amount");
 		}
 
@@ -259,7 +259,7 @@ public class BudgetServiceImpl implements BudgetService {
 		return this.budgetRepository.save(budget);
 	}
 
-	private boolean isProjectedAmountValid(Budget budget, BudgetLineItemDto budgetLineItemDto) {
+	private boolean isProjectedAmountGreaterThanLineItemsTotalAmount(Budget budget, BudgetLineItemDto budgetLineItemDto) {
 		if (budget.getBudgetLineItems().isEmpty() && budgetLineItemDto.getAmount().compareTo(budget.getProjectedAmount()) <= 0) {
 			return true;
 		}
