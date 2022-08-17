@@ -1,10 +1,7 @@
 package com.decagon.decapay.utils;
 
 import com.decagon.decapay.model.auth.PasswordReset;
-import com.decagon.decapay.model.budget.Budget;
-import com.decagon.decapay.model.budget.BudgetLineItem;
-import com.decagon.decapay.model.budget.BudgetPeriod;
-import com.decagon.decapay.model.budget.Expenses;
+import com.decagon.decapay.model.budget.*;
 import com.decagon.decapay.model.user.User;
 
 import java.math.BigDecimal;
@@ -56,4 +53,11 @@ public class TestModels {
         budgetLineItem.setTotalAmountSpentSoFar(amountSpent);
         return budgetLineItem;
     }
+
+    public static BudgetCategory budgetCategory(String title) {
+        BudgetCategory budgetCategory = new BudgetCategory();
+        budgetCategory.setTitle(title);
+        return budgetCategory;
+    }
+
 }

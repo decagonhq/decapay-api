@@ -22,9 +22,15 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET_LINE_IT
 @Entity
 @Table(name = TABLE_BUDGET_LINE_ITEM)
 public class BudgetLineItem implements Auditable, Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
+    @EmbeddedId
+    private BudgetLineItemId id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("budgetId")
+    Budget budget;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("budgetCategoryId")
+    private BudgetCategory budgetCategory;
 
     @Column(columnDefinition = "decimal(10,2) default (0)")
     private BigDecimal projectedAmount;
@@ -35,19 +41,18 @@ public class BudgetLineItem implements Auditable, Serializable {
     @Column(length = 100)
     private String notificationThreshold;
 
-    @ManyToOne
-    @JoinColumn(name = "budget_category_id")
-    private BudgetCategory budgetCategory;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "budget_id")
-    private Budget budget;
-
     @OneToMany(mappedBy = "budgetLineItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Expenses> expenses = new HashSet<>();
 
     @Embedded
     private AuditSection auditSection = new AuditSection();
+
+    public BudgetLineItem(Budget budget, BudgetCategory budgetCategory, BigDecimal projectedAmount){
+        this.budget = budget;
+        this.budgetCategory = budgetCategory;
+        this.projectedAmount = projectedAmount;
+    }
+
 
     public void addExpense(Expenses expense) {
         expense.setBudgetLineItem(this);
@@ -55,7 +60,7 @@ public class BudgetLineItem implements Auditable, Serializable {
     }
 
     public void removeExpense(Expenses expense) {
-        expense.setBudgetLineItem(null);
+        expense.setId(null);
         this.expenses.remove(expense);
     }
 }
