@@ -11,7 +11,6 @@ import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
-import com.decagon.decapay.repositories.budget.BudgetLineItemRepository;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.UserInfo;
@@ -19,6 +18,7 @@ import com.decagon.decapay.utils.UserInfoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,9 +30,9 @@ public class BudgetLineItemServiceImpl implements BudgetLineItemService {
     private final BudgetRepository budgetRepository;
     private final BudgetCategoryRepository budgetCategoryRepository;
     private final UserRepository userRepository;
-    private final BudgetLineItemRepository budgetLineItemRepository;
 
     @Override
+    @Transactional
     public IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto) {
         User user = this.getAuthenticatedUser();
 
@@ -72,8 +72,11 @@ public class BudgetLineItemServiceImpl implements BudgetLineItemService {
 
 
     private void validateThatBudgetLineItemDoesNotExist(Budget budget, BudgetCategory category) {
-        this.budgetLineItemRepository.findByBudgetIdAndBudgetCategoryId(budget.getId(), category.getId())
-                .ifPresent(budgetLineItem -> {
+        budget.getBudgetLineItems()
+                .stream()
+                .filter(lineItem -> lineItem.getBudgetCategory().equals(category))
+                .findAny()
+                .ifPresent(lineItem -> {
                     throw new ResourceConflictException("Budget line item already exists");
                 });
     }

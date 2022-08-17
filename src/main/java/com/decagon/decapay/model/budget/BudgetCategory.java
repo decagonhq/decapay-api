@@ -4,20 +4,22 @@ import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
 import com.decagon.decapay.model.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET_CATEGORY;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @EntityListeners(AuditListener.class)
 @Table(name = TABLE_BUDGET_CATEGORY)
@@ -31,16 +33,30 @@ public class BudgetCategory implements Auditable, Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private User user;
 
     @Embedded
     private AuditSection auditSection = new AuditSection();
 
     @OneToMany(mappedBy = "budgetCategory", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Set<BudgetLineItem> budgetLineItems = new HashSet<>();
 
     public void removeBudgetLineItem(BudgetLineItem budgetLineItem){
         this.budgetLineItems.remove(budgetLineItem);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        BudgetCategory category = (BudgetCategory) o;
+        return id != null && Objects.equals(id, category.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

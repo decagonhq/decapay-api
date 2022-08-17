@@ -4,12 +4,10 @@ package com.decagon.decapay.integration.budget;
 import com.decagon.decapay.dto.budget.BudgetLineItemDto;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
-import com.decagon.decapay.model.budget.BudgetLineItem;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
-import com.decagon.decapay.repositories.budget.BudgetLineItemRepository;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
@@ -322,7 +320,15 @@ class BudgetLineItemTest {
                 .andExpect(jsonPath("$.message").value(LINE_ITEM_CREATED_SUCCESSFULLY))
                 .andExpect(jsonPath("$.data.id").value(budget.getId()));
 
-        BudgetLineItem lineItem = this.budgetLineItemRepository.findByBudgetIdAndBudgetCategoryId(budget.getId(), category4.getId()).get();
+        budget = this.budgetRepository.findBudgetByIdAndUserId(budget.getId(), user.getId()).get();
+        assertEquals(4, budget.getBudgetLineItems().size());
+
+        var lineItem = budget.getBudgetLineItems()
+                .stream()
+                .filter(budgetLineItem -> budgetLineItem.getBudgetCategory().equals(category4))
+                .findFirst()
+                .get();
+
         assertEquals(category4.getId(), lineItem.getBudgetCategory().getId());
         assertEquals(budget.getId(), lineItem.getBudget().getId());
         assertEquals(dto.getAmount().setScale(2), lineItem.getProjectedAmount());
