@@ -9,6 +9,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,5 +63,13 @@ public class BudgetLineItem implements Auditable, Serializable {
     public void removeExpense(Expenses expense) {
         expense.setId(null);
         this.expenses.remove(expense);
+    }
+
+    public BigDecimal calculatePercentageAmountSpent() {
+        if (this.getTotalAmountSpentSoFar() == null){
+            return BigDecimal.ZERO.setScale(1, RoundingMode.CEILING);
+        }
+        BigDecimal spentSoFar = this.getTotalAmountSpentSoFar().divide(this.getProjectedAmount(), BigDecimal.ROUND_HALF_DOWN);
+        return spentSoFar.multiply(BigDecimal.valueOf(100)).setScale(1, RoundingMode.CEILING);
     }
 }
