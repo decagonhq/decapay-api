@@ -239,9 +239,9 @@ public class BudgetServiceImpl implements BudgetService {
 		BudgetCategory category = this.budgetCategoryService.findCategoryById(budgetLineItemDto.getBudgetCategoryId())
 				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-		this.validateThatBudgetLineItemDoesNotExist(budget, category);
+		this.findBudgetLineItemByBudgetAndCategory(budget, category);
 
-		if (!categoryBelongsToUser(user, category)) {
+		if (!findByCategoryIdAndUserId(user, category)) {
 			throw new InvalidRequestException("You are not authorized to create budget line item");
 		}
 
@@ -263,7 +263,7 @@ public class BudgetServiceImpl implements BudgetService {
 	}
 
 
-	private void validateThatBudgetLineItemDoesNotExist(Budget budget, BudgetCategory category) {
+	private void findBudgetLineItemByBudgetAndCategory(Budget budget, BudgetCategory category) {
 		budget.getBudgetLineItems().forEach(budgetLineItem -> {
 			if (budgetLineItem.getBudgetCategory().getId().equals(category.getId())) {
 				throw new ResourceConflictException("Budget line item already exists");
@@ -271,7 +271,7 @@ public class BudgetServiceImpl implements BudgetService {
 		});
 	}
 
-	private boolean categoryBelongsToUser(User user, BudgetCategory category) {
+	private boolean findByCategoryIdAndUserId(User user, BudgetCategory category) {
 		return Objects.equals(user.getId(), category.getUser().getId());
 	}
 }
