@@ -215,7 +215,7 @@ public class BudgetCategoryListTest {
         CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
         dto.setTitle("Transportation");
 
-        mockMvc.perform(post(path + "/budget-categories").headers(headers).contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post(path + "/budget_categories").headers(headers).contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtils.asJsonString(dto))).andExpect(status().isCreated());
 
         BudgetCategory category = budgetCategoryRepository.findAll().iterator().next();
@@ -229,7 +229,7 @@ public class BudgetCategoryListTest {
         CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
         dto.setTitle("Transportation");
 
-        mockMvc.perform(post(path + "/budget-categories").contentType(MediaType.APPLICATION_JSON).content(
+        mockMvc.perform(post(path + "/budget_categories").contentType(MediaType.APPLICATION_JSON).content(
                 TestUtils.asJsonString(dto))).andExpect(status().isForbidden());
     }
 }
