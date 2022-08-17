@@ -60,8 +60,6 @@ class BudgetLineItemTest {
     @Autowired
     private BudgetCategoryRepository budgetCategoryRepository;
     @Autowired
-    private BudgetLineItemRepository budgetLineItemRepository;
-    @Autowired
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private JwtUtil jwtUtil;

@@ -281,17 +281,4 @@ public class BudgetServiceImpl implements BudgetService {
 	private boolean categoryBelongsToUser(User user, BudgetCategory category) {
 		return Objects.equals(user.getId(), category.getUser().getId());
 	}
-
-//	private User getAuthenticatedUser() {
-//		UserInfo authenticatedUserInfo = this.userInfoUtil.authenticatedUserInfo();
-//
-//		if (authenticatedUserInfo == null){
-//			throw new UnAuthorizedException("Authenticated User not found");
-//		}
-//		Optional<User> user = userRepository.findUserByEmail(authenticatedUserInfo.getUsername());
-//		if (user.isEmpty()){
-//			throw  new ResourceNotFoundException("User not found");
-//		}
-//		return user.get();
-//	}
 }
