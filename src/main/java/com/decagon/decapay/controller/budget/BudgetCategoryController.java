@@ -3,9 +3,7 @@ package com.decagon.decapay.controller.budget;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
-import com.decagon.decapay.dto.budget.ViewBudgetDto;
-import com.decagon.decapay.model.budget.BudgetCategory;
-import com.decagon.decapay.service.budget.BudgetCategoryService;
+import com.decagon.decapay.service.budget.category.BudgetCategoryService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
