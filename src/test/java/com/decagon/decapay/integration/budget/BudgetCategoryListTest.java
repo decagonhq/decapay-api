@@ -57,10 +57,6 @@ public class BudgetCategoryListTest {
     private BudgetCategoryRepository budgetCategoryRepository;
     @Autowired
     private JwtUtil jwtUtil;
-
-    @Autowired
-    TxnManager txnManager;
-
     private HttpHeaders headers;
 
 
