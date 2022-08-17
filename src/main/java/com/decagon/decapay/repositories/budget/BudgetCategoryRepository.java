@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BudgetCategoryRepository extends JpaRepository<BudgetCategory, Long> {
 
-    @Query("select new com.decagon.decapay.dto.budget.BudgetCategoryResponseDto(b.title) " +
+    @Query("select new com.decagon.decapay.dto.budget.BudgetCategoryResponseDto(b.id, b.title) " +
             "from BudgetCategory b " +
             "where b.user.id=?1 " +
             "AND b.auditSection.delF <> '1' ")
