@@ -8,11 +8,11 @@ import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
-import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.UserInfo;
+import com.decagon.decapay.service.budget.category.BudgetCategoryService;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
 import com.decagon.decapay.utils.PageUtil;
@@ -39,16 +39,16 @@ public class BudgetServiceImpl implements BudgetService {
 	private final CurrencyService currencyService;
 	//TODO: replace with  userService or userInfo component
 	private final  CustomUserDetailsService userDetailsService;
-	private final BudgetCategoryRepository budgetCategoryRepository;
+	private final BudgetCategoryService budgetCategoryService;
 	private final UserInfoUtills userInfoUtills;
 
 	public BudgetServiceImpl(final BudgetRepository budgetRepository, final CustomUserDetailsService userDetailsService
-			, UserRepository userRepository, CurrencyService currencyService, BudgetCategoryRepository budgetCategoryRepository, UserInfoUtills userInfoUtills) {
+			, UserRepository userRepository, CurrencyService currencyService, BudgetCategoryService budgetCategoryService, UserInfoUtills userInfoUtills) {
 		this.budgetRepository = budgetRepository;
 		this.userDetailsService = userDetailsService;
 		this.userRepository =userRepository;
 		this.currencyService=currencyService;
-		this.budgetCategoryRepository = budgetCategoryRepository;
+		this.budgetCategoryService = budgetCategoryService;
 		this.userInfoUtills=userInfoUtills;
 	}
 
@@ -236,7 +236,7 @@ public class BudgetServiceImpl implements BudgetService {
 		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, user.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
 
-		BudgetCategory category = this.budgetCategoryRepository.findById(budgetLineItemDto.getBudgetCategoryId())
+		BudgetCategory category = this.budgetCategoryService.findCategoryById(budgetLineItemDto.getBudgetCategoryId())
 				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
 		this.validateThatBudgetLineItemDoesNotExist(budget, category);
