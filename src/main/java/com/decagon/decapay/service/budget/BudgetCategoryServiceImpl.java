@@ -35,16 +35,17 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
 
     @Override
     public CreateBudgetResponseDTO createBudgetCategory(CreateBudgetCategoryDto request) {
-        User user = this.getAuthenticatedUser();
-        BudgetCategory category = new BudgetCategory();
-        createCategoryModelEntity(request.getTitle(), user, category);
+        BudgetCategory category= createCategoryModelEntity(request.getTitle());
         budgetCategoryRepository.save(category);
         return new CreateBudgetResponseDTO(category.getId());
     }
 
-    private void createCategoryModelEntity(String title, User user, BudgetCategory category) {
+    private BudgetCategory createCategoryModelEntity(String title) {
+        BudgetCategory category=new BudgetCategory();
+        User user = this.getAuthenticatedUser();
         category.setTitle(title);
         category.setUser(user);
+        return category;
     }
 
 
