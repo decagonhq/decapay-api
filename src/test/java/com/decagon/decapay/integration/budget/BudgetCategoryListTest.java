@@ -224,9 +224,7 @@ public class BudgetCategoryListTest {
 
         BudgetCategory category = budgetCategoryRepository.findAll().iterator().next();
         Assertions.assertEquals("Transportation", category.getTitle());
-        txnManager.startTxn();
         Assertions.assertEquals(user.getId(), category.getUser().getId());
-        txnManager.endTxn();
     }
 
     @Test
