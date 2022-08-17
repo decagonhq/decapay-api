@@ -127,7 +127,8 @@ public class BudgetCategoryListTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.size()").value(3))
-                .andExpect(jsonPath("$.data[*].title", Matchers.containsInRelativeOrder(budgetCategory1.getTitle(), budgetCategory2.getTitle(), budgetCategory3.getTitle())))
+                .andExpect(jsonPath("$.data[*].id", Matchers.containsInRelativeOrder(budgetCategory1.getId().intValue(), budgetCategory2.getId().intValue(), budgetCategory3.getId().intValue())))
+                .andExpect(jsonPath("$.data[0].id").value(budgetCategory1.getId().intValue()))
                 .andExpect(jsonPath("$.data[0].title").value("Transport"));
     }
 
@@ -179,7 +180,9 @@ public class BudgetCategoryListTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.size()").value(2))
+                .andExpect(jsonPath("$.data[0].id").value(budgetCategory1.getId().intValue()))
                 .andExpect(jsonPath("$.data[0].title").value("Transport"))
+                .andExpect(jsonPath("$.data[1].id").value(budgetCategory2.getId().intValue()))
                 .andExpect(jsonPath("$.data[1].title").value("Entertainment"));
 
 
@@ -192,6 +195,7 @@ public class BudgetCategoryListTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.size()").value(1))
+                .andExpect(jsonPath("$.data[0].id").value(budgetCategory3.getId().intValue()))
                 .andExpect(jsonPath("$.data[0].title").value("food"));
     }
 

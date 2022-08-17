@@ -1,18 +1,19 @@
 package com.decagon.decapay.dto.budget;
 
 
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-//@AllArgsConstructor
 @NoArgsConstructor
 public class BudgetCategoryResponseDto {
 
+    private Long id;
     private String title;
 
-    public BudgetCategoryResponseDto(String title) {
+    public BudgetCategoryResponseDto(Long id, String title) {
+        this.id = id;
         this.title = title;
     }
 }
