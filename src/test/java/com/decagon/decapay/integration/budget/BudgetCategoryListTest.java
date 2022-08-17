@@ -2,14 +2,17 @@ package com.decagon.decapay.integration.budget;
 
 
 
+import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.JwtUtil;
+import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +26,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -187,5 +193,37 @@ public class BudgetCategoryListTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.size()").value(1))
                 .andExpect(jsonPath("$.data[0].title").value("food"));
+    }
+
+    @Test
+    void shouldCreateBudgetCategorySuccessfully() throws Exception {
+
+        User user = new User();
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
+        user.setEmail("a@b.com");
+        user.setPassword(passwordEncoder.encode("Password1!"));
+        user.setPhoneNumber("0123456789");
+        user = userRepository.save(user);
+        setAuthHeader(user);
+
+        CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
+        dto.setTitle("Transportation");
+
+        mockMvc.perform(post(path + "/category").headers(headers).contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(dto))).andExpect(status().isCreated());
+
+        BudgetCategory category = budgetCategoryRepository.findAll().iterator().next();
+        Assertions.assertEquals("Transportation", category.getTitle());
+    }
+
+    @Test
+    void createBudgetCategoryFailsWhenUserNotAuthenticated() throws Exception {
+
+        CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
+        dto.setTitle("Transportation");
+
+        mockMvc.perform(post(path + "/category").contentType(MediaType.APPLICATION_JSON).content(
+                TestUtils.asJsonString(dto))).andExpect(status().isForbidden());
     }
 }

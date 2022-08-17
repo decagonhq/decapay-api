@@ -2,8 +2,11 @@ package com.decagon.decapay.service.budget;
 
 
 import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
+import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
+import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.exception.UnAuthorizedException;
+import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
@@ -28,6 +31,20 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
     public List<BudgetCategoryResponseDto> getListOfBudgetCategories() {
         User user = this.getAuthenticatedUser();
         return budgetCategoryRepository.findCategoriesByUserId(user.getId());
+    }
+
+    @Override
+    public CreateBudgetResponseDTO createBudgetCategory(CreateBudgetCategoryDto request) {
+        User user = this.getAuthenticatedUser();
+        BudgetCategory category= populateBudgetCategoryEntity(request.getTitle(), user);
+        return new CreateBudgetResponseDTO(category.getId());
+    }
+
+    private BudgetCategory populateBudgetCategoryEntity(String title, User user) {
+        BudgetCategory category = new BudgetCategory();
+        category.setTitle(title);
+        category.setUser(user);
+        return budgetCategoryRepository.save(category);
     }
 
 

@@ -19,6 +19,7 @@ public class ResponseMessageConstants {
                                                                   "or empty list if the user does not have budget";
 
     public static final String BUDGET_SUCCESSFULLY_CREATED = "Budget successfully created";
+    public static final String BUDGET_CATEGORY_SUCCESSFULLY_CREATED = "Budget category successfully created";
     public static final String BUDGET_UPDATED_SUCCESSFULLY = "Budget Updated Successfully";
 
     //FAILURE MESSAGES

@@ -9,5 +9,6 @@ public class SchemaConstants {
     public static final String TABLE_PASSWORD_RESET="password_resets";
     public static final String TABLE_AUTH="auth";
     public static final int BUDGET_TITLE_SIZE = 100;
+    public static final int BUDGET_CATEGORY_TITLE_SIZE = 100;
     public static final int BUDGET_DESC_SIZE = 255;
 }
