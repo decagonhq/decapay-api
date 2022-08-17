@@ -1,22 +1,19 @@
 package com.decagon.decapay.service.budget;
 
 import com.decagon.decapay.dto.SearchCriteria;
-import com.decagon.decapay.dto.budget.BudgetResponseDto;
-import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
-import com.decagon.decapay.dto.budget.ViewBudgetDto;
+import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.exception.InvalidCredentialException;
-import com.decagon.decapay.exception.InvalidRequestException;
-import com.decagon.decapay.exception.ResourceNotFoundException;
-import com.decagon.decapay.exception.UnAuthorizedException;
+import com.decagon.decapay.exception.*;
 import com.decagon.decapay.model.budget.Budget;
+import com.decagon.decapay.model.budget.BudgetCategory;
+import com.decagon.decapay.model.budget.BudgetLineItem;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.UserInfo;
+import com.decagon.decapay.service.budget.category.BudgetCategoryService;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
 import com.decagon.decapay.utils.PageUtil;
@@ -31,6 +28,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,14 +40,16 @@ public class BudgetServiceImpl implements BudgetService {
 	private final CurrencyService currencyService;
 	//TODO: replace with  userService or userInfo component
 	private final  CustomUserDetailsService userDetailsService;
+	private final BudgetCategoryService budgetCategoryService;
 	private final UserInfoUtills userInfoUtills;
 
 	public BudgetServiceImpl(final BudgetRepository budgetRepository, final CustomUserDetailsService userDetailsService
-			,UserRepository userRepository,CurrencyService currencyService,UserInfoUtills userInfoUtills) {
+			, UserRepository userRepository, CurrencyService currencyService, BudgetCategoryService budgetCategoryService, UserInfoUtills userInfoUtills) {
 		this.budgetRepository = budgetRepository;
 		this.userDetailsService = userDetailsService;
 		this.userRepository =userRepository;
 		this.currencyService=currencyService;
+		this.budgetCategoryService = budgetCategoryService;
 		this.userInfoUtills=userInfoUtills;
 	}
 
@@ -227,5 +227,61 @@ public class BudgetServiceImpl implements BudgetService {
 		budgetRequestDto.setPeriod(budget.getBudgetPeriod().name());
 		budgetPeriodHandler.setBudgetPeriodMetaData(budgetRequestDto, budget);
 		return budgetRequestDto;
+	}
+
+	@Override
+	@Transactional
+	public IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto) {
+		User user = this.getAuthenticatedUser();
+
+		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, user.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(budgetLineItemDto.getBudgetCategoryId(), user)
+				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+		if(isBudgetLineItemExistsForCategory(budget.getBudgetLineItems(), category)){
+			throw new ResourceConflictException("Budget line item already exists");
+		}
+
+		BigDecimal expectedLineItemsTotalAmountAfterSave = calculateExpectedNewTotalLineItemsAmountAfterSave(budget, budgetLineItemDto);
+
+		if(isBudgetProjectedAmountLessThanLineItemsTotalAmountAfterSave(budget, expectedLineItemsTotalAmountAfterSave)){
+			throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountAfterSave), budget.getProjectedAmount()));
+		}
+
+		this.saveBudgetLineItem(budget, category, budgetLineItemDto.getAmount());
+
+		return new IdResponseDto(budget.getId());
+	}
+
+	private void saveBudgetLineItem(Budget budget, BudgetCategory category, BigDecimal amount) {
+		budget.addBudgetLineItem(category, amount);
+	}
+
+	private boolean isBudgetProjectedAmountLessThanLineItemsTotalAmountAfterSave(Budget budget, BigDecimal lineItemsTotalAmount) {
+		return budget.getProjectedAmount().compareTo(lineItemsTotalAmount) < 0;
+	}
+
+	/**
+	 * Method Calculates The Sum of Expected Line Items Amount After Adding New Line Item
+	 * @param budget
+	 * @param budgetLineItemDto
+	 * @return BudgetLineItemDto Amount if budget has no existing line item else return the sum of existing line items amount and new requested line item amount
+	 */
+	private BigDecimal calculateExpectedNewTotalLineItemsAmountAfterSave(Budget budget, BudgetLineItemDto budgetLineItemDto){
+		if (budget.getBudgetLineItems().isEmpty()){
+			return budgetLineItemDto.getAmount();
+		}
+
+		BigDecimal budgetTotalAmount = budget.calculateBudgetLineItemsTotalAmount();
+		return budgetTotalAmount.add(budgetLineItemDto.getAmount());
+	}
+
+
+	private boolean isBudgetLineItemExistsForCategory(Collection<BudgetLineItem> budgetLineItems, BudgetCategory category) {
+		return budgetLineItems
+				.stream()
+				.anyMatch(lineItem -> lineItem.getBudgetCategory().getId().equals(category.getId()));
 	}
 }
