@@ -20,6 +20,7 @@ public interface BudgetRepository extends JpaRepository<Budget, Long>, BudgetRep
 
     @Query("select b from Budget b " +
             "left join fetch b.budgetLineItems i " +
+            "left join fetch i.budgetCategory " +
             "left join fetch i.expenses e " +
             "where b.id = ?1 and b.user.id = ?2 " +
             "and b.auditSection.delF = '0' ")

@@ -1,0 +1,19 @@
+package com.decagon.decapay.service.budget.category;
+
+import com.decagon.decapay.model.budget.BudgetCategory;
+import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class BudgetCategoryServiceImpl implements BudgetCategoryService {
+    private final BudgetCategoryRepository budgetCategoryRepository;
+
+    @Override
+    public Optional<BudgetCategory> findCategoryById(Long budgetCategoryId) {
+        return this.budgetCategoryRepository.findById(budgetCategoryId);
+    }
+}
