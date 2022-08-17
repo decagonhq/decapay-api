@@ -38,7 +38,7 @@ public class BudgetCategoryController {
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content)})
     @Operation(summary = "List Budget Categories", description = "Returns lists of user's budget category successfully")
-    @GetMapping("/budget/categories")
+    @GetMapping("/budget_categories")
     public ResponseEntity<ApiDataResponse<List<BudgetCategoryResponseDto>>> listBudgetCategories() {
         List<BudgetCategoryResponseDto> budgetCategoryResponseDtos =
                 budgetCategoryService.getListOfBudgetCategories();

@@ -13,5 +13,5 @@ public interface BudgetCategoryRepository extends JpaRepository<BudgetCategory, 
             "from BudgetCategory b " +
             "where b.user.id=?1 " +
             "AND b.auditSection.delF <> '1' ")
-    List<BudgetCategoryResponseDto> findByUserId(Long userId);
+    List<BudgetCategoryResponseDto> findCategoriesByUserId(Long userId);
 }

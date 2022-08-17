@@ -4,7 +4,6 @@ package com.decagon.decapay.service.budget;
 import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.exception.UnAuthorizedException;
-import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
@@ -13,7 +12,6 @@ import com.decagon.decapay.utils.UserInfoUtills;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +27,7 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
     @Override
     public List<BudgetCategoryResponseDto> getListOfBudgetCategories() {
         User user = this.getAuthenticatedUser();
-        return budgetCategoryRepository.findByUserId(user.getId());
+        return budgetCategoryRepository.findCategoriesByUserId(user.getId());
     }
 
 

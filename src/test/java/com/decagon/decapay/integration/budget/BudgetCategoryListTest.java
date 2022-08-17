@@ -79,7 +79,7 @@ public class BudgetCategoryListTest {
 
 
         this.mockMvc
-                .perform(get(path + "/budget/categories")
+                .perform(get(path + "/budget_categories")
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -116,7 +116,7 @@ public class BudgetCategoryListTest {
         budgetCategoryRepository.save(budgetCategory3);
 
         this.mockMvc
-                .perform(get(path + "/budget/categories")
+                .perform(get(path + "/budget_categories")
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -168,7 +168,7 @@ public class BudgetCategoryListTest {
         setAuthHeader(user);
 
         this.mockMvc
-                .perform(get(path + "/budget/categories")
+                .perform(get(path + "/budget_categories")
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -181,7 +181,7 @@ public class BudgetCategoryListTest {
         setAuthHeader(user2);
 
         this.mockMvc
-                .perform(get(path + "/budget/categories")
+                .perform(get(path + "/budget_categories")
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
