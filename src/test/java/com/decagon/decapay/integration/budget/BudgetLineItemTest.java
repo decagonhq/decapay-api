@@ -33,7 +33,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -95,14 +94,13 @@ class BudgetLineItemTest {
         BudgetCategory category = TestModels.budgetCategory("Food");
 
         BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetId(1L);
         dto.setBudgetCategoryId(category.getId());
         dto.setAmount(BigDecimal.valueOf(100));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budget-line-items")
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", 1L)
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -119,14 +117,13 @@ class BudgetLineItemTest {
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
 
         BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetId(budget.getId());
         dto.setBudgetCategoryId(2L);
         dto.setAmount(BigDecimal.valueOf(100));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budget-line-items")
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -152,14 +149,13 @@ class BudgetLineItemTest {
 
 
         BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetId(budget.getId());
         dto.setBudgetCategoryId(category.getId());
         dto.setAmount(BigDecimal.valueOf(200));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budget-line-items")
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isConflict());
@@ -188,14 +184,13 @@ class BudgetLineItemTest {
 
 
         BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetId(budget.getId());
         dto.setBudgetCategoryId(category.getId());
         dto.setAmount(BigDecimal.valueOf(100));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budget-line-items")
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -225,14 +220,13 @@ class BudgetLineItemTest {
 
 
         BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetId(budget.getId());
         dto.setBudgetCategoryId(category.getId());
         dto.setAmount(BigDecimal.valueOf(100));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budget-line-items")
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isBadRequest());
@@ -270,14 +264,13 @@ class BudgetLineItemTest {
 
 
         BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetId(budget.getId());
         dto.setBudgetCategoryId(category4.getId());
         dto.setAmount(BigDecimal.valueOf(600));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budget-line-items")
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isBadRequest());
@@ -316,14 +309,13 @@ class BudgetLineItemTest {
 
 
         BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetId(budget.getId());
         dto.setBudgetCategoryId(category4.getId());
         dto.setAmount(BigDecimal.valueOf(500.00));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budget-line-items")
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isOk())

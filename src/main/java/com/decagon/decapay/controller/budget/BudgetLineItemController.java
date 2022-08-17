@@ -12,10 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
@@ -32,9 +29,9 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED),
             @ApiResponse(responseCode = "404", description = NOT_FOUND)})
     @Operation(summary = "Create Budget Line Item", description = "Create Budget Line Item")
-    @PostMapping("/budget-line-items")
-    public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@RequestBody BudgetLineItemDto budgetLineItemDto) {
-        return ApiResponseUtil.response(HttpStatus.OK, this.budgetLineItemService.createLineItem(budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
+    @PostMapping("/budgets/{budgetId}/lineItems")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody BudgetLineItemDto budgetLineItemDto) {
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetLineItemService.createLineItem(budgetId, budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
     }
 
 

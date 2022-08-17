@@ -33,10 +33,10 @@ public class BudgetLineItemServiceImpl implements BudgetLineItemService {
     private final BudgetLineItemRepository budgetLineItemRepository;
 
     @Override
-    public IdResponseDto createLineItem(BudgetLineItemDto budgetLineItemDto) {
+    public IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto) {
         User user = this.getAuthenticatedUser();
 
-        Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetLineItemDto.getBudgetId(), user.getId())
+        Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
 
         BudgetCategory category = this.budgetCategoryRepository.findById(budgetLineItemDto.getBudgetCategoryId())

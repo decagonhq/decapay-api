@@ -11,9 +11,6 @@ import java.math.BigDecimal;
 
 @Data
 public class BudgetLineItemDto {
-    @Schema(description = "The id of the budget", example = "1", required = true)
-    @Positive(message = "Budget id must be a positive number")
-    private Long budgetId;
 
     @Schema(description = "The id of the budget category", example = "1", required = true)
     @Positive(message = "Budget category id must be a positive number")
