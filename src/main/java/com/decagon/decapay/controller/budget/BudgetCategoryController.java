@@ -24,7 +24,7 @@ import java.util.List;
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
 
-@Tag(name = "Budget Controller")
+@Tag(name = "Budget Category Controller")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "${api.basepath-api}")
