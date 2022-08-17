@@ -249,14 +249,9 @@ public class BudgetServiceImpl implements BudgetService {
 			throw new InvalidRequestException("Sum of Line Item Projected amount is greater than budget total amount");
 		}
 
-		budget = this.saveLineItem(budget, category, budgetLineItemDto);
+		budget.addBudgetLineItem(category, budgetLineItemDto.getAmount());
 
 		return new IdResponseDto(budget.getId());
-	}
-
-	private Budget saveLineItem(Budget budget, BudgetCategory category, BudgetLineItemDto dto){
-		budget.addBudgetLineItem(category, dto.getAmount());
-		return this.budgetRepository.save(budget);
 	}
 
 	private boolean isProjectedAmountGreaterThanLineItemsTotalAmount(Budget budget, BudgetLineItemDto budgetLineItemDto) {
