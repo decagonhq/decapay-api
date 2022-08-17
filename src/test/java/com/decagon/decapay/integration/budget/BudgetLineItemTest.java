@@ -318,7 +318,7 @@ class BudgetLineItemTest {
                 .andExpect(jsonPath("$.message").value(LINE_ITEM_CREATED_SUCCESSFULLY))
                 .andExpect(jsonPath("$.data.id").value(budget.getId()));
 
-        budget = this.budgetRepository.findBudgetByIdAndUserId(budget.getId(), user.getId()).get();
+        budget = this.budgetRepository.findBudgetDetailsByIdAndUserId(budget.getId(), user.getId()).get();
         assertEquals(4, budget.getBudgetLineItems().size());
 
         var lineItem = budget.getBudgetLineItems()
