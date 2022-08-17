@@ -10,6 +10,7 @@ import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.JwtUtil;
 import com.decagon.decapay.utils.TestUtils;
+import com.decagon.decapay.utils.TxnManager;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -56,6 +57,10 @@ public class BudgetCategoryListTest {
     private BudgetCategoryRepository budgetCategoryRepository;
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    TxnManager txnManager;
+
     private HttpHeaders headers;
 
 
@@ -219,7 +224,9 @@ public class BudgetCategoryListTest {
 
         BudgetCategory category = budgetCategoryRepository.findAll().iterator().next();
         Assertions.assertEquals("Transportation", category.getTitle());
-        Assertions.assertNotNull(category.getUser());
+        txnManager.startTxn();
+        Assertions.assertEquals(user.getId(), category.getUser().getId());
+        txnManager.endTxn();
     }
 
     @Test
@@ -228,7 +235,7 @@ public class BudgetCategoryListTest {
         CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
         dto.setTitle("Transportation");
 
-        mockMvc.perform(post(path + "/category").contentType(MediaType.APPLICATION_JSON).content(
+        mockMvc.perform(post(path + "/budget-categories").contentType(MediaType.APPLICATION_JSON).content(
                 TestUtils.asJsonString(dto))).andExpect(status().isForbidden());
     }
 }
