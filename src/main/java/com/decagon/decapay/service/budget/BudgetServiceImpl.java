@@ -324,11 +324,15 @@ public class BudgetServiceImpl implements BudgetService {
 
 		BudgetLineItem lineItem = getBudgetLineItem(budget.getBudgetLineItems(), category);
 
-		if (!lineItem.getExpenses().isEmpty()){
+		if (isExpensesPresentForLineItem(lineItem)){
 			throw new InvalidRequestException("Cannot delete line item with existing expenses");
 		}
 
 		this.removeLineItem(budget, lineItem);
+	}
+
+	private boolean isExpensesPresentForLineItem(BudgetLineItem lineItem){
+		return !lineItem.getExpenses().isEmpty();
 	}
 
 	private void removeLineItem(Budget budget, BudgetLineItem lineItem) {
