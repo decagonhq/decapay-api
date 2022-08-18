@@ -22,5 +22,5 @@ public interface BudgetService {
 
     IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto);
 
-    IdResponseDto editLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto);
+    IdResponseDto editLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto);
 }

@@ -2,6 +2,7 @@ package com.decagon.decapay.integration.budget;
 
 
 import com.decagon.decapay.dto.budget.BudgetLineItemDto;
+import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetPeriod;
@@ -364,14 +365,13 @@ class BudgetLineItemTest {
         this.budgetRepository.save(budget);
 
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetCategoryId(category.getId());
+        EditBudgetLineItemDto dto = new EditBudgetLineItemDto();
         dto.setAmount(BigDecimal.valueOf(100));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems", budget.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/category/{categoryId}/lineItems", budget.getId(), category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -386,14 +386,13 @@ class BudgetLineItemTest {
 
         BudgetCategory category = TestModels.budgetCategory("Food");
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetCategoryId(category.getId());
+        EditBudgetLineItemDto dto = new EditBudgetLineItemDto();
         dto.setAmount(BigDecimal.valueOf(100));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems", 1L)
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/category/{categoryId}", 0, category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -418,19 +417,14 @@ class BudgetLineItemTest {
         budget.addBudgetLineItem(category, BigDecimal.valueOf(2000));
         this.budgetRepository.save(budget);
 
-        var lineItem = budget.getBudgetLineItems()
-                .stream()
-                .filter(item -> item.getBudgetCategory().getId().equals(category.getId())).findAny().get();
 
-
-        BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetCategoryId(category.getId());
+        EditBudgetLineItemDto dto = new EditBudgetLineItemDto();
         dto.setAmount(BigDecimal.valueOf(2600));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems", budget.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/category/{categoryId}", budget.getId(), category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isBadRequest());
@@ -463,14 +457,13 @@ class BudgetLineItemTest {
                 .filter(item -> item.getBudgetCategory().getId().equals(category.getId())).findAny().get();
 
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
-        dto.setBudgetCategoryId(category.getId());
+        EditBudgetLineItemDto dto = new EditBudgetLineItemDto();
         dto.setAmount(BigDecimal.valueOf(3500.00));
 
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems", budget.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/category/{categoryId}", budget.getId(), category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isOk())

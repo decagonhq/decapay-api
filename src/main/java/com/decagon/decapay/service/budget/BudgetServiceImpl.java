@@ -313,13 +313,13 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	@Transactional
-	public IdResponseDto editLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto) {
+	public IdResponseDto editLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto) {
 		User user = this.getAuthenticatedUser();
 
 		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, user.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
 
-		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(budgetLineItemDto.getBudgetCategoryId(), user)
+		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, user)
 				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
 		BudgetLineItem lineItem = getBudgetLineItem(budget.getBudgetLineItems(), category);
@@ -339,7 +339,7 @@ public class BudgetServiceImpl implements BudgetService {
 		lineItem.setProjectedAmount(amount);
 	}
 
-	private BigDecimal calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(Budget budget, BudgetLineItem oldLineItem, BudgetLineItemDto budgetLineItemDto){
+	private BigDecimal calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(Budget budget, BudgetLineItem oldLineItem, EditBudgetLineItemDto budgetLineItemDto){
 		if (budget.getBudgetLineItems().isEmpty()){
 			return budgetLineItemDto.getAmount();
 		}

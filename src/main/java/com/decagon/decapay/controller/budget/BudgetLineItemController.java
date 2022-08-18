@@ -2,6 +2,7 @@ package com.decagon.decapay.controller.budget;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.budget.BudgetLineItemDto;
+import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
@@ -41,9 +42,9 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Edit Budget Line Item", description = "Edit Budget Line Item")
-    @PutMapping("/budgets/{budgetId}/lineItems")
-    public ResponseEntity<ApiDataResponse<IdResponseDto>> editBudgetLineItem(@PathVariable Long budgetId, @RequestBody BudgetLineItemDto budgetLineItemDto) {
-        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.editLineItem(budgetId, budgetLineItemDto), LINE_ITEM_UPDATED_SUCCESSFULLY);
+    @PutMapping("/budgets/{budgetId}/category/{categoryId}")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> editBudgetLineItem(@PathVariable Long budgetId, @PathVariable Long categoryId, @RequestBody EditBudgetLineItemDto budgetLineItemDto) {
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.editLineItem(budgetId, categoryId, budgetLineItemDto), LINE_ITEM_UPDATED_SUCCESSFULLY);
     }
 
 
