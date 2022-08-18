@@ -21,6 +21,7 @@ public class ResponseMessageConstants {
     public static final String BUDGET_SUCCESSFULLY_CREATED = "Budget successfully created";
     public static final String BUDGET_CATEGORY_SUCCESSFULLY_CREATED = "Budget category successfully created";
     public static final String BUDGET_UPDATED_SUCCESSFULLY = "Budget Updated Successfully";
+    public static final String BUDGET_CATEGORY_UPDATED_SUCCESSFULLY = "Budget Category Updated Successfully";
     public static final String LINE_ITEM_CREATED_SUCCESSFULLY = "Budget Line Item Created Successfully";
 
     //FAILURE MESSAGES

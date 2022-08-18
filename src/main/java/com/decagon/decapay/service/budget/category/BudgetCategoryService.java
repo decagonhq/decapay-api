@@ -3,6 +3,7 @@ package com.decagon.decapay.service.budget.category;
 import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
 import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
 import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
+import com.decagon.decapay.dto.budget.UpdateBudgetCategoryDto;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 
@@ -16,4 +17,5 @@ public interface BudgetCategoryService {
 
     CreateBudgetResponseDTO createBudgetCategory(CreateBudgetCategoryDto request);
 
+    void updateBudgetCategory(Long categoryId, UpdateBudgetCategoryDto request);
 }

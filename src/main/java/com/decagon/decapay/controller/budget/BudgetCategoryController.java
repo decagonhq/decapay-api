@@ -5,6 +5,7 @@ import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
 import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
 import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
+import com.decagon.decapay.dto.budget.UpdateBudgetCategoryDto;
 import com.decagon.decapay.service.budget.category.BudgetCategoryService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,5 +53,18 @@ public class BudgetCategoryController {
     @PostMapping("/budget_categories")
     public ResponseEntity<ApiDataResponse<CreateBudgetResponseDTO>> createBudgetCategory(@Valid @RequestBody CreateBudgetCategoryDto request) {
         return ApiResponseUtil.response(HttpStatus.CREATED, budgetCategoryService.createBudgetCategory(request),BUDGET_CATEGORY_SUCCESSFULLY_CREATED);
+    }
+
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = BUDGET_CATEGORY_UPDATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+    @Operation(summary = "Update Budget Category", description = "Update User Budget Category")
+    @PutMapping("/budget_categories/{categoryId}")
+    public ResponseEntity<ApiDataResponse<Object>> updateBudgetCategory(@PathVariable Long categoryId, @Valid @RequestBody UpdateBudgetCategoryDto request) {
+        budgetCategoryService.updateBudgetCategory(categoryId, request);
+        return ApiResponseUtil.response(HttpStatus.OK, BUDGET_CATEGORY_UPDATED_SUCCESSFULLY);
     }
 }

@@ -1,8 +1,8 @@
 package com.decagon.decapay.integration.budget;
 
 
-
 import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
+import com.decagon.decapay.dto.budget.UpdateBudgetCategoryDto;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
@@ -10,7 +10,6 @@ import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.JwtUtil;
 import com.decagon.decapay.utils.TestUtils;
-import com.decagon.decapay.utils.TxnManager;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -28,9 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -232,4 +229,83 @@ public class BudgetCategoryListTest {
         mockMvc.perform(post(path + "/budget_categories").contentType(MediaType.APPLICATION_JSON).content(
                 TestUtils.asJsonString(dto))).andExpect(status().isForbidden());
     }
+
+
+    @Test
+    void shouldUpdateBudgetCategorySuccessfully() throws Exception {
+
+        User user = new User();
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
+        user.setEmail("a@b.com");
+        user.setPassword(passwordEncoder.encode("Password1!"));
+        user.setPhoneNumber("0123456789");
+        user = userRepository.save(user);
+        setAuthHeader(user);
+
+        BudgetCategory category = new BudgetCategory();
+        category.setTitle("Transportation");
+        category.setUser(user);
+        budgetCategoryRepository.save(category);
+
+        UpdateBudgetCategoryDto dto = new UpdateBudgetCategoryDto();
+        dto.setTitle("Food");
+
+        mockMvc.perform(put(path + "/budget_categories/{categoryId}", category.getId()).headers(headers).contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(dto))).andExpect(status().isOk());
+
+        BudgetCategory updatedBudgetCategory = budgetCategoryRepository.findById(category.getId()).get();
+        Assertions.assertEquals("Food", updatedBudgetCategory.getTitle());
+    }
+
+    @Test
+    void updateBudgetCategoryFailsWhenUserNotAuthenticated() throws Exception {
+
+        BudgetCategory category = new BudgetCategory();
+        category.setTitle("Transportation");
+        budgetCategoryRepository.save(category);
+
+        UpdateBudgetCategoryDto dto = new UpdateBudgetCategoryDto();
+        dto.setTitle("Food");
+
+        mockMvc.perform(put(path + "/budget_categories/{categoryId}", category.getId()).contentType(MediaType.APPLICATION_JSON).content(
+                TestUtils.asJsonString(dto))).andExpect(status().isForbidden());
+    }
+
+    @Test
+    void updateBudgetCategoryFailsWhenUserUpdateBudgetCategoryUserDidNotCreate() throws Exception {
+
+        User user = new User();
+        user.setFirstName("name");
+        user.setLastName("name");
+        user.setEmail("a@b.com");
+        user.setPassword(passwordEncoder.encode("Password1!"));
+        user.setPhoneNumber("0122345555");
+        user = userRepository.save(user);
+
+        BudgetCategory category = new BudgetCategory();
+        category.setUser(user);
+        category.setTitle("Transportation");
+        budgetCategoryRepository.save(category);
+
+        User user1 = new User();
+        user1.setEmail("o5g@gmail.com");
+        user1.setPassword(passwordEncoder.encode("password"));
+        user1.setFirstName("dip");
+        user1.setLastName("ola");
+        user1.setPhoneNumber("0911111");
+        userRepository.save(user1);
+
+        setAuthHeader(user1);
+
+        UpdateBudgetCategoryDto dto = new UpdateBudgetCategoryDto();
+        dto.setTitle("Food");
+
+        mockMvc.perform(put(path + "/budget_categories/{categoryId}", category.getId()).headers(headers).contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(dto))).andExpect(status().isBadRequest());
+
+    }
+
+
+
 }
