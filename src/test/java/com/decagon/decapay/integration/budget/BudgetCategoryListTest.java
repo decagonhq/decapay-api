@@ -2,7 +2,6 @@ package com.decagon.decapay.integration.budget;
 
 
 import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
-import com.decagon.decapay.dto.budget.UpdateBudgetCategoryDto;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
@@ -248,7 +247,7 @@ public class BudgetCategoryListTest {
         category.setUser(user);
         budgetCategoryRepository.save(category);
 
-        UpdateBudgetCategoryDto dto = new UpdateBudgetCategoryDto();
+        CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
         dto.setTitle("Food");
 
         mockMvc.perform(put(path + "/budget_categories/{categoryId}", category.getId()).headers(headers).contentType(MediaType.APPLICATION_JSON)
@@ -265,7 +264,7 @@ public class BudgetCategoryListTest {
         category.setTitle("Transportation");
         budgetCategoryRepository.save(category);
 
-        UpdateBudgetCategoryDto dto = new UpdateBudgetCategoryDto();
+        CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
         dto.setTitle("Food");
 
         mockMvc.perform(put(path + "/budget_categories/{categoryId}", category.getId()).contentType(MediaType.APPLICATION_JSON).content(
@@ -298,7 +297,7 @@ public class BudgetCategoryListTest {
 
         setAuthHeader(user1);
 
-        UpdateBudgetCategoryDto dto = new UpdateBudgetCategoryDto();
+        CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
         dto.setTitle("Food");
 
         mockMvc.perform(put(path + "/budget_categories/{categoryId}", category.getId()).headers(headers).contentType(MediaType.APPLICATION_JSON)
