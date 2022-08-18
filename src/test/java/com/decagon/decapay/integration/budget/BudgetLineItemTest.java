@@ -35,9 +35,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_CREATED_SUCCESSFULLY;
+import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_UPDATED_SUCCESSFULLY;
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -336,6 +338,155 @@ class BudgetLineItemTest {
         Budget budget = TestModels.budget( period, startDate, endDate);
         budget.setUser(user);
         return this.budgetRepository.save(budget);
+    }
+
+    @Test
+    void shouldReturn400InvalidRequestWhenTryingToEditLineItemAndBudgetLineItemDoesNotBelongToUser() throws Exception {
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
+                passwordEncoder.encode("password"), "08067644802");
+        user2.setUserStatus(UserStatus.ACTIVE);
+
+        userRepository.saveAll(List.of(user, user2));
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user2);
+
+        this.budgetCategoryRepository.save(category);
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user2);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000));
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000));
+        this.budgetRepository.save(budget);
+
+
+        BudgetLineItemDto dto = new BudgetLineItemDto();
+        dto.setBudgetCategoryId(category.getId());
+        dto.setAmount(BigDecimal.valueOf(100));
+
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems", budget.getId())
+                        .content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    void shouldReturn404WhenTryingToEditLineItemAndBudgetLineItemDoesNotExist() throws Exception {
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+
+        BudgetLineItemDto dto = new BudgetLineItemDto();
+        dto.setBudgetCategoryId(category.getId());
+        dto.setAmount(BigDecimal.valueOf(100));
+
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems", 1L)
+                        .content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn400InvalidRequestWhenTryingToEditLineItemAndTotalProjectAmountForBudgetIsLessThanTheExistingLineItemsTotalAmountPlusTheNewLineItemTotalAmount() throws Exception {
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+
+        this.budgetCategoryRepository.save(category);
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(2000));
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000));
+        this.budgetRepository.save(budget);
+
+        var lineItem = budget.getBudgetLineItems()
+                .stream()
+                .filter(item -> item.getBudgetCategory().getId().equals(category.getId())).findAny().get();
+
+
+        BudgetLineItemDto dto = new BudgetLineItemDto();
+        dto.setBudgetCategoryId(category.getId());
+        dto.setAmount(BigDecimal.valueOf(2600));
+
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems", budget.getId())
+                        .content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldEditLineItemSuccessfully() throws Exception {
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        BudgetCategory category2 = TestModels.budgetCategory("Water");
+        category2.setUser(user);
+
+        this.budgetCategoryRepository.saveAll(List.of(category, category2));
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
+        budget.addBudgetLineItem(category2, BigDecimal.valueOf(1000.00));
+        this.budgetRepository.save(budget);
+
+        var lineItem = budget.getBudgetLineItems()
+                .stream()
+                .filter(item -> item.getBudgetCategory().getId().equals(category.getId())).findAny().get();
+
+
+        BudgetLineItemDto dto = new BudgetLineItemDto();
+        dto.setBudgetCategoryId(category.getId());
+        dto.setAmount(BigDecimal.valueOf(3500.00));
+
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems", budget.getId())
+                        .content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(LINE_ITEM_UPDATED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.id").value(budget.getId()));
+
+        budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
+        assertEquals(2, budget.getBudgetLineItems().size());
+
+        lineItem = budget.getBudgetLineItems()
+                .stream()
+                .filter(item -> item.getBudgetCategory().getId().equals(category.getId())).findAny().get();
+
+        assertEquals(category.getId(), lineItem.getBudgetCategory().getId());
+        assertEquals(budget.getId(), lineItem.getBudget().getId());
+        assertEquals(dto.getAmount().setScale(2), lineItem.getProjectedAmount());
     }
 
 }

@@ -35,5 +35,16 @@ public class BudgetLineItemController {
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.createLineItem(budgetId, budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = LINE_ITEM_UPDATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
+    @Operation(summary = "Edit Budget Line Item", description = "Edit Budget Line Item")
+    @PutMapping("/budgets/{budgetId}/lineItems")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> editBudgetLineItem(@PathVariable Long budgetId, @RequestBody BudgetLineItemDto budgetLineItemDto) {
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.editLineItem(budgetId, budgetLineItemDto), LINE_ITEM_UPDATED_SUCCESSFULLY);
+    }
+
 
 }

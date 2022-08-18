@@ -310,4 +310,44 @@ public class BudgetServiceImpl implements BudgetService {
 				.stream()
 				.anyMatch(lineItem -> lineItem.getBudgetCategory().getId().equals(category.getId()));
 	}
+
+	@Override
+	@Transactional
+	public IdResponseDto editLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto) {
+		User user = this.getAuthenticatedUser();
+
+		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, user.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(budgetLineItemDto.getBudgetCategoryId(), user)
+				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+		BudgetLineItem lineItem = budget.getBudgetLineItems()
+				.stream()
+				.filter(item -> item.getBudgetCategory().getId().equals(category.getId()))
+				.findAny()
+				.orElseThrow(()-> new ResourceNotFoundException("Budget Line Item Not Found"));
+
+		BigDecimal expectedLineItemsTotalAmountForNewEditRequestAfterSave = calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(budget,lineItem,budgetLineItemDto);
+
+		if(isBudgetProjectedAmountLessThanLineItemsTotalAmountAfterSave(budget, expectedLineItemsTotalAmountForNewEditRequestAfterSave)){
+			throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountForNewEditRequestAfterSave), budget.getProjectedAmount()));
+		}
+
+		this.updateBudgetLineItem(lineItem, budgetLineItemDto.getAmount());
+
+		return new IdResponseDto(budget.getId());
+	}
+
+	private void updateBudgetLineItem(BudgetLineItem lineItem, BigDecimal amount) {
+		lineItem.setProjectedAmount(amount);
+	}
+
+	private BigDecimal calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(Budget budget, BudgetLineItem oldLineItem, BudgetLineItemDto budgetLineItemDto){
+		if (budget.getBudgetLineItems().isEmpty()){
+			return budgetLineItemDto.getAmount();
+		}
+		BigDecimal budgetTotalAmount = budget.calculateBudgetLineItemsTotalAmount().subtract(oldLineItem.getProjectedAmount());
+		return budgetTotalAmount.add(budgetLineItemDto.getAmount());
+	}
 }
