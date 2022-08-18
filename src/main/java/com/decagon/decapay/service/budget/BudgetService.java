@@ -21,4 +21,6 @@ public interface BudgetService {
     CreateBudgetRequestDTO fetchBudget(Long budgetId);
 
     IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto);
+
+    void removeLineItem(Long budgetId, Long categoryId);
 }
