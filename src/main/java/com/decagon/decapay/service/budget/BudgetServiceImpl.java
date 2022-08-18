@@ -322,11 +322,7 @@ public class BudgetServiceImpl implements BudgetService {
 		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(budgetLineItemDto.getBudgetCategoryId(), user)
 				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-		BudgetLineItem lineItem = budget.getBudgetLineItems()
-				.stream()
-				.filter(item -> item.getBudgetCategory().getId().equals(category.getId()))
-				.findAny()
-				.orElseThrow(()-> new ResourceNotFoundException("Budget Line Item Not Found"));
+		BudgetLineItem lineItem = getBudgetLineItem(budget.getBudgetLineItems(), category);
 
 		BigDecimal expectedLineItemsTotalAmountForNewEditRequestAfterSave = calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(budget,lineItem,budgetLineItemDto);
 
@@ -349,5 +345,13 @@ public class BudgetServiceImpl implements BudgetService {
 		}
 		BigDecimal budgetTotalAmount = budget.calculateBudgetLineItemsTotalAmount().subtract(oldLineItem.getProjectedAmount());
 		return budgetTotalAmount.add(budgetLineItemDto.getAmount());
+	}
+
+	private BudgetLineItem getBudgetLineItem(Collection<BudgetLineItem> budgetLineItems, BudgetCategory category){
+		return budgetLineItems
+				.stream()
+				.filter(item -> item.getBudgetCategory().getId().equals(category.getId()))
+				.findAny()
+				.orElseThrow(()-> new ResourceNotFoundException("Budget Line Item Not Found"));
 	}
 }
