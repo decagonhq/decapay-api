@@ -346,6 +346,7 @@ class BudgetLineItemTest {
     }
 
     @Test
+<<<<<<< HEAD
     void shouldReturn400InvalidRequestWhenTryingToEditLineItemAndBudgetLineItemDoesNotBelongToUser() throws Exception {
 
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
@@ -488,6 +489,8 @@ class BudgetLineItemTest {
     }
 
     @Test
+=======
+>>>>>>> 40340de (Refactor Code And Add More Test)
     void shouldReturn404WhenTryingToRemoveBudgetLineItemAndLineItemBudgetDoesNotBelongToUser() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
