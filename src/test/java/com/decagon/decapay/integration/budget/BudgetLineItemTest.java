@@ -1,7 +1,7 @@
 package com.decagon.decapay.integration.budget;
 
 
-import com.decagon.decapay.dto.budget.BudgetLineItemDto;
+import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
 import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
@@ -92,7 +92,7 @@ class BudgetLineItemTest {
 
         BudgetCategory category = TestModels.budgetCategory("Food");
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
         dto.setBudgetCategoryId(category.getId());
         dto.setAmount(BigDecimal.valueOf(100));
 
@@ -115,7 +115,7 @@ class BudgetLineItemTest {
 
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
         dto.setBudgetCategoryId(2L);
         dto.setAmount(BigDecimal.valueOf(100));
 
@@ -147,7 +147,7 @@ class BudgetLineItemTest {
         this.budgetRepository.save(budget);
 
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
         dto.setBudgetCategoryId(category.getId());
         dto.setAmount(BigDecimal.valueOf(200));
 
@@ -182,7 +182,7 @@ class BudgetLineItemTest {
         this.budgetRepository.save(budget);
 
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
         dto.setBudgetCategoryId(category.getId());
         dto.setAmount(BigDecimal.valueOf(100));
 
@@ -218,7 +218,7 @@ class BudgetLineItemTest {
         this.budgetRepository.save(budget);
 
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
         dto.setBudgetCategoryId(category.getId());
         dto.setAmount(BigDecimal.valueOf(100));
 
@@ -262,7 +262,7 @@ class BudgetLineItemTest {
         this.budgetRepository.save(budget);
 
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
         dto.setBudgetCategoryId(category4.getId());
         dto.setAmount(BigDecimal.valueOf(600));
 
@@ -307,7 +307,7 @@ class BudgetLineItemTest {
 
 
 
-        BudgetLineItemDto dto = new BudgetLineItemDto();
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
         dto.setBudgetCategoryId(category4.getId());
         dto.setAmount(BigDecimal.valueOf(500.00));
 

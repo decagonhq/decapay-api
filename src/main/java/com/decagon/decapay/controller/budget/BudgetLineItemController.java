@@ -2,6 +2,7 @@ package com.decagon.decapay.controller.budget;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.budget.BudgetLineItemDto;
+import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
 import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.service.budget.BudgetService;
@@ -32,7 +33,7 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Create Budget Line Item", description = "Create Budget Line Item")
     @PostMapping("/budgets/{budgetId}/lineItems")
-    public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody BudgetLineItemDto budgetLineItemDto) {
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody CreateBudgetLineItemDto budgetLineItemDto) {
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.createLineItem(budgetId, budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
     }
 

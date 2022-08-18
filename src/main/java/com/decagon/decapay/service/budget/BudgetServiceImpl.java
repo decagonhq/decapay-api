@@ -257,7 +257,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	@Transactional
-	public IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto) {
+	public IdResponseDto createLineItem(Long budgetId, CreateBudgetLineItemDto budgetLineItemDto) {
 		User user = this.getAuthenticatedUser();
 
 		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, user.getId())
@@ -295,7 +295,7 @@ public class BudgetServiceImpl implements BudgetService {
 	 * @param budgetLineItemDto
 	 * @return BudgetLineItemDto Amount if budget has no existing line item else return the sum of existing line items amount and new requested line item amount
 	 */
-	private BigDecimal calculateExpectedNewTotalLineItemsAmountAfterSave(Budget budget, BudgetLineItemDto budgetLineItemDto){
+	private BigDecimal calculateExpectedNewTotalLineItemsAmountAfterSave(Budget budget, CreateBudgetLineItemDto budgetLineItemDto){
 		if (budget.getBudgetLineItems().isEmpty()){
 			return budgetLineItemDto.getAmount();
 		}
