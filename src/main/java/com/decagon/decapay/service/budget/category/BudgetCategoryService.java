@@ -16,4 +16,5 @@ public interface BudgetCategoryService {
 
     CreateBudgetResponseDTO createBudgetCategory(CreateBudgetCategoryDto request);
 
+    void updateBudgetCategory(Long categoryId, CreateBudgetCategoryDto request);
 }
