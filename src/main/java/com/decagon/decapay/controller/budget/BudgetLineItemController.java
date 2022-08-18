@@ -43,7 +43,7 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Edit Budget Line Item", description = "Edit Budget Line Item")
-    @PutMapping("/budgets/{budgetId}/category/{categoryId}")
+    @PutMapping("/budgets/{budgetId}/categories/{categoryId}")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> editBudgetLineItem(@PathVariable Long budgetId, @PathVariable Long categoryId, @RequestBody EditBudgetLineItemDto budgetLineItemDto) {
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.editLineItem(budgetId, categoryId, budgetLineItemDto), LINE_ITEM_UPDATED_SUCCESSFULLY);
     }

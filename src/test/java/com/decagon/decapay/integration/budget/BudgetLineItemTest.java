@@ -371,7 +371,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/category/{categoryId}/lineItems", budget.getId(), category.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", budget.getId(), category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -392,7 +392,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/category/{categoryId}", 0, category.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", 0, category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -424,7 +424,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/category/{categoryId}", budget.getId(), category.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", budget.getId(), category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isBadRequest());
@@ -463,7 +463,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/category/{categoryId}", budget.getId(), category.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", budget.getId(), category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isOk())
