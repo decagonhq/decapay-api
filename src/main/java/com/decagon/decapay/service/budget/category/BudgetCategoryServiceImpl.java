@@ -3,6 +3,7 @@ package com.decagon.decapay.service.budget.category;
 import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
 import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
 import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
+import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.exception.UnAuthorizedException;
 import com.decagon.decapay.model.budget.BudgetCategory;
@@ -14,6 +15,7 @@ import com.decagon.decapay.utils.UserInfoUtills;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +44,30 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
         BudgetCategory category= createCategoryModelEntity(request.getTitle());
         budgetCategoryRepository.save(category);
         return new CreateBudgetResponseDTO(category.getId());
+    }
+
+    @Override
+    @Transactional
+    public void updateBudgetCategory(Long categoryId, CreateBudgetCategoryDto updateRequestDto) {
+        User user = this.getAuthenticatedUser();
+
+        Optional<BudgetCategory> optionalBudgetCategory = this.budgetCategoryRepository.findById(categoryId);
+        if (optionalBudgetCategory.isEmpty()){
+            throw new ResourceNotFoundException("Budget Category not found");
+        }
+        BudgetCategory budgetCategory = optionalBudgetCategory.get();
+        if (!isCurrentUserOwnerOfBudgetCategory(user, budgetCategory)){
+            throw new InvalidRequestException("Invalid Request");
+        }
+        this.mapRequestToEntity(budgetCategory, updateRequestDto);
+    }
+
+    private void mapRequestToEntity(BudgetCategory budgetCategory, CreateBudgetCategoryDto updateRequestDto) {
+        budgetCategory.setTitle(updateRequestDto.getTitle());
+    }
+
+    private boolean isCurrentUserOwnerOfBudgetCategory(User user, BudgetCategory category) {
+            return user.getId().equals(category.getUser().getId());
     }
 
     private BudgetCategory createCategoryModelEntity(String title) {

@@ -53,4 +53,17 @@ public class BudgetCategoryController {
     public ResponseEntity<ApiDataResponse<CreateBudgetResponseDTO>> createBudgetCategory(@Valid @RequestBody CreateBudgetCategoryDto request) {
         return ApiResponseUtil.response(HttpStatus.CREATED, budgetCategoryService.createBudgetCategory(request),BUDGET_CATEGORY_SUCCESSFULLY_CREATED);
     }
+
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = BUDGET_CATEGORY_UPDATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+    @Operation(summary = "Update Budget Category", description = "Update User Budget Category")
+    @PutMapping("/budget_categories/{categoryId}")
+    public ResponseEntity<ApiDataResponse<Object>> updateBudgetCategory(@PathVariable Long categoryId, @Valid @RequestBody CreateBudgetCategoryDto request) {
+        budgetCategoryService.updateBudgetCategory(categoryId, request);
+        return ApiResponseUtil.response(HttpStatus.OK, BUDGET_CATEGORY_UPDATED_SUCCESSFULLY);
+    }
 }
