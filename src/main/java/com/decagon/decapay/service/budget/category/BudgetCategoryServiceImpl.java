@@ -15,6 +15,7 @@ import com.decagon.decapay.utils.UserInfoUtills;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +47,7 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
     }
 
     @Override
+    @Transactional
     public void updateBudgetCategory(Long categoryId, CreateBudgetCategoryDto updateRequestDto) {
         User user = this.getAuthenticatedUser();
 
@@ -58,7 +60,6 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
             throw new InvalidRequestException("Invalid Request");
         }
         this.mapRequestToEntity(budgetCategory, updateRequestDto);
-        budgetCategoryRepository.save(budgetCategory);
     }
 
     private void mapRequestToEntity(BudgetCategory budgetCategory, CreateBudgetCategoryDto updateRequestDto) {
