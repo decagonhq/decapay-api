@@ -31,7 +31,7 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Create Budget Line Item", description = "Create Budget Line Item")
-    @PostMapping("/budgets/{budgetId}/categories")
+    @PostMapping("/budgets/{budgetId}/lineItems")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody CreateBudgetLineItemDto budgetLineItemDto) {
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.createLineItem(budgetId, budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
     }
@@ -42,7 +42,7 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Edit Budget Line Item", description = "Edit Budget Line Item")
-    @PutMapping("/budgets/{budgetId}/categories/{categoryId}")
+    @PutMapping("/budgets/{budgetId}/lineItems/{categoryId}")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> editBudgetLineItem(@PathVariable Long budgetId, @PathVariable Long categoryId, @RequestBody EditBudgetLineItemDto budgetLineItemDto) {
         this.budgetService.updateLineItem(budgetId, categoryId, budgetLineItemDto);
         return ApiResponseUtil.response(HttpStatus.OK, LINE_ITEM_UPDATED_SUCCESSFULLY);
