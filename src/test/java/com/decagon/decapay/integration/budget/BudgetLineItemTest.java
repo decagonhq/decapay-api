@@ -99,7 +99,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", 1L)
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/categories", 1L)
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -122,7 +122,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/categories", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -154,7 +154,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/categories", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isConflict());
@@ -189,7 +189,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/categories", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -225,7 +225,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/categories", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -269,7 +269,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/categories", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isBadRequest());
@@ -314,7 +314,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/categories", budget.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isOk())
@@ -385,6 +385,7 @@ class BudgetLineItemTest {
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
+        this.budgetCategoryRepository.save(category);
 
         EditBudgetLineItemDto dto = new EditBudgetLineItemDto();
         dto.setAmount(BigDecimal.valueOf(100));
@@ -392,7 +393,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", 0, category.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", 1L, category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());

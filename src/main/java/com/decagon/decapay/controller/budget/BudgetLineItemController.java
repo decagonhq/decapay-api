@@ -32,7 +32,7 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Create Budget Line Item", description = "Create Budget Line Item")
-    @PostMapping("/budgets/{budgetId}/lineItems")
+    @PostMapping("/budgets/{budgetId}/categories")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody CreateBudgetLineItemDto budgetLineItemDto) {
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.createLineItem(budgetId, budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
     }
