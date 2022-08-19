@@ -257,7 +257,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	@Transactional
-	public IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto) {
+	public IdResponseDto createLineItem(Long budgetId, CreateBudgetLineItemDto budgetLineItemDto) {
 		User user = this.getAuthenticatedUser();
 
 		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, user.getId())
@@ -295,7 +295,7 @@ public class BudgetServiceImpl implements BudgetService {
 	 * @param budgetLineItemDto
 	 * @return BudgetLineItemDto Amount if budget has no existing line item else return the sum of existing line items amount and new requested line item amount
 	 */
-	private BigDecimal calculateExpectedNewTotalLineItemsAmountAfterSave(Budget budget, BudgetLineItemDto budgetLineItemDto){
+	private BigDecimal calculateExpectedNewTotalLineItemsAmountAfterSave(Budget budget, CreateBudgetLineItemDto budgetLineItemDto){
 		if (budget.getBudgetLineItems().isEmpty()){
 			return budgetLineItemDto.getAmount();
 		}
@@ -309,5 +309,48 @@ public class BudgetServiceImpl implements BudgetService {
 		return budgetLineItems
 				.stream()
 				.anyMatch(lineItem -> lineItem.getBudgetCategory().getId().equals(category.getId()));
+	}
+
+	@Override
+	@Transactional
+	public IdResponseDto editLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto) {
+		User user = this.getAuthenticatedUser();
+
+		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, user.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, user)
+				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+		BudgetLineItem lineItem = getLineItem(budget, category);
+
+		BigDecimal expectedLineItemsTotalAmountForNewEditRequestAfterSave = calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(budget,lineItem,budgetLineItemDto);
+
+		if(isBudgetProjectedAmountLessThanLineItemsTotalAmountAfterSave(budget, expectedLineItemsTotalAmountForNewEditRequestAfterSave)){
+			throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountForNewEditRequestAfterSave), budget.getProjectedAmount()));
+		}
+
+		this.updateBudgetLineItem(lineItem, budgetLineItemDto.getAmount());
+
+		return new IdResponseDto(budget.getId());
+	}
+
+	private void updateBudgetLineItem(BudgetLineItem lineItem, BigDecimal amount) {
+		lineItem.setProjectedAmount(amount);
+	}
+
+	private BigDecimal calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(Budget budget, BudgetLineItem oldLineItem, EditBudgetLineItemDto budgetLineItemDto){
+		if (budget.getBudgetLineItems().isEmpty()){
+			return budgetLineItemDto.getAmount();
+		}
+		BigDecimal budgetTotalAmount = budget.calculateBudgetLineItemsTotalAmount().subtract(oldLineItem.getProjectedAmount());
+		return budgetTotalAmount.add(budgetLineItemDto.getAmount());
+	}
+
+	private BudgetLineItem getLineItem(Budget budget, BudgetCategory category) {
+		if(budget.getBudgetLineItem(category) == null){
+			throw new ResourceNotFoundException("Budget Line item not found");
+		}
+		return budget.getBudgetLineItem(category);
 	}
 }

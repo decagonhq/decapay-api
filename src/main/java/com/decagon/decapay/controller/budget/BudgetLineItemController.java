@@ -2,6 +2,8 @@ package com.decagon.decapay.controller.budget;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.budget.BudgetLineItemDto;
+import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
+import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
@@ -30,9 +32,20 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Create Budget Line Item", description = "Create Budget Line Item")
-    @PostMapping("/budgets/{budgetId}/lineItems")
-    public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody BudgetLineItemDto budgetLineItemDto) {
+    @PostMapping("/budgets/{budgetId}/categories")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody CreateBudgetLineItemDto budgetLineItemDto) {
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.createLineItem(budgetId, budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = LINE_ITEM_UPDATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
+    @Operation(summary = "Edit Budget Line Item", description = "Edit Budget Line Item")
+    @PutMapping("/budgets/{budgetId}/categories/{categoryId}")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> editBudgetLineItem(@PathVariable Long budgetId, @PathVariable Long categoryId, @RequestBody EditBudgetLineItemDto budgetLineItemDto) {
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.editLineItem(budgetId, categoryId, budgetLineItemDto), LINE_ITEM_UPDATED_SUCCESSFULLY);
     }
 
 
