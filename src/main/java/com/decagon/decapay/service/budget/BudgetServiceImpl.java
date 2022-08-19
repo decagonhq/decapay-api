@@ -313,7 +313,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	@Transactional
-	public IdResponseDto editLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto) {
+	public void updateLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto) {
 		User user = this.getAuthenticatedUser();
 
 		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, user.getId())
@@ -332,7 +332,6 @@ public class BudgetServiceImpl implements BudgetService {
 
 		this.updateBudgetLineItem(lineItem, budgetLineItemDto.getAmount());
 
-		return new IdResponseDto(budget.getId());
 	}
 
 	private void updateBudgetLineItem(BudgetLineItem lineItem, BigDecimal amount) {

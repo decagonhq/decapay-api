@@ -1,7 +1,6 @@
 package com.decagon.decapay.controller.budget;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.dto.budget.BudgetLineItemDto;
 import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
 import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
@@ -45,7 +44,8 @@ public class BudgetLineItemController {
     @Operation(summary = "Edit Budget Line Item", description = "Edit Budget Line Item")
     @PutMapping("/budgets/{budgetId}/categories/{categoryId}")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> editBudgetLineItem(@PathVariable Long budgetId, @PathVariable Long categoryId, @RequestBody EditBudgetLineItemDto budgetLineItemDto) {
-        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.editLineItem(budgetId, categoryId, budgetLineItemDto), LINE_ITEM_UPDATED_SUCCESSFULLY);
+        this.budgetService.updateLineItem(budgetId, categoryId, budgetLineItemDto);
+        return ApiResponseUtil.response(HttpStatus.OK, LINE_ITEM_UPDATED_SUCCESSFULLY);
     }
 
 

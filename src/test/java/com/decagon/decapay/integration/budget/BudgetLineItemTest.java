@@ -468,8 +468,7 @@ class BudgetLineItemTest {
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(LINE_ITEM_UPDATED_SUCCESSFULLY))
-                .andExpect(jsonPath("$.data.id").value(budget.getId()));
+                .andExpect(jsonPath("$.message").value(LINE_ITEM_UPDATED_SUCCESSFULLY));
 
         budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
         assertEquals(2, budget.getBudgetLineItems().size());
