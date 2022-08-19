@@ -20,5 +20,7 @@ public interface BudgetService {
 
     CreateBudgetRequestDTO fetchBudget(Long budgetId);
 
-    IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto);
+    IdResponseDto createLineItem(Long budgetId, CreateBudgetLineItemDto budgetLineItemDto);
+
+    void updateLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto);
 }

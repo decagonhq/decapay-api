@@ -104,4 +104,12 @@ public class Budget implements Auditable, Serializable {
             }
         });
     }
+
+    public BudgetLineItem getBudgetLineItem(BudgetCategory category){
+        return this.budgetLineItems
+                .stream()
+                .filter(item -> item.getBudgetCategory().getId().equals(category.getId()))
+                .findAny()
+                .orElse(null);
+    }
 }
