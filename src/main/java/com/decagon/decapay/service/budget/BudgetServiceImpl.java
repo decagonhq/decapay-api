@@ -348,9 +348,10 @@ public class BudgetServiceImpl implements BudgetService {
 	}
 
 	private BudgetLineItem getLineItem(Budget budget, BudgetCategory category) {
-		if(budget.getBudgetLineItem(category) == null){
+		BudgetLineItem budgetLineItem=budget.getBudgetLineItem(category);
+		if( budgetLineItem== null){
 			throw new ResourceNotFoundException("Budget Line item not found");
 		}
-		return budget.getBudgetLineItem(category);
+		return budgetLineItem;
 	}
 }
