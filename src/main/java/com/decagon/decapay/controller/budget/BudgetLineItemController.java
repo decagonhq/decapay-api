@@ -48,5 +48,17 @@ public class BudgetLineItemController {
         return ApiResponseUtil.response(HttpStatus.OK, LINE_ITEM_UPDATED_SUCCESSFULLY);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = LINE_ITEM_REMOVED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
+    @Operation(summary = "Remove Budget Line Item", description = "Remove Budget Line Item")
+    @DeleteMapping("/budgets/{budgetId}/lineItems/{categoryId}")
+    public ResponseEntity<ApiDataResponse<Object>> removeBudgetLineItem(@PathVariable Long budgetId, @PathVariable Long categoryId) {
+        this.budgetService.removeLineItem(budgetId, categoryId);
+        return ApiResponseUtil.response(HttpStatus.NO_CONTENT, LINE_ITEM_REMOVED_SUCCESSFULLY);
+    }
+
 
 }

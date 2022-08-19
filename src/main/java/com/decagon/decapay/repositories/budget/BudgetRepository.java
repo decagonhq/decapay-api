@@ -42,4 +42,12 @@ public interface BudgetRepository extends JpaRepository<Budget, Long>, BudgetRep
            "and b.auditSection.delF = '0' ")
     Optional<Budget> findBudgetWithLineItems(Long budgetId, Long userId);
 
+    @Query("select b from Budget b " +
+           "left join fetch b.budgetLineItems i " +
+           "left join fetch i.expenses " +
+           "left join fetch i.budgetCategory " +
+           "where b.id = ?1 and b.user.id = ?2 " +
+           "and b.auditSection.delF = '0' ")
+    Optional<Budget> findBudgetWithLineItemsAndExpenses(Long budgetId, Long userId);
+
 }

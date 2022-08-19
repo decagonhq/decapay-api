@@ -353,4 +353,29 @@ public class BudgetServiceImpl implements BudgetService {
 		}
 		return budgetLineItem;
 	}
+
+	@Override
+	@Transactional
+	public void removeLineItem(Long budgetId, Long categoryId) {
+		User user = this.getAuthenticatedUser();
+
+		Budget budget = this.budgetRepository.findBudgetWithLineItemsAndExpenses(budgetId, user.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, user)
+				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+		BudgetLineItem lineItem = budget.getBudgetLineItem(category);
+
+		if (!lineItem.getExpenses().isEmpty()){
+			throw new InvalidRequestException("Cannot delete line item with existing expenses");
+		}
+
+		this.removeLineItem(budget, lineItem);
+	}
+
+	private void removeLineItem(Budget budget, BudgetLineItem lineItem) {
+		budget.getBudgetLineItems().remove(lineItem);
+	}
+
 }

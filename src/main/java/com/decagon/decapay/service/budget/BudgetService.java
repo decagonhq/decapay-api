@@ -7,6 +7,7 @@ import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import org.springframework.data.domain.Page;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public interface BudgetService {
@@ -23,4 +24,6 @@ public interface BudgetService {
     IdResponseDto createLineItem(Long budgetId, CreateBudgetLineItemDto budgetLineItemDto);
 
     void updateLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto);
+
+    void removeLineItem(Long budgetId, Long categoryId);
 }
