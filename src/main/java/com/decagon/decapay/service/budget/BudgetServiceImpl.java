@@ -10,6 +10,7 @@ import com.decagon.decapay.model.budget.BudgetLineItem;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
+import com.decagon.decapay.repositories.budget.ExpenseRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.UserInfo;
@@ -44,15 +45,17 @@ public class BudgetServiceImpl implements BudgetService {
 	private final  CustomUserDetailsService userDetailsService;
 	private final BudgetCategoryService budgetCategoryService;
 	private final UserInfoUtills userInfoUtills;
+	private final ExpenseRepository expenseRepository;
 
 	public BudgetServiceImpl(final BudgetRepository budgetRepository, final CustomUserDetailsService userDetailsService
-			, UserRepository userRepository, CurrencyService currencyService, BudgetCategoryService budgetCategoryService, UserInfoUtills userInfoUtills) {
+			, UserRepository userRepository, CurrencyService currencyService, BudgetCategoryService budgetCategoryService, UserInfoUtills userInfoUtills, ExpenseRepository expenseRepository) {
 		this.budgetRepository = budgetRepository;
 		this.userDetailsService = userDetailsService;
 		this.userRepository =userRepository;
 		this.currencyService=currencyService;
 		this.budgetCategoryService = budgetCategoryService;
 		this.userInfoUtills=userInfoUtills;
+		this.expenseRepository = expenseRepository;
 	}
 
 	@Transactional
@@ -353,4 +356,33 @@ public class BudgetServiceImpl implements BudgetService {
 		}
 		return budgetLineItem;
 	}
+
+	@Override
+	@Transactional
+	public void removeLineItem(Long budgetId, Long categoryId) {
+		User user = this.getAuthenticatedUser();
+
+		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, user.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, user)
+				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+		BudgetLineItem lineItem = this.getLineItem(budget, category);
+
+		if (isExpensesPresentForLineItem(lineItem)){
+			throw new InvalidRequestException("Cannot delete line item with existing expenses");
+		}
+
+		this.removeLineItem(budget, category);
+	}
+
+	private boolean isExpensesPresentForLineItem(BudgetLineItem lineItem){
+		return expenseRepository.existsByBudgetLineItem_BudgetCategoryAndBudgetLineItem_Budget(lineItem.getBudgetCategory(), lineItem.getBudget());
+	}
+
+	private void removeLineItem(Budget budget, BudgetCategory category) {
+		budget.removeBudgetLineItem(category);
+	}
+
 }

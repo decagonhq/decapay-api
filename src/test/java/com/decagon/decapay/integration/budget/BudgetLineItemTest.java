@@ -6,6 +6,7 @@ import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetPeriod;
+import com.decagon.decapay.model.budget.*;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
@@ -30,6 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,8 +39,10 @@ import java.util.List;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_CREATED_SUCCESSFULLY;
 import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_UPDATED_SUCCESSFULLY;
+import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_REMOVED_SUCCESSFULLY;
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -481,5 +485,163 @@ class BudgetLineItemTest {
         assertEquals(budget.getId(), lineItem.getBudget().getId());
         assertEquals(dto.getAmount().setScale(2), lineItem.getProjectedAmount());
     }
+
+    @Test
+    void shouldReturn404WhenTryingToRemoveBudgetLineItemAndLineItemBudgetDoesNotBelongToUser() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
+                passwordEncoder.encode("password"), "08067644802");
+        user2.setUserStatus(UserStatus.ACTIVE);
+
+        userRepository.saveAll(List.of(user, user2));
+
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+
+        BudgetCategory category2 = TestModels.budgetCategory("Food");
+        category.setUser(user2);
+        this.budgetCategoryRepository.saveAll(List.of(category, category2));
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user2);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        budget.addBudgetLineItem(category2, BigDecimal.valueOf(2000.00));
+        this.budgetRepository.save(budget);
+
+        setAuthHeader(user);
+        this.assertEditLineItems(budget, category, status().isNotFound());
+    }
+    @Test
+    void shouldReturn404WhenTryingToRemoveBudgetLineItemAndLineItemBudgetCategoryDoesNotBelongToUser() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
+                passwordEncoder.encode("password"), "08067644802");
+        user2.setUserStatus(UserStatus.ACTIVE);
+
+        userRepository.saveAll(List.of(user, user2));
+
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+
+        BudgetCategory category2 = TestModels.budgetCategory("Food");
+        category.setUser(user2);
+        this.budgetCategoryRepository.saveAll(List.of(category, category2));
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
+        this.budgetRepository.save(budget);
+
+        setAuthHeader(user);
+        this.assertEditLineItems(budget, category2, status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn404WhenTryingToRemoveBudgetLineItemAndBudgetDoesNotExist() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        this.budgetCategoryRepository.save(category);
+
+        setAuthHeader(user);
+        this.assertEditLineItems(null, category, status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn404WhenTryingToRemoveBudgetLineItemAndBudgetCategoryDoesNotExist() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        userRepository.save(user);
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        this.budgetRepository.save(budget);
+
+        setAuthHeader(user);
+        this.assertEditLineItems(budget, null, status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn400WhenTryingToRemoveBudgetLineItemAndLineItemHasExpenses() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        this.budgetCategoryRepository.save(category);
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
+
+        BudgetLineItem lineItem = budget.getBudgetLineItems()
+                .stream()
+                .filter(budgetLineItem -> budgetLineItem.getBudgetCategory().equals(category))
+                .findFirst().get();
+        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
+
+        lineItem.addExpense(expenses);
+        this.budgetRepository.save(budget);
+
+        setAuthHeader(user);
+        this.assertEditLineItems(budget, category, status().isBadRequest());
+    }
+
+    private void assertEditLineItems(Budget budget, BudgetCategory category, ResultMatcher expectedResult) throws Exception {
+        Long budgetId = budget == null ? 1L : budget.getId();
+        Long categoryId = category == null ? 1L : category.getId();
+        this.mockMvc.perform(delete(path + "/budgets/{budgetId}/lineItems/{categoryId}", budgetId, categoryId).headers(headers))
+                .andExpect(expectedResult);
+    }
+
+    @Test
+    void shouldRemoveBudgetLineItemSuccessfully() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+
+        BudgetCategory category2 = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        this.budgetCategoryRepository.saveAll(List.of(category, category2));
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
+        budget.addBudgetLineItem(category2, BigDecimal.valueOf(2000.00));
+        this.budgetRepository.save(budget);
+
+        setAuthHeader(user);;
+
+        assertEquals(2, budget.getBudgetLineItems().size());
+
+        this.mockMvc.perform(delete(path + "/budgets/{budgetId}/lineItems/{categoryId}", budget.getId(), category.getId()).headers(headers))
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.message").value(LINE_ITEM_REMOVED_SUCCESSFULLY));
+
+        budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
+        assertEquals(1, budget.getBudgetLineItems().size());
+    }
+
+
 
 }
