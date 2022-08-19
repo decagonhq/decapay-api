@@ -57,9 +57,9 @@ public class BudgetCategoryController {
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = BUDGET_CATEGORY_UPDATED_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
-            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND)})
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Update Budget Category", description = "Update User Budget Category")
     @PutMapping("/budget_categories/{categoryId}")
     public ResponseEntity<ApiDataResponse<Object>> updateBudgetCategory(@PathVariable Long categoryId, @Valid @RequestBody CreateBudgetCategoryDto request) {
