@@ -346,7 +346,6 @@ class BudgetLineItemTest {
     }
 
     @Test
-<<<<<<< HEAD
     void shouldReturn400InvalidRequestWhenTryingToEditLineItemAndBudgetLineItemDoesNotBelongToUser() throws Exception {
 
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
@@ -376,7 +375,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", budget.getId(), category.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems/{categoryId}", budget.getId(), category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -398,7 +397,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", 1L, category.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems/{categoryId}", 1L, category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isNotFound());
@@ -430,7 +429,7 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", budget.getId(), category.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems/{categoryId}", budget.getId(), category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isBadRequest());
@@ -469,12 +468,11 @@ class BudgetLineItemTest {
 
         setAuthHeader(user);;
 
-        this.mockMvc.perform(put(path + "/budgets/{budgetId}/categories/{categoryId}", budget.getId(), category.getId())
+        this.mockMvc.perform(put(path + "/budgets/{budgetId}/lineItems/{categoryId}", budget.getId(), category.getId())
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(LINE_ITEM_UPDATED_SUCCESSFULLY))
-                .andExpect(jsonPath("$.data.id").value(budget.getId()));
+                .andExpect(jsonPath("$.message").value(LINE_ITEM_UPDATED_SUCCESSFULLY));
 
         budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
         assertEquals(2, budget.getBudgetLineItems().size());
@@ -489,8 +487,6 @@ class BudgetLineItemTest {
     }
 
     @Test
-=======
->>>>>>> 40340de (Refactor Code And Add More Test)
     void shouldReturn404WhenTryingToRemoveBudgetLineItemAndLineItemBudgetDoesNotBelongToUser() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
