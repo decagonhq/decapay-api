@@ -41,5 +41,4 @@ public interface BudgetRepository extends JpaRepository<Budget, Long>, BudgetRep
            "where b.id = ?1 and b.user.id = ?2 " +
            "and b.auditSection.delF = '0' ")
     Optional<Budget> findBudgetWithLineItems(Long budgetId, Long userId);
-
 }

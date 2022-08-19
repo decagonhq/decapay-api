@@ -1,6 +1,7 @@
 package com.decagon.decapay.model.budget;
 
 import com.decagon.decapay.constants.SchemaConstants;
+import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
@@ -15,6 +16,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -76,9 +78,17 @@ public class Budget implements Auditable, Serializable {
     }
 
     public void removeBudgetLineItem(BudgetCategory budgetCategory) {
-        BudgetLineItem budgetLineItem = new BudgetLineItem(this, budgetCategory, null);
+        BudgetLineItem budgetLineItem = getBudgetLineItem(budgetCategory);
         this.budgetLineItems.remove(budgetLineItem);
         budgetCategory.removeBudgetLineItem(budgetLineItem);
+    }
+
+    public BudgetLineItem getBudgetLineItem(BudgetCategory category) {
+        return this.budgetLineItems
+                .stream()
+                .filter(lineItem -> lineItem.getBudgetCategory().getId().equals(category.getId()))
+                .findFirst()
+                .orElse(null);
     }
 
     public BigDecimal calculatePercentageAmountSpent(){
@@ -103,13 +113,5 @@ public class Budget implements Auditable, Serializable {
                 budgetLineItem.addExpense(expense);
             }
         });
-    }
-
-    public BudgetLineItem getBudgetLineItem(BudgetCategory category){
-        return this.budgetLineItems
-                .stream()
-                .filter(item -> item.getBudgetCategory().getId().equals(category.getId()))
-                .findAny()
-                .orElse(null);
     }
 }

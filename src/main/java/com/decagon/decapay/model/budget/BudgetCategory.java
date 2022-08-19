@@ -39,11 +39,12 @@ public class BudgetCategory implements Auditable, Serializable {
     @Embedded
     private AuditSection auditSection = new AuditSection();
 
-    @OneToMany(mappedBy = "budgetCategory", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "budgetCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @ToString.Exclude
     private Set<BudgetLineItem> budgetLineItems = new HashSet<>();
 
     public void removeBudgetLineItem(BudgetLineItem budgetLineItem){
+        //TODO: Causing Lazily Initialization Exception Without Transactional
         this.budgetLineItems.remove(budgetLineItem);
     }
 

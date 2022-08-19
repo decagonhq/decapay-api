@@ -2,6 +2,10 @@ package com.decagon.decapay.unit.domain;
 
 
 import com.decagon.decapay.model.budget.Budget;
+import com.decagon.decapay.model.budget.BudgetCategory;
+import com.decagon.decapay.model.budget.BudgetLineItem;
+import com.decagon.decapay.utils.TestModels;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -10,8 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 
+import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -47,4 +53,21 @@ public class BudgetTest {
         return budget;
     }
 
+    @ParameterizedTest
+    @MethodSource("budgetLineItemProvider")
+    void testShouldReturnNullIfBudgetLineItemIsNotPresent(Budget budget, BudgetCategory budgetCategory, BudgetLineItem expectedBudgetLineItem) throws Exception {
+        assertEquals(expectedBudgetLineItem, budget.getBudgetLineItem(budgetCategory));
+    }
+
+    static  Stream<Arguments> budgetLineItemProvider() {
+        Budget budgetWithNoLineItem = TestModels.budget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1));
+        budgetWithNoLineItem.setId(2L);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setId(1L);
+
+        return Stream.of(
+                arguments(budgetWithNoLineItem, category, null)
+        );
+    }
 }
