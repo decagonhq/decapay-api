@@ -9,13 +9,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class UserInfo implements UserDetails {
+public class SecurityUser implements UserDetails {
 
     private String password;
     private String userName;
     private boolean enabled;
 
-    public UserInfo(String userName,String password,boolean enabled) {
+    public SecurityUser(String userName, String password, boolean enabled) {
         this.userName=userName;
         this.password=password;
         this.enabled=enabled;
