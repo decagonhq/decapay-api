@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,11 +48,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 if (username != null) {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     if (jwtUtil.validateToken(token, userDetails)) {
+                        List<GrantedAuthority> authorities = new ArrayList<>();
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                                new UsernamePasswordAuthenticationToken(username, null, authorities);
                         usernamePasswordAuthenticationToken
                                 .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                     }
                 }

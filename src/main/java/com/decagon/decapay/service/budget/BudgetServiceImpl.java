@@ -3,26 +3,23 @@ package com.decagon.decapay.service.budget;
 import com.decagon.decapay.dto.SearchCriteria;
 import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.exception.*;
+import com.decagon.decapay.exception.InvalidRequestException;
+import com.decagon.decapay.exception.ResourceConflictException;
+import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
-import com.decagon.decapay.repositories.user.UserRepository;
-import com.decagon.decapay.security.CustomUserDetailsService;
-import com.decagon.decapay.security.UserInfo;
 import com.decagon.decapay.service.budget.category.BudgetCategoryService;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
 import com.decagon.decapay.utils.PageUtil;
-import com.decagon.decapay.utils.UserInfoUtills;
+import com.decagon.decapay.utils.UserInfoUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -38,30 +35,27 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BudgetServiceImpl implements BudgetService {
 	private final BudgetRepository budgetRepository;
-	private final UserRepository userRepository;
 	private final CurrencyService currencyService;
-	//TODO: replace with  userService or userInfo component
-	private final  CustomUserDetailsService userDetailsService;
 	private final BudgetCategoryService budgetCategoryService;
-	private final UserInfoUtills userInfoUtills;
+	private final UserInfoUtil userInfoUtil;
 
-	public BudgetServiceImpl(final BudgetRepository budgetRepository, final CustomUserDetailsService userDetailsService
-			, UserRepository userRepository, CurrencyService currencyService, BudgetCategoryService budgetCategoryService, UserInfoUtills userInfoUtills) {
+	public BudgetServiceImpl(final BudgetRepository budgetRepository,CurrencyService currencyService, BudgetCategoryService budgetCategoryService, UserInfoUtil userInfoUtil) {
 		this.budgetRepository = budgetRepository;
-		this.userDetailsService = userDetailsService;
-		this.userRepository =userRepository;
 		this.currencyService=currencyService;
 		this.budgetCategoryService = budgetCategoryService;
-		this.userInfoUtills=userInfoUtills;
+		this.userInfoUtil=userInfoUtil;
 	}
 
 	@Transactional
 	@Override
 	public CreateBudgetResponseDTO createBudget(CreateBudgetRequestDTO budgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
 
-		User user = userDetailsService.getLoggedInUser();
+		User currentUser = this.userInfoUtil.getCurrAuthUser();
+
 		Budget budget =this.createModelEntity(budgetRequest,budgetPeriodHandler);
-		this.saveBudget(budget,user);
+
+		this.saveBudget(budget,currentUser);
+
 		return new CreateBudgetResponseDTO(budget.getId());
 	}
 
@@ -72,7 +66,6 @@ public class BudgetServiceImpl implements BudgetService {
 	}
 
 	private Budget createModelEntity(CreateBudgetRequestDTO budgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
-
 		Budget budget=new Budget();
 		CreateBudgetPopulator populator=new CreateBudgetPopulator();
 		populator.setBudgetPeriodHandler(budgetPeriodHandler);
@@ -85,11 +78,13 @@ public class BudgetServiceImpl implements BudgetService {
 	public Page<BudgetResponseDto> getBudgets(int pageSize, int pageNo, List<SearchCriteria> searchCriterias) {
 
 		Pageable pageable = PageUtil.normalisePageRequest(pageNo, pageSize);
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		User user = userRepository.findUserByEmail(userDetails.getUsername())
-				.orElseThrow(() -> new InvalidCredentialException("Invalid Credentials"));
-		Page<BudgetResponseDto> budgets = budgetRepository.findBudgetsByUserId(pageable, user.getId(), searchCriterias);
+
+		User currentUser = this.userInfoUtil.getCurrAuthUser();
+
+		Page<BudgetResponseDto> budgets = budgetRepository.findBudgetsByUserId(pageable, currentUser.getId(), searchCriterias);
+
 		Budget budget1 = new Budget();
+
 		return budgets.map(budgetResponseDto -> {
 			budgetResponseDto.setDisplayTotalAmountSpentSoFar(currencyService.formatAmount(budgetResponseDto.getTotalAmountSpentSoFar()));
 			budgetResponseDto.setDisplayProjectedAmount(currencyService.formatAmount(budgetResponseDto.getProjectedAmount()));
@@ -104,7 +99,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public ViewBudgetDto viewBudgetDetails(Long budgetId) {
-		User currentUser = this.getAuthenticatedUser();
+		User currentUser = this.userInfoUtil.getCurrAuthUser();
 
 		Optional<Budget> optionalBudget = budgetRepository.findBudgetDetailsById(budgetId);
 
@@ -165,23 +160,11 @@ public class BudgetServiceImpl implements BudgetService {
 	}
 
 
-	public User getAuthenticatedUser() {
-
-		UserInfo authenticatedUserInfo = this.userInfoUtills.authenticationUserInfo();
-		if (authenticatedUserInfo == null){
-			throw new UnAuthorizedException("Authenticated User not found");
-		}
-		Optional<User> user = userRepository.findUserByEmail(authenticatedUserInfo.getUsername());
-		if (user.isEmpty()){
-			throw  new ResourceNotFoundException("User not found");
-		}
-		return user.get();
-	}
-
 	@Transactional
     @Override
     public IdResponseDto updateBudget(Long budgetId, CreateBudgetRequestDTO budgetRequestDto, AbstractBudgetPeriodHandler budgetPeriodHandler) {
-        User currentUser = this.getAuthenticatedUser();
+
+		User currentUser = this.userInfoUtil.getCurrAuthUser();
 
 		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
@@ -230,13 +213,14 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public CreateBudgetRequestDTO fetchBudget(Long budgetId) {
-		User user = this.getAuthenticatedUser();
 
-		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, user.getId())
+		User currentUser = this.userInfoUtil.getCurrAuthUser();
+
+		Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
 
-		if (!isCurrentUserOwnerOfBudget(user, budget)){
-			log.error(String.format("This should be an hacking attempt, userid : %s, budgetId : %s", user.getId(), budgetId));
+		if (!isCurrentUserOwnerOfBudget(currentUser, budget)){
+			log.error(String.format("This should be an hacking attempt, userid : %s, budgetId : %s", currentUser.getId(), budgetId));
 			throw new InvalidRequestException("Invalid Request");
 		}
 
@@ -258,12 +242,13 @@ public class BudgetServiceImpl implements BudgetService {
 	@Override
 	@Transactional
 	public IdResponseDto createLineItem(Long budgetId, BudgetLineItemDto budgetLineItemDto) {
-		User user = this.getAuthenticatedUser();
 
-		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, user.getId())
+		User currentUser = this.userInfoUtil.getCurrAuthUser();
+
+		Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, currentUser.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
 
-		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(budgetLineItemDto.getBudgetCategoryId(), user)
+		BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(budgetLineItemDto.getBudgetCategoryId(), currentUser)
 				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
 		if(isBudgetLineItemExistsForCategory(budget.getBudgetLineItems(), category)){
