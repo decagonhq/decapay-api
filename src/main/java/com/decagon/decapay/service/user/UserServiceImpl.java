@@ -7,6 +7,8 @@ import com.decagon.decapay.repositories.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,12 +28,6 @@ public class UserServiceImpl implements UserService {
             throw new ResourceConflictException();
         }
 
-		/*User user = User.builder().firstName(userDTO.getFirstName())
-			.lastName(userDTO.getLastName())
-			.email(userDTO.getEmail().toLowerCase())
-			.password(passwordEncoder.encode(userDTO.getPassword()))
-			.phoneNumber(userDTO.getPhoneNumber()).build();*/
-
         User user = new User();
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
@@ -40,5 +36,10 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> findUserByEmail(String email) {
+        return this.userRepository.findUserByEmail(email);
     }
 }
