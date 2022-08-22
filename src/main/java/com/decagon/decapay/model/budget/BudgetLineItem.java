@@ -22,6 +22,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_BUDGET_LINE_IT
 @EntityListeners(AuditListener.class)
 @Entity
 @Table(name = TABLE_BUDGET_LINE_ITEM)
+@EqualsAndHashCode
 public class BudgetLineItem implements Auditable, Serializable {
 
     @EmbeddedId
