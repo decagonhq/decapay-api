@@ -5,7 +5,6 @@ import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
 import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
-import com.decagon.decapay.exception.UnAuthorizedException;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
@@ -46,14 +45,15 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
     @Override
     @Transactional
     public void updateBudgetCategory(Long categoryId, CreateBudgetCategoryDto updateRequestDto) {
-        User user = this.getAuthenticatedUser();
+
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
 
         Optional<BudgetCategory> optionalBudgetCategory = this.budgetCategoryRepository.findById(categoryId);
         if (optionalBudgetCategory.isEmpty()){
             throw new ResourceNotFoundException("Budget Category not found");
         }
         BudgetCategory budgetCategory = optionalBudgetCategory.get();
-        if (!isCurrentUserOwnerOfBudgetCategory(user, budgetCategory)){
+        if (!isCurrentUserOwnerOfBudgetCategory(currentUser, budgetCategory)){
             throw new InvalidRequestException("Invalid Request");
         }
         this.mapRequestToEntity(budgetCategory, updateRequestDto);
