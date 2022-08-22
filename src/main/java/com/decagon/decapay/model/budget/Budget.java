@@ -81,6 +81,8 @@ public class Budget implements Auditable, Serializable {
         BudgetLineItem budgetLineItem = getBudgetLineItem(budgetCategory);
         this.budgetLineItems.remove(budgetLineItem);
         budgetCategory.removeBudgetLineItem(budgetLineItem);
+        budgetLineItem.setBudget(null);
+        budgetLineItem.setBudgetCategory(null);
     }
 
     public BudgetLineItem getBudgetLineItem(BudgetCategory category) {
