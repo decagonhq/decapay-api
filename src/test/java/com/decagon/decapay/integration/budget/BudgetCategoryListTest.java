@@ -226,7 +226,7 @@ public class BudgetCategoryListTest {
         dto.setTitle("Transportation");
 
         mockMvc.perform(post(path + "/budget_categories").contentType(MediaType.APPLICATION_JSON).content(
-                TestUtils.asJsonString(dto))).andExpect(status().isForbidden());
+                TestUtils.asJsonString(dto))).andExpect(status().isUnauthorized());
     }
 
 
@@ -268,7 +268,7 @@ public class BudgetCategoryListTest {
         dto.setTitle("Food");
 
         mockMvc.perform(put(path + "/budget_categories/{categoryId}", category.getId()).contentType(MediaType.APPLICATION_JSON).content(
-                TestUtils.asJsonString(dto))).andExpect(status().isForbidden());
+                TestUtils.asJsonString(dto))).andExpect(status().isUnauthorized());
     }
 
     @Test

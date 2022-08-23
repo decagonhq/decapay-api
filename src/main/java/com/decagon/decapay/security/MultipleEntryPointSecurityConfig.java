@@ -36,6 +36,8 @@ public class MultipleEntryPointSecurityConfig {
 
         @Autowired
         private JwtRequestFilter jwtRequestFilter;
+        @Autowired
+        private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
         
         @Autowired
         private PasswordEncoder passwordEncoder;
@@ -65,7 +67,8 @@ public class MultipleEntryPointSecurityConfig {
             http.csrf().disable()
                     .antMatcher(path+"/**").authorizeRequests()
                     .antMatchers(AUTH_WHITELIST).permitAll()
-                    .anyRequest().authenticated().and().exceptionHandling().and().sessionManagement()
+                    .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
+                    .and().sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                     .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         }

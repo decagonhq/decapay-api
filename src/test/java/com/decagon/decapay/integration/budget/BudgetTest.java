@@ -258,30 +258,6 @@ public class BudgetTest {
     }
 
 
-
-
-    @Test
-    void testShouldReturnForbidden() throws Exception {
-
-        User user = new User();
-        user.setEmail("o3g@gmail.com");
-        user.setPassword(passwordEncoder.encode("1234567"));
-        user.setFirstName("Goodluck");
-        user.setLastName("Nwoko");
-        user.setPhoneNumber("07056355667");
-        userRepository.save(user);
-
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        this.mockMvc
-                .perform(post(path + "/budgets")
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isForbidden());
-    }
-
-
     @Test
     void testShouldReturnListOfBudgetsSuccesfullyWhenAUserHasBudget() throws Exception {
 

@@ -104,6 +104,6 @@ public class SignOutTest {
                 .perform(get(path + "/any").content(TestUtils.asJsonString(signOutRequestDto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }
