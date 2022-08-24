@@ -114,4 +114,12 @@ public class Budget implements Auditable, Serializable {
             }
         });
     }
+
+    public void removeExpense(Expenses expense){
+        BigDecimal newBudgetTotalAmount = this.getTotalAmountSpentSoFar().subtract(expense.getAmount());
+        this.setTotalAmountSpentSoFar(newBudgetTotalAmount.setScale(2, RoundingMode.HALF_DOWN));
+        BudgetLineItem updateLineItem = this.getBudgetLineItem(expense.getBudgetLineItem().getBudgetCategory());
+        BigDecimal newLineItemTotalAmount = updateLineItem.getTotalAmountSpentSoFar().subtract(expense.getAmount());
+        updateLineItem.setTotalAmountSpentSoFar(newLineItemTotalAmount.setScale(2, RoundingMode.HALF_DOWN));
+    }
 }

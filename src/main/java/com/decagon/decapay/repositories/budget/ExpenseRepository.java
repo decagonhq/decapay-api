@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
+import java.util.Optional;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expenses, Long> {
@@ -24,4 +24,12 @@ public interface ExpenseRepository extends JpaRepository<Expenses, Long> {
             "join b.budgetCategory bc " +
             "where bt.id =?1 and bc.id=?2 order by e.transactionDate desc " )
     Page<BudgetExpensesResponseDto> fetchExpenses(Long budgetId, Long categoryId, Pageable pageable);
+
+    @Query("select e from Expenses e " +
+            "join fetch e.budgetLineItem l " +
+            "join fetch l.budget b " +
+            "join fetch l.budgetCategory c " +
+            "where e.id=?1 " +
+            "and e.auditSection.delF <> '1' ")
+    Optional<Expenses> findExpenseById(Long id);
 }

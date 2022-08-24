@@ -8,7 +8,6 @@ import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHand
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface BudgetService {
@@ -29,4 +28,6 @@ public interface BudgetService {
     void removeLineItem(Long budgetId, Long categoryId);
 
     Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable);
+
+    void removeExpense(Long expenseId);
 }
