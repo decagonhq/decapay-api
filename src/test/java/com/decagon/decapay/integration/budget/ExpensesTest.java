@@ -1,8 +1,8 @@
 package com.decagon.decapay.integration.budget;
 
 
-import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
-import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
+import com.decagon.decapay.constants.AppConstants;
+import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.model.budget.*;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
@@ -12,9 +12,10 @@ import com.decagon.decapay.repositories.budget.ExpenseRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.JwtUtil;
+import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.TestModels;
-import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,19 +30,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.Currency;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Locale;
 
-import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @ExtendWith(DBCleanerExtension.class)
-class BudgetExpensesTest {
+class ExpensesTest {
     @Value("${api.basepath-api}")
     private String path;
     @Autowired
@@ -93,7 +90,7 @@ class BudgetExpensesTest {
     }
 
     @Test
-    void shouldReturnBudgetLineItemExpensesSuccessfully() throws Exception {
+    void givenAnyBudgetLineItemExist_WhenUserListsExpensesForBudgetLineItemWithABudgetThatDoesNotExist_ShouldReturnEmptyList() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -107,72 +104,17 @@ class BudgetExpensesTest {
         budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
         budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
 
-        BudgetLineItem lineItem = budget.getBudgetLineItems()
-                .stream()
-                .filter(budgetLineItem -> budgetLineItem.getBudgetCategory().equals(category))
-                .findFirst().get();
-        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
-        expenses.setDescription("descriptin 1");
-        Expenses expenses2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now());
-        expenses2.setDescription("description 2");
-
-        lineItem.addExpense(expenses);
-        lineItem.addExpense(expenses2);
-        this.budgetRepository.save(budget);
-
-        setAuthHeader(user);
-        this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.size()").value(2));
-
-        Collection<Expenses> expenses1 = expenseRepository.findAll();
-        assertEquals(2, expenses1.size());
-        expenses1.stream().map(Expenses::getDescription).toList().containsAll(List.of("Description 1", "Description 2"));
-        expenses1.stream().map(Expenses::getAmount).toList().containsAll(List.of("500", "1000"));
-    }
-
-    @Test
-    void shouldNotListExpensesWhenBudgetDoesNotExists() throws Exception {
-        User user = TestModels.user("ola", "dip", "ola@gmail.com",
-                passwordEncoder.encode("password"), "08067644805");
-        user.setUserStatus(UserStatus.ACTIVE);
-        userRepository.save(user);
-
-        BudgetCategory category = TestModels.budgetCategory("Food");
-        category.setUser(user);
-        this.budgetCategoryRepository.save(category);
-
-        setAuthHeader(user);
-        this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", 1, category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.size()").value(0));
-    }
-    @Test
-    void shouldNotListExpensesWhenBudgetCategoryDoesNotExists() throws Exception {
-        User user = TestModels.user("ola", "dip", "ola@gmail.com",
-                passwordEncoder.encode("password"), "08067644805");
-        user.setUserStatus(UserStatus.ACTIVE);
-        userRepository.save(user);
-
-        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
-        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
-
-
-        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
-        expenses.setDescription("descriptin 1");
-        Expenses expenses2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now());
-        expenses2.setDescription("description 2");
 
         this.budgetRepository.save(budget);
 
         setAuthHeader(user);
-        this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), 1).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", 0, category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.size()").value(0));
     }
 
     @Test
-    void shouldNotListExpensesWhenBudgetLineItemExpensesDoesNotExists() throws Exception {
+    void givenAnyBudgetLineItemExist_WhenUserListsExpensesForBudgetLineItemWithBudgetCategoryThatDoesExist_ShouldReturnEmptyList() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -186,10 +128,29 @@ class BudgetExpensesTest {
         budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
         budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
 
-        BudgetLineItem lineItem = budget.getBudgetLineItems()
-                .stream()
-                .filter(budgetLineItem -> budgetLineItem.getBudgetCategory().equals(category))
-                .findFirst().get();
+        this.budgetRepository.save(budget);
+
+        setAuthHeader(user);
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), 0).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.size()").value(0));
+    }
+
+    @Test
+    void givenBudgetLineItemExistWithNoExpenses_WhenUserListsExpensesForBudgetLineItem_ShouldReturnEmptyList() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        this.budgetCategoryRepository.save(category);
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
+
         this.budgetRepository.save(budget);
 
         setAuthHeader(user);
@@ -200,41 +161,89 @@ class BudgetExpensesTest {
 
 
     @Test
-    void shouldReturn404WhenTryingToCreateLineItemAndBudgetDoesNotBelongToUser() throws Exception {
+    void givenABudgetLineItemCreatedByOtherUserExistWithAtleastTwoExpenses_WhenUserListExpensesForBudgetLineItemCreatedByOtherUser_ShouldReturnEmptyList() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
 
-        User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
+        User otherUser = TestModels.user("ola2", "dip2", "ola2@gmail.com",
                 passwordEncoder.encode("password"), "08067644802");
-        user2.setUserStatus(UserStatus.ACTIVE);
-        userRepository.saveAll(List.of(user, user2));
+        otherUser.setUserStatus(UserStatus.ACTIVE);
+        userRepository.saveAll(List.of(user, otherUser));
 
         BudgetCategory category = TestModels.budgetCategory("Food");
-        category.setUser(user2);
+        category.setUser(otherUser);
         this.budgetCategoryRepository.save(category);
 
-        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),otherUser);
         budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
         budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
+        budgetRepository.save(budget);
 
-        BudgetLineItem lineItem = budget.getBudgetLineItems()
-                .stream()
-                .filter(budgetLineItem -> budgetLineItem.getBudgetCategory().equals(category))
-                .findFirst().get();
-        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
-        expenses.setDescription("descriptin 1");
-        Expenses expenses2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now());
-        expenses2.setDescription("description 2");
+        BudgetLineItem lineItem = budget.getBudgetLineItem(category);
 
-        lineItem.addExpense(expenses);
-        lineItem.addExpense(expenses2);
-        this.budgetRepository.save(budget);
+        Expenses expense = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
+        expense.setDescription("descriptin 1");
+        expense.setBudgetLineItem(lineItem);
+
+        Expenses expense2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now());
+        expense2.setDescription("description 2");
+        expense2.setBudgetLineItem(lineItem);
+
+        expenseRepository.saveAll(List.of(expense, expense2));
 
         setAuthHeader(user);
         this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.size()").value(0));
     }
+
+
+    @Test
+    void givenABudgetLineItemCreatedByUserExistsWithAtLeastTwoExpenses_WhenUserListExpensesForTheBudgetLineItem_ShouldReturnListSuccessfully() throws Exception {
+        Currency currency = AppConstants.DEFAULT_CURRENCY;
+        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
+
+
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        this.budgetCategoryRepository.save(category);
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
+        this.budgetRepository.save(budget);
+
+        BudgetLineItem lineItem = budget.getBudgetLineItem(category);
+
+        Expenses expense = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now().plusDays(3));
+        expense.setDescription("descriptin 1");
+        expense.setBudgetLineItem(lineItem);
+
+        Expenses expense2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now().plusDays(1));
+        expense2.setDescription("description 2");
+        expense2.setBudgetLineItem(lineItem);
+
+        expenseRepository.saveAll(List.of(expense, expense2));
+
+        setAuthHeader(user);
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.size()").value(2))
+                .andExpect(jsonPath("$.data[*].id", Matchers.containsInRelativeOrder(expense.getId().intValue(), expense2.getId().intValue())))
+                .andExpect(jsonPath("$.data[0].id").value(expense.getId()))
+                .andExpect(jsonPath("$.data[0].amount").value(500))
+                .andExpect(jsonPath("$.data[0].displayAmount").value(currency.getSymbol(locale) + "500.00"))
+                .andExpect(jsonPath("$.data[0].description").value("descriptin 1"))
+                .andExpect(jsonPath("$.data[0].transactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data[0].displayTransactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)));
+    }
+
 
 }
