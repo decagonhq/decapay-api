@@ -399,40 +399,27 @@ public class BudgetServiceImpl implements BudgetService {
         }
         BudgetLineItem lineItem = this.getLineItem(budget, category);
 
-        Expenses expense = this.saveExpense(lineItem, expenseDto);
-        this.updateLineItemTotalAmountSpentSoFar(lineItem, expenseDto);
-        this.updateBudgetTotalAmountSpentSoFar(budget, lineItem);
+        Expenses expense = this.convertExpenseDtoToEntity(expenseDto, lineItem);
+
+        expense = this.saveExpense(expense);
+
+        lineItem.addExpense(expense.getAmount());
+
+        budget.addExpense(lineItem.getTotalAmountSpentSoFar());
 
         return new IdResponseDto(expense.getId());
     }
 
-    private void updateLineItemTotalAmountSpentSoFar(BudgetLineItem lineItem, ExpenseDto expenseDto) {
-        BigDecimal expectedTotalExpensesAmountForNewExpenseRequestAfterSave = calculateExpectedTotalExpensesAmountForNewExpenseRequestAfterSave(lineItem, expenseDto);
-        lineItem.setTotalAmountSpentSoFar(expectedTotalExpensesAmountForNewExpenseRequestAfterSave);
+    private Expenses saveExpense(Expenses expense) {
+        return expenseRepository.save(expense);
     }
 
-    private void updateBudgetTotalAmountSpentSoFar(Budget budget, BudgetLineItem lineItem) {
-        if (budget.getTotalAmountSpentSoFar() == null) {
-            budget.setTotalAmountSpentSoFar(lineItem.getTotalAmountSpentSoFar());
-        }
-        budget.setTotalAmountSpentSoFar(budget.getTotalAmountSpentSoFar().add(lineItem.getTotalAmountSpentSoFar()));
-    }
-
-
-    private Expenses saveExpense(BudgetLineItem lineItem, ExpenseDto expenseDto) {
+    private Expenses convertExpenseDtoToEntity(ExpenseDto expenseDto, BudgetLineItem lineItem) {
         Expenses expense = new Expenses();
         expense.setAmount(expenseDto.getAmount());
         expense.setDescription(expenseDto.getDescription());
         expense.setTransactionDate(CustomDateUtil.formatStringToLocalDate(expenseDto.getTransactionDate()));
         expense.setBudgetLineItem(lineItem);
-        return expenseRepository.save(expense);
-    }
-
-    private BigDecimal calculateExpectedTotalExpensesAmountForNewExpenseRequestAfterSave(BudgetLineItem lineItem, ExpenseDto expenseDto) {
-        if(lineItem.getExpenses().isEmpty()) {
-            return expenseDto.getAmount();
-        }
-        BigDecimal totalExpensesAmount = lineItem.calculateExpensesTotalAmount();
-        return totalExpensesAmount.add(expenseDto.getAmount());
+        return expense;
     }
 }
