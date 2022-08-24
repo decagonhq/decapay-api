@@ -110,7 +110,7 @@ class ExpensesTest {
         setAuthHeader(user);
         this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", 0, category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.size()").value(0));
+                .andExpect(jsonPath("$.data.content.size()").value(0));
     }
 
     @Test
@@ -133,7 +133,7 @@ class ExpensesTest {
         setAuthHeader(user);
         this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), 0).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.size()").value(0));
+                .andExpect(jsonPath("$.data.content.size()").value(0));
     }
 
     @Test
@@ -156,7 +156,7 @@ class ExpensesTest {
         setAuthHeader(user);
         this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.size()").value(0));
+                .andExpect(jsonPath("$.data.content.size()").value(0));
     }
 
 
@@ -195,7 +195,7 @@ class ExpensesTest {
         setAuthHeader(user);
         this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.size()").value(0));
+                .andExpect(jsonPath("$.data.content.size()").value(0));
     }
 
 
@@ -235,14 +235,14 @@ class ExpensesTest {
         setAuthHeader(user);
         this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.size()").value(2))
-                .andExpect(jsonPath("$.data[*].id", Matchers.containsInRelativeOrder(expense.getId().intValue(), expense2.getId().intValue())))
-                .andExpect(jsonPath("$.data[0].id").value(expense.getId()))
-                .andExpect(jsonPath("$.data[0].amount").value(500))
-                .andExpect(jsonPath("$.data[0].displayAmount").value(currency.getSymbol(locale) + "500.00"))
-                .andExpect(jsonPath("$.data[0].description").value("descriptin 1"))
-                .andExpect(jsonPath("$.data[0].transactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                .andExpect(jsonPath("$.data[0].displayTransactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)));
+                .andExpect(jsonPath("$.data.content.size()").value(2))
+                .andExpect(jsonPath("$.data.content[*].id", Matchers.containsInRelativeOrder(expense.getId().intValue(), expense2.getId().intValue())))
+                .andExpect(jsonPath("$.data.content[0].id").value(expense.getId()))
+                .andExpect(jsonPath("$.data.content[0].amount").value(500))
+                .andExpect(jsonPath("$.data.content[0].displayAmount").value(currency.getSymbol(locale) + "500.00"))
+                .andExpect(jsonPath("$.data.content[0].description").value("descriptin 1"))
+                .andExpect(jsonPath("$.data.content[0].transactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.content[0].displayTransactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)));
     }
 
 

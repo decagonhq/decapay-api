@@ -3,11 +3,12 @@ package com.decagon.decapay.service.budget;
 import com.decagon.decapay.dto.SearchCriteria;
 import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.exception.*;
+import com.decagon.decapay.exception.InvalidRequestException;
+import com.decagon.decapay.exception.ResourceConflictException;
+import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
-import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
@@ -25,7 +26,10 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -377,26 +381,27 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public Collection<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId) {
+    public Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable) {
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
         Optional<Budget> budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId());
         if (budget.isEmpty()){
-            return Collections.emptyList();
+            return Page.empty();
         }
         Optional<BudgetCategory> category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser);
         if (category.isEmpty()){
-            return Collections.emptyList();
+            return Page.empty();
         }
 
         if (!isCurrentUserOwnerOfBudgetCategory(currentUser, category.get())) {
-            return Collections.emptyList();
+            return Page.empty();
         }
 
-        Collection<BudgetExpensesResponseDto> expenses = expenseRepository.fetchExpenses(budget.get().getId(), category.get().getId());
+        Page<BudgetExpensesResponseDto> expenses = expenseRepository.fetchExpenses(budget.get().getId(), category.get().getId(), PageUtil.normalisePageRequest(pageable));
         if (expenses.isEmpty()){
-            return Collections.emptyList();
+            return Page.empty();
         }
+
         for (BudgetExpensesResponseDto dto: expenses) {
             dto.setDisplayAmount(currencyService.formatAmount(dto.getAmount()));
         }

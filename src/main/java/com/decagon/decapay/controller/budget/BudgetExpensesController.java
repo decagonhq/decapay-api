@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +33,8 @@ public class BudgetExpensesController {
             @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content)})
     @Operation(summary = "List Budget Expenses", description = "Returns lists of user's budget expenses successfully")
     @GetMapping("/budgets/{budgetId}/lineItems/{categoryId}/expenses")
-    public ResponseEntity<ApiDataResponse<Collection<BudgetExpensesResponseDto>>> listBudgetCategories(@PathVariable Long budgetId, @PathVariable Long categoryId) {
-        Collection<BudgetExpensesResponseDto> budgetExpensesResponse =budgetService.getListOfBudgetExpenses(budgetId, categoryId);
+    public ResponseEntity<ApiDataResponse<Page<BudgetExpensesResponseDto>>> listBudgetCategories(@PathVariable Long budgetId, @PathVariable Long categoryId, Pageable pageable) {
+        Page<BudgetExpensesResponseDto> budgetExpensesResponse =budgetService.getListOfBudgetExpenses(budgetId, categoryId, pageable);
         return ApiResponseUtil.response(HttpStatus.OK, budgetExpensesResponse);
     }
 
