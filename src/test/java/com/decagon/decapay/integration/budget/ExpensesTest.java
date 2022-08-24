@@ -42,6 +42,7 @@ import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
 import static com.decagon.decapay.utils.CustomDateUtil.formatLocalDateToString;
 import static com.decagon.decapay.utils.CustomDateUtil.formatStringToLocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -212,77 +213,12 @@ class ExpensesTest {
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(4000));
 
         budget.addBudgetLineItem(category, BigDecimal.valueOf(2000));
-        var lineItem = budget.getBudgetLineItem(category);
-        lineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(1000));
-
         this.budgetRepository.save(budget);
 
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
         dto.setTransactionDate(LocalDate.now().plusMonths(2).toString());
-        setAuthHeader(user);
-
-        this.validateExpectation(budget, category, dto, status().isBadRequest());
-    }
-
-    @Test
-    void givenLineItemCreatedByUserExists_WhenUserLogExpenseAndSumOfAllExpensesIsGreaterThanLineItemTotalAmountSpentSoFar_SystemShouldFailWith400() throws Exception {
-        User user = TestModels.user("ola", "dip", "ola@gmail.com",
-                passwordEncoder.encode("password"), "08067644805");
-        user.setUserStatus(UserStatus.ACTIVE);
-        userRepository.save(user);
-
-        BudgetCategory category = TestModels.budgetCategory("Food");
-        category.setUser(user);
-        budgetCategoryRepository.save(category);
-
-
-        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
-        budget.setProjectedAmount(BigDecimal.valueOf(5000));
-        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(2000));
-        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000));
-
-        var lineItem = budget.getBudgetLineItem(category);
-        lineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(1000));
-        this.budgetRepository.save(budget);
-
-        ExpenseDto dto = new ExpenseDto();
-        dto.setAmount(BigDecimal.valueOf(2000));
-        dto.setDescription("Food");
-        dto.setTransactionDate(LocalDate.now().toString());
-        setAuthHeader(user);
-
-        this.validateExpectation(budget, category, dto, status().isBadRequest());
-    }
-
-    @Test
-    void givenLineItemCreatedByUserExists_WhenUserLogExpenseAndSumOfExpectedLineItemTotalAmountSpentSoFarIsGreaterThanBudgetTotalAmountSpentSoFar_SystemShouldFailWith400() throws Exception {
-        User user = TestModels.user("ola", "dip", "ola@gmail.com",
-                passwordEncoder.encode("password"), "08067644805");
-        user.setUserStatus(UserStatus.ACTIVE);
-        userRepository.save(user);
-
-        BudgetCategory category = TestModels.budgetCategory("Food");
-        category.setUser(user);
-        budgetCategoryRepository.save(category);
-
-
-        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
-        budget.setProjectedAmount(BigDecimal.valueOf(5000));
-        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(4000));
-
-        budget.addBudgetLineItem(category, BigDecimal.valueOf(3000));
-
-        var lineItem = budget.getBudgetLineItem(category);
-        lineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(3000));
-
-        this.budgetRepository.save(budget);
-
-        ExpenseDto dto = new ExpenseDto();
-        dto.setAmount(BigDecimal.valueOf(2000));
-        dto.setDescription("Food");
-        dto.setTransactionDate(LocalDate.now().plusDays(5).toString());
         setAuthHeader(user);
 
         this.validateExpectation(budget, category, dto, status().isBadRequest());
@@ -302,12 +238,7 @@ class ExpensesTest {
 
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
         budget.setProjectedAmount(BigDecimal.valueOf(5000));
-        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(4000));
         budget.addBudgetLineItem(category, BigDecimal.valueOf(3000));
-
-        var lineItem = budget.getBudgetLineItem(category);
-        lineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(2000));
-
         this.budgetRepository.save(budget);
 
         ExpenseDto dto = new ExpenseDto();
@@ -318,10 +249,19 @@ class ExpensesTest {
 
          this.validateExpectation(budget, category, dto, status().isOk())
                 .andExpect(jsonPath("$.message").value(EXPENSE_CREATED_SUCCESSFULLY));
+
+         budget = this.budgetRepository.findBudgetByIdAndUserId(budget.getId(), user.getId()).get();
+         category = this.budgetCategoryRepository.findByIdAndUser(category.getId(),user).get();
+
+         var lineItem = budget.getBudgetLineItem(category);
+
          var expense = this.expenseRepository.findAll().get(0);
+         assertNotNull(expense.getId());
          assertThat(expense.getAmount().doubleValue()).isEqualTo(dto.getAmount().doubleValue());
          assertThat(expense.getDescription()).isEqualTo(dto.getDescription());
          assertThat(expense.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate()));
+         assertThat(lineItem.getTotalAmountSpentSoFar().doubleValue()).isEqualTo(dto.getAmount().doubleValue());
+         assertThat(budget.getTotalAmountSpentSoFar().doubleValue()).isEqualTo(dto.getAmount().add(lineItem.getTotalAmountSpentSoFar()).doubleValue());
     }
 
     private ResultActions validateExpectation(Budget budget, BudgetCategory category, ExpenseDto dto, ResultMatcher expectedResult) throws Exception {

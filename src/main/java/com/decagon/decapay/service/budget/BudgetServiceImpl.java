@@ -383,6 +383,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
+    @Transactional
     public IdResponseDto createExpense(Long budgetId, Long categoryId, ExpenseDto expenseDto) {
 
         User currentUser = this.userInfoUtil.getCurrAuthUser();
@@ -393,25 +394,28 @@ public class BudgetServiceImpl implements BudgetService {
         BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-        BudgetLineItem lineItem = this.getLineItem(budget, category);
-
-        BigDecimal expectedTotalExpensesAmountForNewExpenseRequestAfterSave = calculateExpectedTotalExpensesAmountForNewExpenseRequestAfterSave(lineItem, expenseDto);
-
-        if(isExpectedExpensesTotalAmountAfterSaveGreaterThanLineItemsTotalAmountSpentSoFar(lineItem, expectedTotalExpensesAmountForNewExpenseRequestAfterSave)) {
-            throw new InvalidRequestException(String.format("Sum of Expenses amount {%s} Cannot be greater than budget total amount spent so far {%s} ", currencyService.formatAmount(expectedTotalExpensesAmountForNewExpenseRequestAfterSave), lineItem.getTotalAmountSpentSoFar()));
-        }
-
-        if(isExpectedLineItemAmountSpentSoFarAfterExpenseIsSavedGreaterThanBudgetTotalAmountSpentSoFar(budget, lineItem, expectedTotalExpensesAmountForNewExpenseRequestAfterSave)) {
-            throw new InvalidRequestException(String.format("Sum of Expected Line Items amount spent so far {%s} Cannot be greater than budget total amount spent so far {%s} ", currencyService.formatAmount(expectedTotalExpensesAmountForNewExpenseRequestAfterSave.add(lineItem.getTotalAmountSpentSoFar())), budget.getTotalAmountSpentSoFar()));
-        }
-
         if (!budget.isWithinBudgetPeriod(expenseDto.getTransactionDate())) {
             throw new InvalidRequestException(String.format("Expense transaction date {%s} is outside budget period {%s} - {%s} ", expenseDto.getTransactionDate(), budget.getBudgetStartDate(), budget.getBudgetEndDate()));
         }
+        BudgetLineItem lineItem = this.getLineItem(budget, category);
 
         Expenses expense = this.saveExpense(lineItem, expenseDto);
+        this.updateLineItemTotalAmountSpentSoFar(lineItem, expenseDto);
+        this.updateBudgetTotalAmountSpentSoFar(budget, lineItem);
 
         return new IdResponseDto(expense.getId());
+    }
+
+    private void updateLineItemTotalAmountSpentSoFar(BudgetLineItem lineItem, ExpenseDto expenseDto) {
+        BigDecimal expectedTotalExpensesAmountForNewExpenseRequestAfterSave = calculateExpectedTotalExpensesAmountForNewExpenseRequestAfterSave(lineItem, expenseDto);
+        lineItem.setTotalAmountSpentSoFar(expectedTotalExpensesAmountForNewExpenseRequestAfterSave);
+    }
+
+    private void updateBudgetTotalAmountSpentSoFar(Budget budget, BudgetLineItem lineItem) {
+        if (budget.getTotalAmountSpentSoFar() == null) {
+            budget.setTotalAmountSpentSoFar(lineItem.getTotalAmountSpentSoFar());
+        }
+        budget.setTotalAmountSpentSoFar(budget.getTotalAmountSpentSoFar().add(lineItem.getTotalAmountSpentSoFar()));
     }
 
 
@@ -422,14 +426,6 @@ public class BudgetServiceImpl implements BudgetService {
         expense.setTransactionDate(CustomDateUtil.formatStringToLocalDate(expenseDto.getTransactionDate()));
         expense.setBudgetLineItem(lineItem);
         return expenseRepository.save(expense);
-    }
-
-    private boolean isExpectedLineItemAmountSpentSoFarAfterExpenseIsSavedGreaterThanBudgetTotalAmountSpentSoFar(Budget budget, BudgetLineItem lineItem, BigDecimal expectedTotalExpensesAmountForNewExpenseRequestAfterSave) {
-        return (lineItem.getTotalAmountSpentSoFar().add(expectedTotalExpensesAmountForNewExpenseRequestAfterSave)).compareTo(budget.getTotalAmountSpentSoFar()) > 0;
-    }
-
-    private boolean isExpectedExpensesTotalAmountAfterSaveGreaterThanLineItemsTotalAmountSpentSoFar(BudgetLineItem lineItem, BigDecimal expectedTotalExpensesAmountForNewExpenseRequestAfterSave) {
-        return expectedTotalExpensesAmountForNewExpenseRequestAfterSave.compareTo(lineItem.getTotalAmountSpentSoFar()) > 0;
     }
 
     private BigDecimal calculateExpectedTotalExpensesAmountForNewExpenseRequestAfterSave(BudgetLineItem lineItem, ExpenseDto expenseDto) {
