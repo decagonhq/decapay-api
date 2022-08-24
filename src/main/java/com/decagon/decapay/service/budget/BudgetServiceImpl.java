@@ -3,7 +3,9 @@ package com.decagon.decapay.service.budget;
 import com.decagon.decapay.dto.SearchCriteria;
 import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.exception.*;
+import com.decagon.decapay.exception.InvalidRequestException;
+import com.decagon.decapay.exception.ResourceConflictException;
+import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
@@ -377,5 +379,38 @@ public class BudgetServiceImpl implements BudgetService {
     private void removeLineItem(Budget budget, BudgetCategory category) {
         budget.removeBudgetLineItem(category);
     }
+
+    @Override
+    public Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable) {
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+
+        Optional<Budget> budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId());
+        if (budget.isEmpty()){
+            return Page.empty();
+        }
+        Optional<BudgetCategory> category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser);
+        if (category.isEmpty()){
+            return Page.empty();
+        }
+
+        if (!isCurrentUserOwnerOfBudgetCategory(currentUser, category.get())) {
+            return Page.empty();
+        }
+
+        Page<BudgetExpensesResponseDto> expenses = expenseRepository.fetchExpenses(budget.get().getId(), category.get().getId(), PageUtil.normalisePageRequest(pageable));
+        if (expenses.isEmpty()){
+            return Page.empty();
+        }
+
+        for (BudgetExpensesResponseDto dto: expenses) {
+            dto.setDisplayAmount(currencyService.formatAmount(dto.getAmount()));
+        }
+        return expenses;
+    }
+
+    private boolean isCurrentUserOwnerOfBudgetCategory(User user, BudgetCategory category) {
+        return user.getId().equals(category.getUser().getId());
+    }
+
 
 }
