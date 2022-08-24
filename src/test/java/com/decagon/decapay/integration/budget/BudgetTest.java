@@ -9,6 +9,7 @@ import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
+import com.decagon.decapay.repositories.budget.ExpenseRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.JwtUtil;
@@ -75,7 +76,8 @@ public class BudgetTest {
     private BudgetRepository budgetRepository;
     @Autowired
     private BudgetCategoryRepository budgetCategoryRepository;
-
+    @Autowired
+    private ExpenseRepository expenseRepository;
     Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
 
     Currency currency = AppConstants.DEFAULT_CURRENCY;
@@ -791,8 +793,9 @@ public class BudgetTest {
         budgetRepository.save(budget);
         //add expense
         Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 1, 2));
-        budget.addExpense(category,expense1);
-        budgetRepository.save(budget);
+        expense1.setBudgetLineItem(budget.getBudgetLineItem(category));
+        expenseRepository.save(expense1);
+
         //input
         CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
         dto.setTitle("New Title");
@@ -829,8 +832,8 @@ public class BudgetTest {
         budgetRepository.save(budget);
         //add expense
         Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.now().plusDays(3));
-        budget.addExpense(category,expense1);
-
+        expense1.setBudgetLineItem(budget.getBudgetLineItem(category));
+        expenseRepository.save(expense1);
         //input
         YearMonth ym = YearMonth.from(Instant.now().atZone(ZoneId.of("UTC")));
         CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
@@ -910,8 +913,8 @@ public class BudgetTest {
         budgetRepository.save(budget);
         //add expense
         Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 3, 5));
-        budget.addExpense(category,expense1);
-
+        expense1.setBudgetLineItem(budget.getBudgetLineItem(category));
+        expenseRepository.save(expense1);
         //input
         YearMonth ym = YearMonth.from(Instant.now().atZone(ZoneId.of("UTC")));
         CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
