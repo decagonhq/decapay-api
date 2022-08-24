@@ -3,10 +3,13 @@ package com.decagon.decapay.service.budget;
 import com.decagon.decapay.dto.SearchCriteria;
 import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.exception.*;
+import com.decagon.decapay.exception.InvalidRequestException;
+import com.decagon.decapay.exception.ResourceConflictException;
+import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
+import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
@@ -14,6 +17,7 @@ import com.decagon.decapay.repositories.budget.ExpenseRepository;
 import com.decagon.decapay.service.budget.category.BudgetCategoryService;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
+import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.PageUtil;
 import com.decagon.decapay.utils.UserInfoUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -378,4 +382,61 @@ public class BudgetServiceImpl implements BudgetService {
         budget.removeBudgetLineItem(category);
     }
 
+    @Override
+    public IdResponseDto createExpense(Long budgetId, Long categoryId, ExpenseDto expenseDto) {
+
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+
+        Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+        BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+        BudgetLineItem lineItem = this.getLineItem(budget, category);
+
+        BigDecimal expectedTotalExpensesAmountForNewExpenseRequestAfterSave = calculateExpectedTotalExpensesAmountForNewExpenseRequestAfterSave(lineItem, expenseDto);
+
+        if(isExpectedExpensesTotalAmountAfterSaveGreaterThanLineItemsTotalAmountSpentSoFar(lineItem, expectedTotalExpensesAmountForNewExpenseRequestAfterSave)) {
+            throw new InvalidRequestException(String.format("Sum of Expenses amount {%s} Cannot be greater than budget total amount spent so far {%s} ", currencyService.formatAmount(expectedTotalExpensesAmountForNewExpenseRequestAfterSave), lineItem.getTotalAmountSpentSoFar()));
+        }
+
+        if(isExpectedLineItemAmountSpentSoFarAfterExpenseIsSavedGreaterThanBudgetTotalAmountSpentSoFar(budget, lineItem, expectedTotalExpensesAmountForNewExpenseRequestAfterSave)) {
+            throw new InvalidRequestException(String.format("Sum of Expected Line Items amount spent so far {%s} Cannot be greater than budget total amount spent so far {%s} ", currencyService.formatAmount(expectedTotalExpensesAmountForNewExpenseRequestAfterSave.add(lineItem.getTotalAmountSpentSoFar())), budget.getTotalAmountSpentSoFar()));
+        }
+
+        if (!budget.isWithinBudgetPeriod(expenseDto.getTransactionDate())) {
+            throw new InvalidRequestException(String.format("Expense transaction date {%s} is outside budget period {%s} - {%s} ", expenseDto.getTransactionDate(), budget.getBudgetStartDate(), budget.getBudgetEndDate()));
+        }
+
+        Expenses expense = this.saveExpense(lineItem, expenseDto);
+
+        return new IdResponseDto(expense.getId());
+    }
+
+
+    private Expenses saveExpense(BudgetLineItem lineItem, ExpenseDto expenseDto) {
+        Expenses expense = new Expenses();
+        expense.setAmount(expenseDto.getAmount());
+        expense.setDescription(expenseDto.getDescription());
+        expense.setTransactionDate(CustomDateUtil.formatStringToLocalDate(expenseDto.getTransactionDate()));
+        expense.setBudgetLineItem(lineItem);
+        return expenseRepository.save(expense);
+    }
+
+    private boolean isExpectedLineItemAmountSpentSoFarAfterExpenseIsSavedGreaterThanBudgetTotalAmountSpentSoFar(Budget budget, BudgetLineItem lineItem, BigDecimal expectedTotalExpensesAmountForNewExpenseRequestAfterSave) {
+        return (lineItem.getTotalAmountSpentSoFar().add(expectedTotalExpensesAmountForNewExpenseRequestAfterSave)).compareTo(budget.getTotalAmountSpentSoFar()) > 0;
+    }
+
+    private boolean isExpectedExpensesTotalAmountAfterSaveGreaterThanLineItemsTotalAmountSpentSoFar(BudgetLineItem lineItem, BigDecimal expectedTotalExpensesAmountForNewExpenseRequestAfterSave) {
+        return expectedTotalExpensesAmountForNewExpenseRequestAfterSave.compareTo(lineItem.getTotalAmountSpentSoFar()) > 0;
+    }
+
+    private BigDecimal calculateExpectedTotalExpensesAmountForNewExpenseRequestAfterSave(BudgetLineItem lineItem, ExpenseDto expenseDto) {
+        if(lineItem.getExpenses().isEmpty()) {
+            return expenseDto.getAmount();
+        }
+        BigDecimal totalExpensesAmount = lineItem.calculateExpensesTotalAmount();
+        return totalExpensesAmount.add(expenseDto.getAmount());
+    }
 }

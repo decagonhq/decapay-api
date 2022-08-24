@@ -5,6 +5,7 @@ import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.utils.CustomDateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -113,5 +114,10 @@ public class Budget implements Auditable, Serializable {
                 budgetLineItem.addExpense(expense);
             }
         });
+    }
+
+    public boolean isWithinBudgetPeriod(String transactionDate) {
+        LocalDate transactionLocalDate = CustomDateUtil.formatStringToLocalDate(transactionDate);
+        return !(transactionLocalDate.isBefore(this.getBudgetStartDate()) || transactionLocalDate.isAfter(this.getBudgetEndDate()));
     }
 }
