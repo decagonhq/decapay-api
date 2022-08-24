@@ -25,4 +25,6 @@ public interface BudgetService {
     void updateLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto);
 
     void removeLineItem(Long budgetId, Long categoryId);
+
+    void removeExpense(Long expenseId);
 }

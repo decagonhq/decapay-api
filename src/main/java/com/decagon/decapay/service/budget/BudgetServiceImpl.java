@@ -7,6 +7,7 @@ import com.decagon.decapay.exception.*;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
+import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
@@ -24,10 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -368,6 +366,34 @@ public class BudgetServiceImpl implements BudgetService {
         }
 
         this.removeLineItem(budget, category);
+    }
+
+    @Override
+    @Transactional
+    public void removeExpense(Long expenseId) {
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+        Expenses expense = expenseRepository.findExpenseById(expenseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Expense with " + expenseId + " not found"));
+        if(!isExpenseBelongToUser(currentUser, expense)){
+            throw new InvalidRequestException("Expense does not belong to user");
+        }
+       this.deleteExpense(expense, currentUser);
+    }
+
+    private void deleteExpense(Expenses expense, User user){
+        expenseRepository.deleteById(expense.getId());
+        Budget updateBudget = budgetRepository.findBudgetWithLineItems(expense.getBudgetLineItem().getBudget().getId(), user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+        updateBudget.removeExpense(expense);
+    }
+
+    private boolean isExpenseBelongToUser(User user, Expenses expenses){
+        Long userBudgetId = expenses.getBudgetLineItem().getBudget().getUser().getId();
+        Long userCategoryId = expenses.getBudgetLineItem().getBudgetCategory().getUser().getId();
+        if (Objects.equals(userBudgetId, user.getId()) && Objects.equals(userCategoryId, user.getId())){
+            return true;
+        }
+        return false;
     }
 
     private boolean isExpensesPresentForLineItem(BudgetLineItem lineItem) {
