@@ -118,7 +118,7 @@ class ExpensesTest {
     }
 
     @Test
-    void GivenNoOrSomeBudgetLineItemExists_WhenUserLogExpenseWithNoExistingBudget_SystemShouldFailWith404() throws Exception {
+    void givenNoOrSomeBudgetLineItemExists_WhenUserLogExpenseWithNoExistingBudget_SystemShouldFailWith404() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -143,7 +143,7 @@ class ExpensesTest {
     }
 
     @Test
-    void GivenNoOrSomeBudgetLineItemExists_WhenUserLogExpenseWithNoExistingBudgetCategory_SystemShouldFailWith404() throws Exception {
+    void givenNoOrSomeBudgetLineItemExists_WhenUserLogExpenseWithNoExistingBudgetCategory_SystemShouldFailWith404() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -168,7 +168,7 @@ class ExpensesTest {
     }
 
     @Test
-    void GivenABudgetLineItemExists_WhenUserLogExpenseAndBudgetLineItemDoesNotBelongToUser_SystemShouldFailWith404() throws Exception {
+    void givenLineItemCreatedByOtherUserExists_WhenUserLogExpenseAndLineItemBelongToOtherUser_SystemShouldFailWith404() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -196,7 +196,7 @@ class ExpensesTest {
     }
 
     @Test
-    void GivenABudgetLineItemExists_WhenUserLogExpenseAndTransactionDateIsOutsideLineItemDateRange_SystemShouldFailWith400() throws Exception {
+    void givenLineItemCreatedByUserExists_WhenUserLogExpenseAndTransactionDateIsOutsideLineItemDateRange_SystemShouldFailWith400() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -227,7 +227,7 @@ class ExpensesTest {
     }
 
     @Test
-    void GivenABudgetLineItemExists_WhenUserLogExpenseAndSumOfAllExpensesIsGreaterThanLineItemTotalAmountSpentSoFar_SystemShouldFailWith400() throws Exception {
+    void givenLineItemCreatedByUserExists_WhenUserLogExpenseAndSumOfAllExpensesIsGreaterThanLineItemTotalAmountSpentSoFar_SystemShouldFailWith400() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -257,7 +257,7 @@ class ExpensesTest {
     }
 
     @Test
-    void GivenABudgetLineItemExists_WhenUserLogExpenseAndSumOfExpectedLineItemTotalAmountSpentSoFarIsGreaterThanBudgetTotalAmountSpentSoFar_SystemShouldFailWith400() throws Exception {
+    void givenLineItemCreatedByUserExists_WhenUserLogExpenseAndSumOfExpectedLineItemTotalAmountSpentSoFarIsGreaterThanBudgetTotalAmountSpentSoFar_SystemShouldFailWith400() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -289,7 +289,7 @@ class ExpensesTest {
     }
 
     @Test
-    void GivenABudgetLineItemExists_WhenUserLogExpense_SystemShouldLogExpenseSuccessfully() throws Exception {
+    void givenLineItemCreatedByUserExists_WhenUserLogExpense_SystemShouldLogExpenseSuccessfully() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -325,8 +325,8 @@ class ExpensesTest {
     }
 
     private ResultActions validateExpectation(Budget budget, BudgetCategory category, ExpenseDto dto, ResultMatcher expectedResult) throws Exception {
-        Long budgetId = budget == null ? 1L : budget.getId();
-        Long categoryId = category == null ? 1L : category.getId();
+        Long budgetId = budget == null ? 0 : budget.getId();
+        Long categoryId = category == null ? 0 : category.getId();
         return this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budgetId, categoryId)
                 .content(TestUtils.asJsonString(dto))
                 .contentType(MediaType.APPLICATION_JSON).headers(headers))
