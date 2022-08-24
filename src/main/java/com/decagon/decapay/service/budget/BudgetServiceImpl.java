@@ -7,6 +7,7 @@ import com.decagon.decapay.exception.*;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
+import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
@@ -24,10 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -377,5 +375,37 @@ public class BudgetServiceImpl implements BudgetService {
     private void removeLineItem(Budget budget, BudgetCategory category) {
         budget.removeBudgetLineItem(category);
     }
+
+    @Override
+    public Collection<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId) {
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+
+        Optional<Budget> budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId());
+        if (budget.isEmpty()){
+            return Collections.emptyList();
+        }
+        Optional<BudgetCategory> category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser);
+        if (category.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        if (!isCurrentUserOwnerOfBudgetCategory(currentUser, category.get())) {
+            return Collections.emptyList();
+        }
+
+        Collection<BudgetExpensesResponseDto> expenses = expenseRepository.fetchExpenses(budget.get().getId(), category.get().getId());
+        if (expenses.isEmpty()){
+            return Collections.emptyList();
+        }
+        for (BudgetExpensesResponseDto dto: expenses) {
+            dto.setDisplayAmount(currencyService.formatAmount(dto.getAmount()));
+        }
+        return expenses;
+    }
+
+    private boolean isCurrentUserOwnerOfBudgetCategory(User user, BudgetCategory category) {
+        return user.getId().equals(category.getUser().getId());
+    }
+
 
 }

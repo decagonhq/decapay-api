@@ -1,14 +1,8 @@
 package com.decagon.decapay.controller.budget;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.dto.budget.BudgetCategoryResponseDto;
 import com.decagon.decapay.dto.budget.BudgetExpensesResponseDto;
-import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
-import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
-import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.service.budget.BudgetService;
-import com.decagon.decapay.service.budget.expenses.ExpensesService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.List;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
@@ -30,7 +23,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 @RestController
 @RequestMapping(value = "${api.basepath-api}")
 public class BudgetExpensesController {
-    private final ExpensesService expensesService;
+    private final BudgetService budgetService;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = RESOURCE_RETRIEVED_SUCCESSFULLY),
@@ -39,7 +32,7 @@ public class BudgetExpensesController {
     @Operation(summary = "List Budget Expenses", description = "Returns lists of user's budget expenses successfully")
     @GetMapping("/budgets/{budgetId}/lineItems/{categoryId}/expenses")
     public ResponseEntity<ApiDataResponse<Collection<BudgetExpensesResponseDto>>> listBudgetCategories(@PathVariable Long budgetId, @PathVariable Long categoryId) {
-        Collection<BudgetExpensesResponseDto> budgetExpensesResponse =expensesService.getListOfBudgetExpenses(budgetId, categoryId);
+        Collection<BudgetExpensesResponseDto> budgetExpensesResponse =budgetService.getListOfBudgetExpenses(budgetId, categoryId);
         return ApiResponseUtil.response(HttpStatus.OK, budgetExpensesResponse);
     }
 
