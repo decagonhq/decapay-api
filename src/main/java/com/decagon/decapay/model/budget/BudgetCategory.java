@@ -32,9 +32,8 @@ public class BudgetCategory implements Auditable, Serializable {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",nullable = false)
     @ToString.Exclude
-    @Column(nullable = false)
     private User user;
 
     @Embedded

@@ -260,8 +260,17 @@ public class BudgetCategoryListTest {
     @Test
     void updateBudgetCategoryFailsWhenUserNotAuthenticated() throws Exception {
 
+        User user = new User();
+        user.setEmail("o4g@gmail.com");
+        user.setPassword(passwordEncoder.encode("12345678"));
+        user.setFirstName("Goodluck");
+        user.setLastName("Nwoko");
+        user.setPhoneNumber("07056357667");
+        userRepository.save(user);
+
         BudgetCategory category = new BudgetCategory();
         category.setTitle("Transportation");
+        category.setUser(user);
         budgetCategoryRepository.save(category);
 
         CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();

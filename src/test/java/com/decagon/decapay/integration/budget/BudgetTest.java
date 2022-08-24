@@ -740,9 +740,12 @@ public class BudgetTest {
         budget.setProjectedAmount(BigDecimal.valueOf(750));
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200));
 
-        BudgetCategory category1=budgetCategoryRepository.save(TestModels.budgetCategory("Transport"));
-        BudgetCategory category2=budgetCategoryRepository.save(TestModels.budgetCategory("Food"));
-        BudgetCategory category3=budgetCategoryRepository.save(TestModels.budgetCategory("Health"));
+        BudgetCategory category1=TestModels.budgetCategory("Transport");
+        category1.setUser(user);
+        BudgetCategory category2=TestModels.budgetCategory("Food");
+        category2.setUser(user);
+        BudgetCategory category3=TestModels.budgetCategory("Health");
+        category3.setUser(user);
 
         budgetCategoryRepository.saveAll(List.of(category1,category2,category3));
 
@@ -781,7 +784,8 @@ public class BudgetTest {
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         budget = this.budgetRepository.save(budget);
         //add budget line item
-        BudgetCategory category=budgetCategoryRepository.save(TestModels.budgetCategory("Health"));
+        BudgetCategory category=TestModels.budgetCategory("Health");
+        category.setUser(user);
         budgetCategoryRepository.save(category);
         budget.addBudgetLineItem(category,BigDecimal.valueOf(250));
         budgetRepository.save(budget);
@@ -818,7 +822,8 @@ public class BudgetTest {
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         budget = this.budgetRepository.save(budget);
 
-        BudgetCategory category=budgetCategoryRepository.save(TestModels.budgetCategory("Health"));
+        BudgetCategory category=TestModels.budgetCategory("Health");
+        category.setUser(user);
         budgetCategoryRepository.save(category);
         budget.addBudgetLineItem(category,BigDecimal.valueOf(250));
         budgetRepository.save(budget);
@@ -857,7 +862,8 @@ public class BudgetTest {
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         budget = this.budgetRepository.save(budget);
 
-        BudgetCategory category=budgetCategoryRepository.save(TestModels.budgetCategory("Health"));
+        BudgetCategory category=TestModels.budgetCategory("Health");
+        category.setUser(user);
         budgetCategoryRepository.save(category);
         budget.addBudgetLineItem(category,BigDecimal.valueOf(250));
         budgetRepository.save(budget);
@@ -897,7 +903,8 @@ public class BudgetTest {
         budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(250));
         budget = this.budgetRepository.save(budget);
 
-        BudgetCategory category=budgetCategoryRepository.save(TestModels.budgetCategory("Health"));
+        BudgetCategory category=TestModels.budgetCategory("Health");
+        category.setUser(user);
         budgetCategoryRepository.save(category);
         budget.addBudgetLineItem(category,BigDecimal.valueOf(250));
         budgetRepository.save(budget);

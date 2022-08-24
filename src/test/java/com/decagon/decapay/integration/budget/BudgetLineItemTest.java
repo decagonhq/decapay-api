@@ -389,6 +389,7 @@ class BudgetLineItemTest {
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
         this.budgetCategoryRepository.save(category);
 
         EditBudgetLineItemDto dto = new EditBudgetLineItemDto();
@@ -503,7 +504,7 @@ class BudgetLineItemTest {
         category.setUser(user);
 
         BudgetCategory category2 = TestModels.budgetCategory("Food");
-        category.setUser(user2);
+        category2.setUser(user2);
         this.budgetCategoryRepository.saveAll(List.of(category, category2));
 
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user2);
@@ -531,7 +532,7 @@ class BudgetLineItemTest {
         category.setUser(user);
 
         BudgetCategory category2 = TestModels.budgetCategory("Food");
-        category.setUser(user2);
+        category2.setUser(user2);
         this.budgetCategoryRepository.saveAll(List.of(category, category2));
 
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
@@ -619,9 +620,8 @@ class BudgetLineItemTest {
 
         BudgetCategory category = TestModels.budgetCategory("Food");
         category.setUser(user);
-
         BudgetCategory category2 = TestModels.budgetCategory("Food");
-        category.setUser(user);
+        category2.setUser(user);
         this.budgetCategoryRepository.saveAll(List.of(category, category2));
 
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
