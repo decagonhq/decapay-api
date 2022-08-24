@@ -108,7 +108,7 @@ class CreateBudgetTest {
         CreateBudgetRequestDTO budgetRequest = budgetRequest();
         mockMvc.perform(
                 post(path + "/budgets").contentType(MediaType.APPLICATION_JSON).content(
-                        TestUtils.asJsonString(budgetRequest))).andExpect(status().isForbidden());
+                        TestUtils.asJsonString(budgetRequest))).andExpect(status().isUnauthorized());
     }
 
     @Test

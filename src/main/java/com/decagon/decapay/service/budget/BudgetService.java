@@ -6,6 +6,7 @@ import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -25,4 +26,8 @@ public interface BudgetService {
     void updateLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto);
 
     void removeLineItem(Long budgetId, Long categoryId);
+
+    Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable);
+
+    void removeExpense(Long expenseId);
 }

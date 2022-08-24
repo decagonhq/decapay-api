@@ -25,6 +25,7 @@ public class ResponseMessageConstants {
     public static final String LINE_ITEM_CREATED_SUCCESSFULLY = "Budget Line Item Created Successfully";
     public static final String LINE_ITEM_UPDATED_SUCCESSFULLY = "Budget Line Item Updated Successfully";
     public static final String LINE_ITEM_REMOVED_SUCCESSFULLY = "Budget Line Item Removed Successfully";
+    public static final String EXPENSE_REMOVED_SUCCESSFULLY = "Expense Removed Successfully";
 
     //FAILURE MESSAGES
     public static final String UNABLE_TO_PROCESS_TEMPLATE = "Unable to process template";

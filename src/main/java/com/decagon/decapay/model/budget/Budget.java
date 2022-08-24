@@ -1,7 +1,6 @@
 package com.decagon.decapay.model.budget;
 
 import com.decagon.decapay.constants.SchemaConstants;
-import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
@@ -16,7 +15,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -81,6 +79,8 @@ public class Budget implements Auditable, Serializable {
         BudgetLineItem budgetLineItem = getBudgetLineItem(budgetCategory);
         this.budgetLineItems.remove(budgetLineItem);
         budgetCategory.removeBudgetLineItem(budgetLineItem);
+        budgetLineItem.setBudget(null);
+        budgetLineItem.setBudgetCategory(null);
     }
 
     public BudgetLineItem getBudgetLineItem(BudgetCategory category) {
@@ -113,5 +113,13 @@ public class Budget implements Auditable, Serializable {
                 budgetLineItem.addExpense(expense);
             }
         });
+    }
+
+    public void removeExpense(Expenses expense){
+        BigDecimal newBudgetTotalAmount = this.getTotalAmountSpentSoFar().subtract(expense.getAmount());
+        this.setTotalAmountSpentSoFar(newBudgetTotalAmount.setScale(2, RoundingMode.HALF_DOWN));
+        BudgetLineItem updateLineItem = this.getBudgetLineItem(expense.getBudgetLineItem().getBudgetCategory());
+        BigDecimal newLineItemTotalAmount = updateLineItem.getTotalAmountSpentSoFar().subtract(expense.getAmount());
+        updateLineItem.setTotalAmountSpentSoFar(newLineItemTotalAmount.setScale(2, RoundingMode.HALF_DOWN));
     }
 }

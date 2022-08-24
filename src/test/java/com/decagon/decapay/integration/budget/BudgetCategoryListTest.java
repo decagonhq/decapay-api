@@ -226,7 +226,7 @@ public class BudgetCategoryListTest {
         dto.setTitle("Transportation");
 
         mockMvc.perform(post(path + "/budget_categories").contentType(MediaType.APPLICATION_JSON).content(
-                TestUtils.asJsonString(dto))).andExpect(status().isForbidden());
+                TestUtils.asJsonString(dto))).andExpect(status().isUnauthorized());
     }
 
 
@@ -260,15 +260,24 @@ public class BudgetCategoryListTest {
     @Test
     void updateBudgetCategoryFailsWhenUserNotAuthenticated() throws Exception {
 
+        User user = new User();
+        user.setEmail("o4g@gmail.com");
+        user.setPassword(passwordEncoder.encode("12345678"));
+        user.setFirstName("Goodluck");
+        user.setLastName("Nwoko");
+        user.setPhoneNumber("07056357667");
+        userRepository.save(user);
+
         BudgetCategory category = new BudgetCategory();
         category.setTitle("Transportation");
+        category.setUser(user);
         budgetCategoryRepository.save(category);
 
         CreateBudgetCategoryDto dto = new CreateBudgetCategoryDto();
         dto.setTitle("Food");
 
         mockMvc.perform(put(path + "/budget_categories/{categoryId}", category.getId()).contentType(MediaType.APPLICATION_JSON).content(
-                TestUtils.asJsonString(dto))).andExpect(status().isForbidden());
+                TestUtils.asJsonString(dto))).andExpect(status().isUnauthorized());
     }
 
     @Test

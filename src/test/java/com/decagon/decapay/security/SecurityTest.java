@@ -40,11 +40,11 @@ class SecurityTest {
 
         this.mockMvc.perform(get(path + "/any1")
                 .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         this.mockMvc.perform(get(path + "/any2")
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
     }
 

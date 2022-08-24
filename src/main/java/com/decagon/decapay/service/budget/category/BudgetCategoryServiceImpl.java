@@ -5,13 +5,10 @@ import com.decagon.decapay.dto.budget.CreateBudgetCategoryDto;
 import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
-import com.decagon.decapay.exception.UnAuthorizedException;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
-import com.decagon.decapay.repositories.user.UserRepository;
-import com.decagon.decapay.security.UserInfo;
-import com.decagon.decapay.utils.UserInfoUtills;
+import com.decagon.decapay.utils.UserInfoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +22,7 @@ import java.util.Optional;
 public class BudgetCategoryServiceImpl implements BudgetCategoryService{
 
     private final BudgetCategoryRepository budgetCategoryRepository;
-    private final UserRepository userRepository;
-    private final UserInfoUtills userInfoUtills;
+    private final UserInfoUtil userInfoUtil;
 
     @Override
     public Optional<BudgetCategory> findCategoryByIdAndUser(Long budgetCategoryId, User user) {
@@ -35,8 +31,8 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
 
     @Override
     public List<BudgetCategoryResponseDto> getListOfBudgetCategories() {
-        User user = this.getAuthenticatedUser();
-        return budgetCategoryRepository.findCategoriesByUserId(user.getId());
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+        return budgetCategoryRepository.findCategoriesByUserId(currentUser.getId());
     }
 
     @Override
@@ -49,14 +45,15 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
     @Override
     @Transactional
     public void updateBudgetCategory(Long categoryId, CreateBudgetCategoryDto updateRequestDto) {
-        User user = this.getAuthenticatedUser();
+
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
 
         Optional<BudgetCategory> optionalBudgetCategory = this.budgetCategoryRepository.findById(categoryId);
         if (optionalBudgetCategory.isEmpty()){
             throw new ResourceNotFoundException("Budget Category not found");
         }
         BudgetCategory budgetCategory = optionalBudgetCategory.get();
-        if (!isCurrentUserOwnerOfBudgetCategory(user, budgetCategory)){
+        if (!isCurrentUserOwnerOfBudgetCategory(currentUser, budgetCategory)){
             throw new InvalidRequestException("Invalid Request");
         }
         this.mapRequestToEntity(budgetCategory, updateRequestDto);
@@ -72,23 +69,10 @@ public class BudgetCategoryServiceImpl implements BudgetCategoryService{
 
     private BudgetCategory createCategoryModelEntity(String title) {
         BudgetCategory category=new BudgetCategory();
-        User user = this.getAuthenticatedUser();
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
         category.setTitle(title);
-        category.setUser(user);
+        category.setUser(currentUser);
         return category;
     }
 
-
-    public User getAuthenticatedUser() {
-
-        UserInfo authenticatedUserInfo = this.userInfoUtills.authenticationUserInfo();
-        if (authenticatedUserInfo == null){
-            throw new UnAuthorizedException("Authenticated User not found");
-        }
-        Optional<User> user = userRepository.findUserByEmail(authenticatedUserInfo.getUsername());
-        if (user.isEmpty()){
-            throw  new ResourceNotFoundException("User not found");
-        }
-        return user.get();
-    }
 }
