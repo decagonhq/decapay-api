@@ -107,14 +107,6 @@ public class Budget implements Auditable, Serializable {
         return totalAmount;
     }
 
-    public void addExpense(BudgetCategory category, Expenses expense) {
-        this.budgetLineItems.forEach(budgetLineItem -> {
-            if(budgetLineItem.getBudgetCategory().equals(category)){
-                budgetLineItem.addExpense(expense);
-            }
-        });
-    }
-
     public void removeExpense(Expenses expense){
         BigDecimal newBudgetTotalAmount = this.getTotalAmountSpentSoFar().subtract(expense.getAmount());
         this.setTotalAmountSpentSoFar(newBudgetTotalAmount.setScale(2, RoundingMode.HALF_DOWN));
