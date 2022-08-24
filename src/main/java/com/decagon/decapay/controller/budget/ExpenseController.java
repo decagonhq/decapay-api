@@ -6,7 +6,11 @@ import com.decagon.decapay.dto.budget.BudgetExpensesResponseDto;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,17 +34,28 @@ public class ExpenseController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = RESOURCE_RETRIEVED_SUCCESSFULLY),
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
-            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content)})
+            @ApiResponse(responseCode = "401", description = NOT_AUTHORIZED,content = @Content)})
     @Operation(summary = "End point to list user expenses for a budget line item", description = "Returns lists of user's  expenses successfully")
+    @Parameters({
+            @Parameter(name = "pageable", hidden = true),
+            @Parameter(in = ParameterIn.QUERY
+                    , description = "Page you want to retrieve (0..N)"
+                    , name = "page"
+                    , content = @Content(schema = @Schema(type = "integer", defaultValue = "0"))),
+            @Parameter(in = ParameterIn.QUERY
+                    , description = "Number of records per page."
+                    , name = "size"
+                    , content = @Content(schema = @Schema(type = "integer", defaultValue = "10"))),
+    })
     @GetMapping("/budgets/{budgetId}/lineItems/{categoryId}/expenses")
-    public ResponseEntity<ApiDataResponse<Page<BudgetExpensesResponseDto>>> listExpenses(@PathVariable Long budgetId, @PathVariable Long categoryId, Pageable pageable) {
+    public ResponseEntity<ApiDataResponse<Page<BudgetExpensesResponseDto>>> listExpenses(@PathVariable Long budgetId, @PathVariable Long categoryId,Pageable pageable) {
         Page<BudgetExpensesResponseDto> budgetExpensesResponse =budgetService.getListOfBudgetExpenses(budgetId, categoryId, pageable);
         return ApiResponseUtil.response(HttpStatus.OK, budgetExpensesResponse);
     }
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = EXPENSE_REMOVED_SUCCESSFULLY),
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
-            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
+            @ApiResponse(responseCode = "401", description = NOT_AUTHORIZED,content = @Content),
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Remove Expense", description = "Remove Expense")
     @DeleteMapping("/expenses/{expenseId}")
