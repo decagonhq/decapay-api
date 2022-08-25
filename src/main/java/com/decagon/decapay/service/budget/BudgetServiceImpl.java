@@ -38,7 +38,7 @@ public class BudgetServiceImpl implements BudgetService {
     private final ExpenseRepository expenseRepository;
     private final UserInfoUtil userInfoUtil;
 
-    public BudgetServiceImpl(final BudgetRepository budgetRepository, CurrencyService currencyService, BudgetCategoryService budgetCategoryService, UserInfoUtil userInfoUtil,ExpenseRepository expenseRepository) {
+    public BudgetServiceImpl(final BudgetRepository budgetRepository, CurrencyService currencyService, BudgetCategoryService budgetCategoryService, UserInfoUtil userInfoUtil, ExpenseRepository expenseRepository) {
         this.budgetRepository = budgetRepository;
         this.currencyService = currencyService;
         this.budgetCategoryService = budgetCategoryService;
@@ -375,23 +375,23 @@ public class BudgetServiceImpl implements BudgetService {
         User currentUser = this.userInfoUtil.getCurrAuthUser();
         Expenses expense = expenseRepository.findExpenseById(expenseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Expense with " + expenseId + " not found"));
-        if(!isExpenseBelongToUser(currentUser, expense)){
+        if (!isExpenseBelongToUser(currentUser, expense)) {
             throw new InvalidRequestException("Expense does not belong to user");
         }
-       this.deleteExpense(expense, currentUser);
+        this.deleteExpense(expense, currentUser);
     }
 
-    private void deleteExpense(Expenses expense, User user){
+    private void deleteExpense(Expenses expense, User user) {
         expenseRepository.deleteById(expense.getId());
         Budget updateBudget = budgetRepository.findBudgetWithLineItems(expense.getBudgetLineItem().getBudget().getId(), user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
         updateBudget.removeExpense(expense);
     }
 
-    private boolean isExpenseBelongToUser(User user, Expenses expenses){
+    private boolean isExpenseBelongToUser(User user, Expenses expenses) {
         Long userBudgetId = expenses.getBudgetLineItem().getBudget().getUser().getId();
         Long userCategoryId = expenses.getBudgetLineItem().getBudgetCategory().getUser().getId();
-        if (Objects.equals(userBudgetId, user.getId()) && Objects.equals(userCategoryId, user.getId())){
+        if (Objects.equals(userBudgetId, user.getId()) && Objects.equals(userCategoryId, user.getId())) {
             return true;
         }
         return false;
@@ -442,16 +442,17 @@ public class BudgetServiceImpl implements BudgetService {
         expense.setBudgetLineItem(lineItem);
         return expense;
     }
+
     @Override
     public Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable) {
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
         Optional<Budget> budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId());
-        if (budget.isEmpty()){
+        if (budget.isEmpty()) {
             return Page.empty();
         }
         Optional<BudgetCategory> category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser);
-        if (category.isEmpty()){
+        if (category.isEmpty()) {
             return Page.empty();
         }
 
@@ -460,11 +461,11 @@ public class BudgetServiceImpl implements BudgetService {
         }
 
         Page<BudgetExpensesResponseDto> expenses = expenseRepository.fetchExpenses(budget.get().getId(), category.get().getId(), PageUtil.normalisePageRequest(pageable));
-        if (expenses.isEmpty()){
+        if (expenses.isEmpty()) {
             return Page.empty();
         }
 
-        for (BudgetExpensesResponseDto dto: expenses) {
+        for (BudgetExpensesResponseDto dto : expenses) {
             dto.setDisplayAmount(currencyService.formatAmount(dto.getAmount()));
         }
         return expenses;

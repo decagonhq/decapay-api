@@ -104,9 +104,7 @@ public class BudgetController {
     }
 
 
-    private void validateRequest(CreateBudgetRequestDTO createBudgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
-        budgetPeriodHandler.validateRequest(createBudgetRequest);
-    }
+
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = BUDGET_UPDATED_SUCCESSFULLY),
@@ -130,5 +128,10 @@ public class BudgetController {
     @GetMapping("/budgets/edit/{budgetId}")
     public ResponseEntity<ApiDataResponse<CreateBudgetRequestDTO>> fetchBudget(@PathVariable Long budgetId) {
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.fetchBudget(budgetId), RESOURCE_RETRIEVED_SUCCESSFULLY);
+    }
+
+
+    private void validateRequest(CreateBudgetRequestDTO createBudgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
+        budgetPeriodHandler.validateRequest(createBudgetRequest);
     }
 }
