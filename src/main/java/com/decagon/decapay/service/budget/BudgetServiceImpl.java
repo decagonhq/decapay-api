@@ -12,12 +12,12 @@ import com.decagon.decapay.model.budget.BudgetLineItem;
 import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
+import com.decagon.decapay.populator.CreateExpensePopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.budget.ExpenseRepository;
 import com.decagon.decapay.service.budget.category.BudgetCategoryService;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
-import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.PageUtil;
 import com.decagon.decapay.utils.UserInfoUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -399,13 +399,13 @@ public class BudgetServiceImpl implements BudgetService {
         }
         BudgetLineItem lineItem = this.getLineItem(budget, category);
 
-        Expenses expense = this.convertExpenseDtoToEntity(expenseDto, lineItem);
+        Expenses expense = this.createExpenseModelEntity(expenseDto, lineItem);
 
         expense = this.saveExpense(expense);
 
-        lineItem.addExpense(expense.getAmount());
+        BigDecimal totalExpensesAmount = this.getTotalExpensesAmount(lineItem);
 
-        budget.addExpense(lineItem.getTotalAmountSpentSoFar());
+        budget.addExpense(lineItem, totalExpensesAmount);
 
         return new IdResponseDto(expense.getId());
     }
@@ -414,12 +414,15 @@ public class BudgetServiceImpl implements BudgetService {
         return expenseRepository.save(expense);
     }
 
-    private Expenses convertExpenseDtoToEntity(ExpenseDto expenseDto, BudgetLineItem lineItem) {
+    private Expenses createExpenseModelEntity(ExpenseDto expenseDto, BudgetLineItem lineItem) {
         Expenses expense = new Expenses();
-        expense.setAmount(expenseDto.getAmount());
-        expense.setDescription(expenseDto.getDescription());
-        expense.setTransactionDate(CustomDateUtil.formatStringToLocalDate(expenseDto.getTransactionDate()));
+        CreateExpensePopulator populator = new CreateExpensePopulator();
+        expense = populator.populate(expenseDto, expense);
         expense.setBudgetLineItem(lineItem);
         return expense;
+    }
+
+    private BigDecimal getTotalExpensesAmount(BudgetLineItem lineItem){
+        return expenseRepository.sumByBudgetLineItem(lineItem);
     }
 }

@@ -74,22 +74,4 @@ public class BudgetLineItem implements Auditable, Serializable {
         BigDecimal spentSoFar = this.getTotalAmountSpentSoFar().divide(this.getProjectedAmount(), BigDecimal.ROUND_HALF_DOWN);
         return spentSoFar.multiply(BigDecimal.valueOf(100)).setScale(1, RoundingMode.CEILING);
     }
-
-    public BigDecimal calculateExpensesTotalAmount(){
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        for (Expenses expense : this.getExpenses()){
-            totalAmount = totalAmount.add(expense.getAmount());
-        }
-        return totalAmount;
-    }
-
-    public void addExpense(BigDecimal expenseAmount) {
-        if(this.getExpenses().isEmpty()) {
-            this.setTotalAmountSpentSoFar(expenseAmount);
-        }
-        BigDecimal totalExpensesAmount = this.calculateExpensesTotalAmount();
-        totalExpensesAmount = totalExpensesAmount.add(expenseAmount);
-
-        this.setTotalAmountSpentSoFar(totalExpensesAmount);
-    }
 }
