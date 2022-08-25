@@ -9,6 +9,7 @@ import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
+import com.decagon.decapay.repositories.budget.ExpenseRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.JwtUtil;
@@ -75,6 +76,8 @@ public class BudgetTest {
     private BudgetRepository budgetRepository;
     @Autowired
     private BudgetCategoryRepository budgetCategoryRepository;
+    @Autowired
+    private ExpenseRepository expenseRepository;
 
     Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
 
@@ -786,9 +789,11 @@ public class BudgetTest {
         budget.addBudgetLineItem(category,BigDecimal.valueOf(250));
         budgetRepository.save(budget);
         //add expense
+        var lineItem = budget.getBudgetLineItem(category);
+
         Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 1, 2));
-        budget.addExpense(category,expense1);
-        budgetRepository.save(budget);
+        expense1.setBudgetLineItem(lineItem);
+        expenseRepository.save(expense1);
         //input
         CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
         dto.setTitle("New Title");

@@ -1,7 +1,6 @@
 package com.decagon.decapay.model.budget;
 
 
-import com.decagon.decapay.dto.budget.ExpenseDto;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
@@ -58,8 +57,15 @@ public class BudgetLineItem implements Auditable, Serializable {
 
 
     public void addExpense(Expenses expense) {
-        expense.setBudgetLineItem(this);
-        this.expenses.add(expense);
+        if (this.totalAmountSpentSoFar == null){
+            this.totalAmountSpentSoFar = BigDecimal.ZERO;
+        }
+        this.totalAmountSpentSoFar = this.totalAmountSpentSoFar.add(expense.getAmount());
+
+        if (this.budget.getTotalAmountSpentSoFar() == null){
+            this.budget.setTotalAmountSpentSoFar(BigDecimal.ZERO);
+        }
+        this.budget.setTotalAmountSpentSoFar(this.budget.getTotalAmountSpentSoFar().add(expense.getAmount()));
     }
 
     public void removeExpense(Expenses expense) {

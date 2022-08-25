@@ -403,9 +403,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         expense = this.saveExpense(expense);
 
-        BigDecimal totalExpensesAmount = this.getTotalExpensesAmount(lineItem);
-
-        budget.addExpense(lineItem, totalExpensesAmount);
+        lineItem.addExpense(expense);
 
         return new IdResponseDto(expense.getId());
     }
@@ -420,9 +418,5 @@ public class BudgetServiceImpl implements BudgetService {
         expense = populator.populate(expenseDto, expense);
         expense.setBudgetLineItem(lineItem);
         return expense;
-    }
-
-    private BigDecimal getTotalExpensesAmount(BudgetLineItem lineItem){
-        return expenseRepository.sumByBudgetLineItem(lineItem);
     }
 }

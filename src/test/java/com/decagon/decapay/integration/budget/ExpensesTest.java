@@ -5,6 +5,7 @@ import com.decagon.decapay.dto.budget.ExpenseDto;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetPeriod;
+import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
@@ -179,6 +180,7 @@ class ExpensesTest {
         userRepository.saveAll(List.of(user, user2));
 
         BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user2);
         budgetCategoryRepository.save(category);
 
 
@@ -233,12 +235,38 @@ class ExpensesTest {
 
         BudgetCategory category = TestModels.budgetCategory("Food");
         category.setUser(user);
-        budgetCategoryRepository.save(category);
+
+        BudgetCategory category2 = TestModels.budgetCategory("Food");
+        category2.setUser(user);
+        budgetCategoryRepository.saveAll(List.of(category,category2));
 
 
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
         budget.setProjectedAmount(BigDecimal.valueOf(5000));
         budget.addBudgetLineItem(category, BigDecimal.valueOf(3000));
+        budget.addBudgetLineItem(category2, BigDecimal.valueOf(2000));
+        this.budgetRepository.save(budget);
+
+        var lineItem1 = budget.getBudgetLineItem(category);
+        var lineItem2 = budget.getBudgetLineItem(category2);
+
+        Expenses expense1 = new Expenses();
+        expense1.setAmount(BigDecimal.valueOf(500.00));
+        expense1.setTransactionDate(LocalDate.now().plusDays(2));
+        expense1.setDescription("Food expense1");
+        expense1.setBudgetLineItem(lineItem1);
+
+        Expenses expense2 = new Expenses();
+        expense2.setAmount(BigDecimal.valueOf(1000.00));
+        expense2.setTransactionDate(LocalDate.now().plusDays(3));
+        expense2.setDescription("Food expense2");
+        expense2.setBudgetLineItem(lineItem2);
+
+        expenseRepository.saveAll(List.of(expense1, expense2));
+
+        lineItem1.addExpense(expense1);
+        lineItem2.addExpense(expense2);
+
         this.budgetRepository.save(budget);
 
         ExpenseDto dto = new ExpenseDto();
@@ -247,21 +275,24 @@ class ExpensesTest {
         dto.setTransactionDate(LocalDate.now().toString());
         setAuthHeader(user);
 
-         this.validateExpectation(budget, category, dto, status().isOk())
-                .andExpect(jsonPath("$.message").value(EXPENSE_CREATED_SUCCESSFULLY));
+         var response = this.validateExpectation(budget, category, dto, status().isOk())
+                .andExpect(jsonPath("$.message").value(EXPENSE_CREATED_SUCCESSFULLY)).andReturn();
 
          budget = this.budgetRepository.findBudgetByIdAndUserId(budget.getId(), user.getId()).get();
          category = this.budgetCategoryRepository.findByIdAndUser(category.getId(),user).get();
 
-         var lineItem = budget.getBudgetLineItem(category);
+         lineItem1 = budget.getBudgetLineItem(category);
 
-         var expense = this.expenseRepository.findAll().get(0);
-         assertNotNull(expense.getId());
-         assertThat(expense.getAmount().doubleValue()).isEqualTo(dto.getAmount().doubleValue());
-         assertThat(expense.getDescription()).isEqualTo(dto.getDescription());
-         assertThat(expense.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate()));
-         assertThat(lineItem.getTotalAmountSpentSoFar().doubleValue()).isEqualTo(dto.getAmount().doubleValue());
-         assertThat(budget.getTotalAmountSpentSoFar().doubleValue()).isEqualTo(dto.getAmount().add(lineItem.getTotalAmountSpentSoFar()).doubleValue());
+         var expenseId = (Integer) TestUtils.objectFromResponseStr(response.getResponse().getContentAsString(),"$.data.id");
+
+         expense1 = expenseRepository.findById(Long.valueOf(expenseId)).get();
+
+         assertNotNull(expense1.getId());
+         assertThat(expense1.getAmount().doubleValue()).isEqualTo(dto.getAmount().doubleValue());
+         assertThat(expense1.getDescription()).isEqualTo(dto.getDescription());
+         assertThat(expense1.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate()));
+         assertThat(lineItem1.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(1500.00).setScale(2));
+         assertThat(budget.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(2500.00).setScale(2));
     }
 
     private ResultActions validateExpectation(Budget budget, BudgetCategory category, ExpenseDto dto, ResultMatcher expectedResult) throws Exception {

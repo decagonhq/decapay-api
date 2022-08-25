@@ -11,6 +11,7 @@ import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
+import com.decagon.decapay.repositories.budget.ExpenseRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.JwtUtil;
@@ -70,6 +71,8 @@ class BudgetLineItemTest {
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private ExpenseRepository expenseRepository;
 
     private HttpHeaders headers;
     @BeforeEach
@@ -512,7 +515,7 @@ class BudgetLineItemTest {
         this.budgetRepository.save(budget);
 
         setAuthHeader(user);
-        this.assertEditLineItems(budget, category, status().isNotFound());
+        this.assertRemoveLineItem(budget, category, status().isNotFound());
     }
     @Test
     void shouldReturn404WhenTryingToRemoveBudgetLineItemAndLineItemBudgetCategoryDoesNotBelongToUser() throws Exception {
@@ -540,7 +543,7 @@ class BudgetLineItemTest {
         this.budgetRepository.save(budget);
 
         setAuthHeader(user);
-        this.assertEditLineItems(budget, category2, status().isNotFound());
+        this.assertRemoveLineItem(budget, category2, status().isNotFound());
     }
 
     @Test
@@ -556,7 +559,7 @@ class BudgetLineItemTest {
         this.budgetCategoryRepository.save(category);
 
         setAuthHeader(user);
-        this.assertEditLineItems(null, category, status().isNotFound());
+        this.assertRemoveLineItem(null, category, status().isNotFound());
     }
 
     @Test
@@ -572,7 +575,7 @@ class BudgetLineItemTest {
         this.budgetRepository.save(budget);
 
         setAuthHeader(user);
-        this.assertEditLineItems(budget, null, status().isNotFound());
+        this.assertRemoveLineItem(budget, null, status().isNotFound());
     }
 
     @Test
@@ -589,21 +592,19 @@ class BudgetLineItemTest {
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
         budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
         budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
-
-        BudgetLineItem lineItem = budget.getBudgetLineItems()
-                .stream()
-                .filter(budgetLineItem -> budgetLineItem.getBudgetCategory().equals(category))
-                .findFirst().get();
-        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
-
-        lineItem.addExpense(expenses);
         this.budgetRepository.save(budget);
 
+        BudgetLineItem lineItem = budget.getBudgetLineItem(category);
+
+        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
+        expenses.setBudgetLineItem(lineItem);
+        expenseRepository.save(expenses);
+
         setAuthHeader(user);
-        this.assertEditLineItems(budget, category, status().isBadRequest());
+        this.assertRemoveLineItem(budget, category, status().isBadRequest());
     }
 
-    private void assertEditLineItems(Budget budget, BudgetCategory category, ResultMatcher expectedResult) throws Exception {
+    private void assertRemoveLineItem(Budget budget, BudgetCategory category, ResultMatcher expectedResult) throws Exception {
         Long budgetId = budget == null ? 1L : budget.getId();
         Long categoryId = category == null ? 1L : category.getId();
         this.mockMvc.perform(delete(path + "/budgets/{budgetId}/lineItems/{categoryId}", budgetId, categoryId).headers(headers))
