@@ -120,14 +120,4 @@ public class Budget implements Auditable, Serializable {
         LocalDate transactionLocalDate = CustomDateUtil.formatStringToLocalDate(transactionDate);
         return !(transactionLocalDate.isBefore(this.getBudgetStartDate()) || transactionLocalDate.isAfter(this.getBudgetEndDate()));
     }
-
-    public void addExpense(BudgetLineItem lineItem, BigDecimal totalExpensesAmount) {
-        lineItem.setTotalAmountSpentSoFar(totalExpensesAmount);
-
-        if (this.getTotalAmountSpentSoFar() == null) {
-            this.setTotalAmountSpentSoFar(lineItem.getTotalAmountSpentSoFar());
-        }
-
-        this.setTotalAmountSpentSoFar(this.getTotalAmountSpentSoFar().add(lineItem.getTotalAmountSpentSoFar()));
-    }
 }
