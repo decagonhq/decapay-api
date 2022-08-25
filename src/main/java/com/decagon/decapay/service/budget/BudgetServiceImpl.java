@@ -3,15 +3,14 @@ package com.decagon.decapay.service.budget;
 import com.decagon.decapay.dto.SearchCriteria;
 import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.exception.InvalidRequestException;
-import com.decagon.decapay.exception.ResourceConflictException;
-import com.decagon.decapay.exception.ResourceNotFoundException;
+import com.decagon.decapay.exception.*;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
 import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
+import com.decagon.decapay.populator.CreateExpensePopulator;
 import com.decagon.decapay.repositories.budget.BudgetRepository;
 import com.decagon.decapay.repositories.budget.ExpenseRepository;
 import com.decagon.decapay.service.budget.category.BudgetCategoryService;
@@ -406,6 +405,43 @@ public class BudgetServiceImpl implements BudgetService {
         budget.removeBudgetLineItem(category);
     }
 
+    @Override
+    @Transactional
+    public IdResponseDto createExpense(Long budgetId, Long categoryId, ExpenseDto expenseDto) {
+
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+
+        Budget budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+        BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+        if (!budget.isWithinBudgetPeriod(expenseDto.getTransactionDate())) {
+            throw new InvalidRequestException(String.format("Expense transaction date {%s} is outside budget period {%s} - {%s} ", expenseDto.getTransactionDate(), budget.getBudgetStartDate(), budget.getBudgetEndDate()));
+        }
+        BudgetLineItem lineItem = this.getLineItem(budget, category);
+
+        Expenses expense = this.createExpenseModelEntity(expenseDto, lineItem);
+
+        expense = this.saveExpense(expense);
+
+        lineItem.addExpense(expense);
+
+        return new IdResponseDto(expense.getId());
+    }
+
+    private Expenses saveExpense(Expenses expense) {
+        return expenseRepository.save(expense);
+    }
+
+    private Expenses createExpenseModelEntity(ExpenseDto expenseDto, BudgetLineItem lineItem) {
+        Expenses expense = new Expenses();
+        CreateExpensePopulator populator = new CreateExpensePopulator();
+        expense = populator.populate(expenseDto, expense);
+        expense.setBudgetLineItem(lineItem);
+        return expense;
+    }
     @Override
     public Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable) {
         User currentUser = this.userInfoUtil.getCurrAuthUser();

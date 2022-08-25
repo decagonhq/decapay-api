@@ -1,6 +1,5 @@
 package com.decagon.decapay.integration.budget;
 
-
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.model.budget.*;
@@ -47,11 +46,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @ExtendWith(DBCleanerExtension.class)
-class ExpensesTest {
+class ListExpensesTest {
     @Value("${api.basepath-api}")
     private String path;
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private JwtUtil jwtUtil;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -60,13 +61,10 @@ class ExpensesTest {
     private BudgetRepository budgetRepository;
     @Autowired
     private BudgetCategoryRepository budgetCategoryRepository;
-
     @Autowired
     private ExpenseRepository expenseRepository;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-    @Autowired
-    private JwtUtil jwtUtil;
 
     private HttpHeaders headers;
     @BeforeEach
@@ -205,7 +203,6 @@ class ExpensesTest {
         Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
 
 
-
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -244,6 +241,10 @@ class ExpensesTest {
                 .andExpect(jsonPath("$.data.content[0].transactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DB_FORMAT)))
                 .andExpect(jsonPath("$.data.content[0].displayTransactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)));
     }
+
+
+
+
 
 
 }

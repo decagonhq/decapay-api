@@ -32,7 +32,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.EXPENSE_REMOVED_SUCCESSFULLY;
-import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_REMOVED_SUCCESSFULLY;
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -45,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @ExtendWith(DBCleanerExtension.class)
-public class ExpenseTest {
+public class RemoveExpenseTest {
 
     @Value("${api.basepath-api}")
     private String path;

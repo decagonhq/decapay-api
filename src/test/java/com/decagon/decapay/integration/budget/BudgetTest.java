@@ -78,6 +78,7 @@ public class BudgetTest {
     private BudgetCategoryRepository budgetCategoryRepository;
     @Autowired
     private ExpenseRepository expenseRepository;
+
     Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
 
     Currency currency = AppConstants.DEFAULT_CURRENCY;
@@ -792,10 +793,11 @@ public class BudgetTest {
         budget.addBudgetLineItem(category,BigDecimal.valueOf(250));
         budgetRepository.save(budget);
         //add expense
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 1, 2));
-        expense1.setBudgetLineItem(budget.getBudgetLineItem(category));
-        expenseRepository.save(expense1);
+        var lineItem = budget.getBudgetLineItem(category);
 
+        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 1, 2));
+        expense1.setBudgetLineItem(lineItem);
+        expenseRepository.save(expense1);
         //input
         CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO();
         dto.setTitle("New Title");

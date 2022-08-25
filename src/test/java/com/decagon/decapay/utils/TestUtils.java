@@ -3,6 +3,7 @@ package com.decagon.decapay.utils;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 
 public class TestUtils {
 
@@ -23,6 +24,10 @@ public class TestUtils {
 			return 2;
 		}
 		return (short)currMonth;
+	}
+
+	public static <T> T objectFromResponseStr(String response, String jsonPathStr) {
+		return JsonPath.parse(response).read(jsonPathStr);
 	}
 
 }
