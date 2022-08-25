@@ -27,6 +27,8 @@ public interface BudgetService {
 
     void removeLineItem(Long budgetId, Long categoryId);
 
+    IdResponseDto createExpense(Long budgetId, Long categoryId, ExpenseDto expenseDto);
+
     Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable);
 
     void removeExpense(Long expenseId);

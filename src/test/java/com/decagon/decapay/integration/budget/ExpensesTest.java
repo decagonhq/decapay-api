@@ -1,9 +1,9 @@
 package com.decagon.decapay.integration.budget;
 
-
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.model.budget.*;
+import com.decagon.decapay.dto.budget.ExpenseDto;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
@@ -16,6 +16,8 @@ import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import org.hamcrest.Matchers;
+import com.decagon.decapay.utils.TestUtils;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -30,7 +32,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
@@ -39,6 +40,16 @@ import java.util.Locale;
 
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
+
+import static com.decagon.decapay.constants.ResponseMessageConstants.EXPENSE_CREATED_SUCCESSFULLY;
+import static com.decagon.decapay.utils.CustomDateUtil.formatLocalDateToString;
+import static com.decagon.decapay.utils.CustomDateUtil.formatStringToLocalDate;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,6 +64,8 @@ class ExpensesTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
@@ -60,13 +73,10 @@ class ExpensesTest {
     private BudgetRepository budgetRepository;
     @Autowired
     private BudgetCategoryRepository budgetCategoryRepository;
-
     @Autowired
     private ExpenseRepository expenseRepository;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-    @Autowired
-    private JwtUtil jwtUtil;
 
     private HttpHeaders headers;
     @BeforeEach

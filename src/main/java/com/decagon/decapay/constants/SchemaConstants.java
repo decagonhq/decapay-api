@@ -11,4 +11,5 @@ public class SchemaConstants {
     public static final int BUDGET_TITLE_SIZE = 100;
     public static final int BUDGET_CATEGORY_TITLE_SIZE = 100;
     public static final int BUDGET_DESC_SIZE = 255;
+    public static final int EXPENSE_DESC_SIZE = 60;
 }
