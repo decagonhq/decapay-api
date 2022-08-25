@@ -7,6 +7,7 @@ import com.decagon.decapay.exception.*;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
+import com.decagon.decapay.model.budget.Expenses;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.populator.CreateExpensePopulator;

@@ -36,6 +36,17 @@ public class ExpenseController {
     private final BudgetService budgetService;
 
     @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = EXPENSE_CREATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
+    @Operation(summary = "Create Expense", description = "Create Expense")
+    @PostMapping("/budgets/{budgetId}/lineItems/{categoryId}/expenses")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> createExpense(@PathVariable Long budgetId, @PathVariable Long categoryId, @Valid @RequestBody ExpenseDto expenseDto) {
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.createExpense(budgetId, categoryId, expenseDto), EXPENSE_CREATED_SUCCESSFULLY);
+    }
+
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = RESOURCE_RETRIEVED_SUCCESSFULLY),
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
             @ApiResponse(responseCode = "401", description = NOT_AUTHORIZED,content = @Content)})
@@ -69,14 +80,5 @@ public class ExpenseController {
     }
 
 
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = EXPENSE_CREATED_SUCCESSFULLY),
-            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
-            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
-            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
-    @Operation(summary = "Create Expense", description = "Create Expense")
-    @PostMapping("/budgets/{budgetId}/lineItems/{categoryId}/expenses")
-    public ResponseEntity<ApiDataResponse<IdResponseDto>> createExpense(@PathVariable Long budgetId, @PathVariable Long categoryId, @Valid @RequestBody ExpenseDto expenseDto) {
-        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.createExpense(budgetId, categoryId, expenseDto), EXPENSE_CREATED_SUCCESSFULLY);
-    }
+
 }

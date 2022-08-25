@@ -3,7 +3,6 @@ package com.decagon.decapay.integration.budget;
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.model.budget.*;
-import com.decagon.decapay.dto.budget.ExpenseDto;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
@@ -16,8 +15,6 @@ import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import org.hamcrest.Matchers;
-import com.decagon.decapay.utils.TestUtils;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -32,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
@@ -40,16 +38,6 @@ import java.util.Locale;
 
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
-
-import static com.decagon.decapay.constants.ResponseMessageConstants.EXPENSE_CREATED_SUCCESSFULLY;
-import static com.decagon.decapay.utils.CustomDateUtil.formatLocalDateToString;
-import static com.decagon.decapay.utils.CustomDateUtil.formatStringToLocalDate;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @ExtendWith(DBCleanerExtension.class)
-class ExpensesTest {
+class ListExpensesTest {
     @Value("${api.basepath-api}")
     private String path;
     @Autowired
@@ -215,7 +203,6 @@ class ExpensesTest {
         Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
 
 
-
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -254,6 +241,10 @@ class ExpensesTest {
                 .andExpect(jsonPath("$.data.content[0].transactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DB_FORMAT)))
                 .andExpect(jsonPath("$.data.content[0].displayTransactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)));
     }
+
+
+
+
 
 
 }
