@@ -32,4 +32,6 @@ public interface BudgetService {
     Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable);
 
     void removeExpense(Long expenseId);
+
+    IdResponseDto updateExpense(Long expenseId, ExpenseDto expenseDto);
 }

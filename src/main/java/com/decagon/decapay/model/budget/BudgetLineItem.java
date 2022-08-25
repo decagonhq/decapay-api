@@ -80,4 +80,14 @@ public class BudgetLineItem implements Auditable, Serializable {
         BigDecimal spentSoFar = this.getTotalAmountSpentSoFar().divide(this.getProjectedAmount(), BigDecimal.ROUND_HALF_DOWN);
         return spentSoFar.multiply(BigDecimal.valueOf(100)).setScale(1, RoundingMode.CEILING);
     }
+
+    public void updateExpense(Expenses expense, BigDecimal oldExpenseAmount) {
+        this.totalAmountSpentSoFar = this.totalAmountSpentSoFar
+                .subtract(oldExpenseAmount)
+                .add(expense.getAmount());
+
+        this.budget.setTotalAmountSpentSoFar(this.budget.getTotalAmountSpentSoFar()
+                .subtract(oldExpenseAmount)
+                .add(expense.getAmount()));
+    }
 }
