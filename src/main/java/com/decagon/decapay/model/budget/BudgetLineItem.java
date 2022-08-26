@@ -38,7 +38,7 @@ public class BudgetLineItem implements Auditable, Serializable {
     private BigDecimal projectedAmount;
 
     @Column(columnDefinition = "decimal(10,2) default (0)")
-    private BigDecimal totalAmountSpentSoFar;
+    private BigDecimal totalAmountSpentSoFar=BigDecimal.ZERO;
 
     @Column(length = 100)
     private String notificationThreshold;
