@@ -2,6 +2,7 @@ package com.decagon.decapay.dto.budget;
 
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.constants.SchemaConstants;
+import com.decagon.decapay.validators.dateValidator.CustomDate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -20,6 +21,6 @@ public class ExpenseDto extends BudgetLineItemDto {
     @NotBlank
     private String description;
     @Schema(description = "Expense Log date in format " + DateDisplayConstants.DATE_INPUT_FORMAT, required = true)
-    @NotBlank
+    @CustomDate(format = DateDisplayConstants.DATE_INPUT_FORMAT, required = true)
     private String transactionDate;
 }
