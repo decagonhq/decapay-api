@@ -475,5 +475,35 @@ public class BudgetServiceImpl implements BudgetService {
         return user.getId().equals(category.getUser().getId());
     }
 
+    @Override
+    @Transactional
+    public IdResponseDto updateExpense(Long expenseId, ExpenseDto expenseDto) {
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
 
+        Expenses expense = this.expenseRepository.findExpenseById(expenseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+
+        Budget budget = expense.getBudgetLineItem().getBudget();
+
+        if (!budget.isWithinBudgetPeriod(expenseDto.getTransactionDate())) {
+            throw new InvalidRequestException(String.format("Expense transaction date {%s} is outside budget period {%s} - {%s} ", expenseDto.getTransactionDate(), budget.getBudgetStartDate(), budget.getBudgetEndDate()));
+        }
+
+        if(!isExpenseBelongToUser(currentUser, expense)){
+            throw new InvalidRequestException("Expense does not belong to user");
+        }
+
+        BigDecimal oldExpenseAmount = expense.getAmount();
+
+        expense = this.updateExpense(expenseDto, expense);
+
+        expense.getBudgetLineItem().updateExpense(expense, oldExpenseAmount);
+
+        return new IdResponseDto(expense.getId());
+    }
+
+    private Expenses updateExpense(ExpenseDto expenseDto, Expenses expense) {
+        CreateExpensePopulator populator = new CreateExpensePopulator();
+        return populator.populate(expenseDto, expense);
+    }
 }
