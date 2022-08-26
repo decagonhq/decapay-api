@@ -223,7 +223,7 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(LocalDate.now().plusMonths(2).toString());
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now().plusMonths(2),DateDisplayConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(budget, category, dto, status().isBadRequest());
@@ -275,7 +275,7 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(1000));
         dto.setDescription("Food");
-        dto.setTransactionDate(LocalDate.now().toString());
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(),DateDisplayConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         var response = this.validateExpectation(budget, category, dto, status().isOk())
@@ -293,7 +293,7 @@ class CreateExpenseTest {
         assertNotNull(expense1.getId());
         assertThat(expense1.getAmount().doubleValue()).isEqualTo(dto.getAmount().doubleValue());
         assertThat(expense1.getDescription()).isEqualTo(dto.getDescription());
-        assertThat(expense1.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate()));
+        assertThat(expense1.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate(),DateDisplayConstants.DATE_INPUT_FORMAT));
         assertThat(lineItem1.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(1500.00).setScale(2));
         assertThat(budget.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(2500.00).setScale(2));
     }

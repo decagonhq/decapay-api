@@ -1,5 +1,6 @@
 package com.decagon.decapay.model.budget;
 
+import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
@@ -117,7 +118,7 @@ public class Budget implements Auditable, Serializable {
     }
 
     public boolean isWithinBudgetPeriod(String transactionDate) {
-        LocalDate transactionLocalDate = CustomDateUtil.formatStringToLocalDate(transactionDate);
+        LocalDate transactionLocalDate = CustomDateUtil.formatStringToLocalDate(transactionDate, DateDisplayConstants.DATE_INPUT_FORMAT);
         return !(transactionLocalDate.isBefore(this.getBudgetStartDate()) || transactionLocalDate.isAfter(this.getBudgetEndDate()));
     }
 }
