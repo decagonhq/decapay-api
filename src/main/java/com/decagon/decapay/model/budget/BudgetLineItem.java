@@ -68,11 +68,6 @@ public class BudgetLineItem implements Auditable, Serializable {
         this.budget.setTotalAmountSpentSoFar(this.budget.getTotalAmountSpentSoFar().add(expense.getAmount()));
     }
 
-    public void removeExpense(Expenses expense) {
-        expense.setId(null);
-        this.expenses.remove(expense);
-    }
-
     public BigDecimal calculatePercentageAmountSpent() {
         if (this.getTotalAmountSpentSoFar() == null){
             return BigDecimal.ZERO.setScale(1, RoundingMode.CEILING);
@@ -90,4 +85,13 @@ public class BudgetLineItem implements Auditable, Serializable {
                 .subtract(oldExpenseAmount)
                 .add(expense.getAmount()));
     }
+
+    public void removeExpense(Expenses expense){
+        BigDecimal newBudgetTotalAmount = this.budget.getTotalAmountSpentSoFar().subtract(expense.getAmount());
+        this.budget.setTotalAmountSpentSoFar(newBudgetTotalAmount.setScale(2, RoundingMode.HALF_DOWN));
+
+        BigDecimal newLineItemTotalAmount = this.getTotalAmountSpentSoFar().subtract(expense.getAmount());
+        this.setTotalAmountSpentSoFar(newLineItemTotalAmount.setScale(2, RoundingMode.HALF_DOWN));
+    }
+
 }

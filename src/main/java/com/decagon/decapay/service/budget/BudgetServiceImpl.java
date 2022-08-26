@@ -383,9 +383,9 @@ public class BudgetServiceImpl implements BudgetService {
 
     private void deleteExpense(Expenses expense, User user) {
         expenseRepository.deleteById(expense.getId());
-        Budget updateBudget = budgetRepository.findBudgetWithLineItems(expense.getBudgetLineItem().getBudget().getId(), user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
-        updateBudget.removeExpense(expense);
+       // Budget updateBudget = budgetRepository.findBudgetWithLineItems(expense.getBudgetLineItem().getBudget().getId(), user.getId())
+                //.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+        expense.getBudgetLineItem().removeExpense(expense);
     }
 
     private boolean isExpenseBelongToUser(User user, Expenses expenses) {
