@@ -79,6 +79,15 @@ public class ExpenseController {
         return ApiResponseUtil.response(HttpStatus.NO_CONTENT, EXPENSE_REMOVED_SUCCESSFULLY);
     }
 
-
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = EXPENSE_UPDATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "403", description = NOT_AUTHORIZED,content = @Content),
+            @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
+    @Operation(summary = "Update Expense", description = "Update Expense")
+    @PutMapping("/expenses/{expenseId}")
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> updateExpense(@PathVariable Long expenseId, @Valid @RequestBody ExpenseDto expenseDto) {
+        return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.updateExpense(expenseId, expenseDto), EXPENSE_UPDATED_SUCCESSFULLY);
+    }
 
 }

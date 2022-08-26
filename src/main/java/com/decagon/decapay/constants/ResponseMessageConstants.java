@@ -52,4 +52,5 @@ public class ResponseMessageConstants {
     public static final String PASSWORDS_DONT_MATCH = "Passwords Dont Match";
     public static final String UNEXPECTED_VALUE = "Unexpected value: ";
     public static final String BUDGET_FETCHED_SUCCESSFULLY = "Budget fetched sucessfully";
+    public static final String EXPENSE_UPDATED_SUCCESSFULLY = "Expense updated successfully";
 }
