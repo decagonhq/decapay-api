@@ -1,5 +1,6 @@
 package com.decagon.decapay.integration.budget;
 
+import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.dto.budget.ExpenseDto;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.EXPENSE_UPDATED_SUCCESSFULLY;
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
+import static com.decagon.decapay.utils.CustomDateUtil.formatLocalDateToString;
 import static com.decagon.decapay.utils.CustomDateUtil.formatStringToLocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -140,7 +142,7 @@ class EditExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(1000));
         dto.setDescription("Food");
-        dto.setTransactionDate(LocalDate.now().toString());
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(null, dto, status().isNotFound());
@@ -274,7 +276,7 @@ class EditExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(1000));
         dto.setDescription("Updated Food");
-        dto.setTransactionDate(LocalDate.now().toString());
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(),DateDisplayConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         var response = this.validateExpectation(expense1, dto, status().isOk())
@@ -289,7 +291,7 @@ class EditExpenseTest {
         assertNotNull(updatedExpense.getId());
         assertThat(updatedExpense.getAmount().setScale(2)).isEqualTo(dto.getAmount().setScale(2));
         assertThat(updatedExpense.getDescription()).isEqualTo(dto.getDescription());
-        assertThat(updatedExpense.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate()));
+        assertThat(updatedExpense.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate(),DateDisplayConstants.DATE_INPUT_FORMAT));
         assertThat(lineItem1.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(1000.00).setScale(2));
         assertThat(budget.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(2000.00).setScale(2));
     }
