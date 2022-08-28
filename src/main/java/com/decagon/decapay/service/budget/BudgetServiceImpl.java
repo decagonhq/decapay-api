@@ -204,7 +204,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     private boolean transactionExistsOutsideOfNewBudgetPeriod(CreateBudgetRequestDTO budgetRequestDto, Budget budget, AbstractBudgetPeriodHandler budgetPeriodHandler) {
         LocalDate[] targetdDateRange = budgetPeriodHandler.calculateBudgetDateRange(budgetRequestDto);
-        return this.budgetRepository.expenseExistsForPeriod(budget.getId(), targetdDateRange[0], targetdDateRange[1]);
+        return this.expenseRepository.existsExpenseOutsideBudgetPeriod(budget.getId(), targetdDateRange[0], targetdDateRange[1]);
 
     }
 

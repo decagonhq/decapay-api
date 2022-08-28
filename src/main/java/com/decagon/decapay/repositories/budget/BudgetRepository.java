@@ -27,13 +27,6 @@ public interface BudgetRepository extends JpaRepository<Budget, Long>, BudgetRep
     Optional<Budget> findBudgetByIdAndUserId(Long id, Long userId);//TODO: rename method
 
     //todo: move to expense repository
-    @Query("select (count(e.id) > 0) from Budget b " +
-            "join b.budgetLineItems i " +
-            "join i.expenses e " +
-            "where b.id = ?1 " +
-            "and b.auditSection.delF = '0' " +
-            "and e.transactionDate < ?2 or e.transactionDate > ?3 ")
-    boolean expenseExistsForPeriod(Long id, LocalDate startDate, LocalDate endDate);
 
     @Query("select b from Budget b " +
            "left join fetch b.budgetLineItems i " +
