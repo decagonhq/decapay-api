@@ -20,7 +20,9 @@ import com.decagon.decapay.utils.PageUtil;
 import com.decagon.decapay.utils.UserInfoUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -204,8 +206,8 @@ public class BudgetServiceImpl implements BudgetService {
 
     private boolean transactionExistsOutsideOfNewBudgetPeriod(CreateBudgetRequestDTO budgetRequestDto, Budget budget, AbstractBudgetPeriodHandler budgetPeriodHandler) {
         LocalDate[] targetdDateRange = budgetPeriodHandler.calculateBudgetDateRange(budgetRequestDto);
-        return this.expenseRepository.existsExpenseOutsideBudgetPeriod(budget.getId(), targetdDateRange[0], targetdDateRange[1]);
-
+        Slice<Long> id=this.expenseRepository.existsExpenseOutsideBudgetPeriod(budget.getId(), targetdDateRange[0], targetdDateRange[1],PageRequest.of(0, 1));
+        return id.hasContent();
     }
 
     private void updateBudgetModel(Budget budget, CreateBudgetRequestDTO budgetRequestDto, AbstractBudgetPeriodHandler budgetPeriodHandler) {
