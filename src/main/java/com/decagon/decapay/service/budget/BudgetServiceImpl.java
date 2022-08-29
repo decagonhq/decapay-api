@@ -419,7 +419,7 @@ public class BudgetServiceImpl implements BudgetService {
         BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-        if (!budget.isWithinBudgetPeriod(expenseDto.getTransactionDate())) {
+        if (!budget.isValidExpenseTransactionDate(expenseDto.getTransactionDate())) {
             throw new InvalidRequestException(String.format("Expense transaction date {%s} is outside budget period {%s} - {%s} ", expenseDto.getTransactionDate(), budget.getBudgetStartDate(), budget.getBudgetEndDate()));
         }
         BudgetLineItem lineItem = this.getLineItem(budget, category);
@@ -487,7 +487,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         Budget budget = expense.getBudgetLineItem().getBudget();
 
-        if (!budget.isWithinBudgetPeriod(expenseDto.getTransactionDate())) {
+        if (!budget.isValidExpenseTransactionDate(expenseDto.getTransactionDate())) {
             throw new InvalidRequestException(String.format("Expense transaction date {%s} is outside budget period {%s} - {%s} ", expenseDto.getTransactionDate(), budget.getBudgetStartDate(), budget.getBudgetEndDate()));
         }
 

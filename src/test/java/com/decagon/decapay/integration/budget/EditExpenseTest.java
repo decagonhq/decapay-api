@@ -150,7 +150,7 @@ class EditExpenseTest {
     }
 
     @Test
-    void givenAnExpenseExists_WhenUserUpdateAnExpenseAndTransactionDateIsOutsideLineItemDateRange_SystemShouldFailWith400() throws Exception {
+    void givenAnExpenseExists_WhenUserUpdateAnExpenseAndTransactionDateIsFutureDate_SystemShouldFailWith400() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -178,7 +178,7 @@ class EditExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(1000));
         dto.setDescription("Food");
-        dto.setTransactionDate(LocalDate.now().plusMonths(2).toString());
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now().plusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(expense1, dto, status().isBadRequest());
