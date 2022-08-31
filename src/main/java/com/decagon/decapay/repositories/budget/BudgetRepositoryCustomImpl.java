@@ -46,7 +46,7 @@ public class BudgetRepositoryCustomImpl implements BudgetRepositoryCustom{
                                 whereClauseQry.append(" and b.budgetStartDate<=:currDate and b.budgetEndDate>=:currDate ");
                         case PAST ->
                                 whereClauseQry.append(" and b.budgetStartDate<:currDate and b.budgetEndDate<:currDate ");
-                        case UPCOMMING ->
+                        case UPCOMING ->
                                 whereClauseQry.append(" and b.budgetStartDate>:currDate and b.budgetEndDate>:currDate ");
                     }
                 }
