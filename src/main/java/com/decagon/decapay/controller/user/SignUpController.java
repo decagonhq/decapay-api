@@ -7,6 +7,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.USER_SUCCES
 import javax.validation.Valid;
 
 import com.decagon.decapay.dto.UserDTO;
+import com.decagon.decapay.dto.common.IdResponseDto;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,7 +44,7 @@ public class SignUpController {
 		@ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS,content = @Content) })
 	@Operation(summary = "Register user", description = "Register new user account with all mandatory fields.")
 	@PostMapping("/register")
-	public ResponseEntity<ApiDataResponse<User>> registerUser(@Valid @RequestBody UserDTO userRegistrationRequest) {
+	public ResponseEntity<ApiDataResponse<IdResponseDto>> registerUser(@Valid @RequestBody UserDTO userRegistrationRequest) {
 		return ApiResponseUtil.response(HttpStatus.CREATED, userService.registerUser(userRegistrationRequest),
 			USER_SUCCESSFULLY_REGISTERED);
 	}

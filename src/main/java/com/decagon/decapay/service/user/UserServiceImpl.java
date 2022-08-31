@@ -1,6 +1,7 @@
 package com.decagon.decapay.service.user;
 
 import com.decagon.decapay.dto.UserDTO;
+import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
@@ -22,7 +23,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(final UserDTO userDTO) throws ResourceConflictException {
+    public IdResponseDto registerUser(final UserDTO userDTO) throws ResourceConflictException {
 
         if (userRepository.findByEmail(userDTO.getEmail().toLowerCase()).isPresent()) {
             throw new ResourceConflictException();
@@ -35,7 +36,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setPhoneNumber(userDTO.getPhoneNumber());
 
-        return userRepository.save(user);
+        return new IdResponseDto(userRepository.save(user).getId());
     }
 
     @Override
