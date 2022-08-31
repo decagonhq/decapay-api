@@ -39,3 +39,7 @@ management:
 
 config.emailSender: ${DEFAULT_EMAIL_SENDER:default}
 
+---
+spring:
+  flyway:
+    enabled: false

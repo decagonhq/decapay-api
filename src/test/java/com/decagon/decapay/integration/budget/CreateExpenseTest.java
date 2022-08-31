@@ -202,7 +202,7 @@ class CreateExpenseTest {
     }
 
     @Test
-    void givenLineItemCreatedByUserExists_WhenUserLogExpenseAndTransactionDateIsOutsideLineItemDateRange_SystemShouldFailWith400() throws Exception {
+    void givenLineItemCreatedByUserExists_WhenUserLogExpenseAndTransactionDateIsBeforeStartDate_SystemShouldFailWith400() throws Exception {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
@@ -212,6 +212,34 @@ class CreateExpenseTest {
         category.setUser(user);
         budgetCategoryRepository.save(category);
 
+        LocalDate budgetStartDate=LocalDate.now();
+        Budget budget = this.fetchTestBudget( MONTHLY,budgetStartDate, LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(4000));
+
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000));
+        this.budgetRepository.save(budget);
+
+        ExpenseDto dto = new ExpenseDto();
+        dto.setAmount(BigDecimal.valueOf(100));
+        dto.setDescription("Food");
+        dto.setTransactionDate(formatLocalDateToString(budgetStartDate.minusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        setAuthHeader(user);
+
+        this.validateExpectation(budget, category, dto, status().isBadRequest());
+    }
+
+
+    @Test
+    void givenLineItemCreatedByUserExists_WhenUserLogExpenseAndTransactionDateIsFutureDate_SystemShouldFailWith400() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        budgetCategoryRepository.save(category);
 
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
         budget.setProjectedAmount(BigDecimal.valueOf(5000));
@@ -223,11 +251,12 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(LocalDate.now().plusMonths(2),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now().plusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(budget, category, dto, status().isBadRequest());
     }
+
 
     @Test
     void givenLineItemCreatedByUserExists_WhenUserLogExpense_SystemShouldLogExpenseSuccessfully() throws Exception {

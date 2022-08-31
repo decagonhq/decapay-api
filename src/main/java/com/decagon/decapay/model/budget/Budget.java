@@ -109,8 +109,16 @@ public class Budget implements Auditable, Serializable {
         return totalAmount;
     }
 
-    public boolean isWithinBudgetPeriod(String transactionDate) {
+    /**
+     * check if expense log date is valid. A valid expense date is a date
+     * within the budget(that expense is being logged for) start date and the current date. An expense must not be logged outside
+     * the budget's date range(start and end date) and also for any future date(date past the current date).
+     *
+     * @param transactionDate
+     * @return true if transaction date is valid or false otherwise
+     */
+    public boolean isValidExpenseTransactionDate(String transactionDate) {
         LocalDate transactionLocalDate = CustomDateUtil.formatStringToLocalDate(transactionDate, DateDisplayConstants.DATE_INPUT_FORMAT);
-        return !(transactionLocalDate.isBefore(this.getBudgetStartDate()) || transactionLocalDate.isAfter(this.getBudgetEndDate()));
+        return !(transactionLocalDate.isBefore(this.getBudgetStartDate()) || transactionLocalDate.isAfter(LocalDate.now()));
     }
 }

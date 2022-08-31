@@ -624,7 +624,7 @@ public class BudgetTest {
         setAuthHeader(user);
 
         this.mockMvc
-                .perform(get(path + "/budgets").param("state", BudgetState.UPCOMMING.name().toLowerCase())
+                .perform(get(path + "/budgets").param("state", BudgetState.UPCOMING.name().toLowerCase())
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -650,7 +650,7 @@ public class BudgetTest {
         setAuthHeader(user);
 
         this.mockMvc
-                .perform(get(path + "/budgets").param("state", BudgetState.UPCOMMING.name().toLowerCase())
+                .perform(get(path + "/budgets").param("state", BudgetState.UPCOMING.name().toLowerCase())
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -678,7 +678,7 @@ public class BudgetTest {
         setAuthHeader(user);
 
         this.mockMvc
-                .perform(get(path + "/budgets").param("state", BudgetState.UPCOMMING.name().toLowerCase())
+                .perform(get(path + "/budgets").param("state", BudgetState.UPCOMING.name().toLowerCase())
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

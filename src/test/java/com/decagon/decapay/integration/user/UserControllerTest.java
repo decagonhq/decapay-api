@@ -4,9 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.decagon.decapay.dto.UserDTO;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -62,7 +64,8 @@ class UserControllerTest {
 	void registerUser() throws Exception {
 		ResultActions response = mockMvc.perform(
 			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(201));
+				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(201))
+				.andExpect(jsonPath("$.data.id").value(Matchers.greaterThan(0)));
 
 		User user = userRepository.findByEmail(userDTO.getEmail()).get();
 
