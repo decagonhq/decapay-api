@@ -119,6 +119,13 @@ public class Budget implements Auditable, Serializable {
      */
     public boolean isValidExpenseTransactionDate(String transactionDate) {
         LocalDate transactionLocalDate = CustomDateUtil.formatStringToLocalDate(transactionDate, DateDisplayConstants.DATE_INPUT_FORMAT);
-        return !(transactionLocalDate.isBefore(this.getBudgetStartDate()) || transactionLocalDate.isAfter(LocalDate.now()));
+       LocalDate budgetValidTransactionEndDate=null;
+       LocalDate now=LocalDate.now();
+       if(now.isBefore(this.budgetEndDate)){
+           budgetValidTransactionEndDate=now;
+       }else{
+           budgetValidTransactionEndDate=this.budgetEndDate;
+       }
+        return !(transactionLocalDate.isBefore(this.getBudgetStartDate()) || transactionLocalDate.isAfter(budgetValidTransactionEndDate));
     }
 }

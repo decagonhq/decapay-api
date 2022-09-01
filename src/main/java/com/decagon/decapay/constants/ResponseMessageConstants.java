@@ -11,7 +11,7 @@ public class ResponseMessageConstants {
     public static final String FORGOT_PASSWORD_INITIATED_SUCCESSFULLY = "Forgot Password Initiated Successfully";
     public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Password Changed Successfully";
     public static final String PASSWORD_CREATED_SUCCESSFULLY = "Password Created Successfully";
-    public static final String USER_SUCCESSFULLY_REGISTERED = "User successfully registered";
+    public static final String USER_SUCCESSFULLY_REGISTERED = "Sign Up successful";
     public static final String SIGN_IN_SUCCESSFULLY = "Sign In Successfully";
     public static final String PASSWORD_RESET_CODE_VERIFIED_SUCCESSFULLY = "Password Reset Code Verified Successfully";
     public static final String SIGN_OUT_SUCCESSFULLY = "Sign Out Successfully";
