@@ -39,6 +39,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.EXPENSE_CREATED_SUCCESSFULLY;
+import static com.decagon.decapay.model.budget.BudgetPeriod.CUSTOM;
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
 import static com.decagon.decapay.utils.CustomDateUtil.formatLocalDateToString;
 import static com.decagon.decapay.utils.CustomDateUtil.formatStringToLocalDate;
@@ -254,6 +255,84 @@ class CreateExpenseTest {
         dto.setTransactionDate(formatLocalDateToString(LocalDate.now().plusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
+        this.validateExpectation(budget, category, dto, status().isBadRequest());
+    }
+
+
+    @Test
+    void givenLineItemCreatedByUserExists_WhenUserLogExpenseForPastBudgetAndTransactionDateOutsideBudgetDateRange_SystemShouldFailWith400() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+        setAuthHeader(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        budgetCategoryRepository.save(category);
+
+        LocalDate budgetStartDate=LocalDate.now().minusDays(10);
+        LocalDate budgetEndDate=LocalDate.now().minusDays(2);
+
+        //budget after end endate
+        Budget budget = this.fetchTestBudget( CUSTOM,budgetStartDate,budgetEndDate,user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(4000));
+
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000));
+        this.budgetRepository.save(budget);
+
+        //request transaction date before budget start date
+        ExpenseDto dto = new ExpenseDto();
+        dto.setAmount(BigDecimal.valueOf(100));
+        dto.setDescription("Food");
+        dto.setTransactionDate(formatLocalDateToString(budgetStartDate.minusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        this.validateExpectation(budget, category, dto, status().isBadRequest());
+
+        //request transaction date after budget end date
+        dto = new ExpenseDto();
+        dto.setAmount(BigDecimal.valueOf(100));
+        dto.setDescription("Food");
+        dto.setTransactionDate(formatLocalDateToString(budgetEndDate.plusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        this.validateExpectation(budget, category, dto, status().isBadRequest());
+    }
+
+
+    @Test
+    void givenLineItemCreatedByUserExists_WhenUserLogExpenseForActiveBudgetAndTransactionDateOutsideBudgetDateRange_SystemShouldFailWith400() throws Exception {
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+        setAuthHeader(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        budgetCategoryRepository.save(category);
+
+        LocalDate budgetStartDate=LocalDate.now().minusDays(10);
+        LocalDate budgetEndDate=LocalDate.now().plusDays(2);
+
+        //budget after end endate
+        Budget budget = this.fetchTestBudget( CUSTOM,budgetStartDate,budgetEndDate,user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(4000));
+
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000));
+        this.budgetRepository.save(budget);
+
+        //request transaction date before budget start date
+        ExpenseDto dto = new ExpenseDto();
+        dto.setAmount(BigDecimal.valueOf(100));
+        dto.setDescription("Food");
+        dto.setTransactionDate(formatLocalDateToString(budgetStartDate.minusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        this.validateExpectation(budget, category, dto, status().isBadRequest());
+
+        //request transaction date after budget end date
+        dto = new ExpenseDto();
+        dto.setAmount(BigDecimal.valueOf(100));
+        dto.setDescription("Food");
+        dto.setTransactionDate(formatLocalDateToString(budgetEndDate.plusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
         this.validateExpectation(budget, category, dto, status().isBadRequest());
     }
 
