@@ -44,6 +44,9 @@ public class User implements Auditable, Serializable {
     @Column(length = 50)
     private String phoneNumber;
 
+    @Column(length = 100)
+    private String userSetting;
+
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus = UserStatus.ACTIVE;
     private LocalDateTime lastLogin;

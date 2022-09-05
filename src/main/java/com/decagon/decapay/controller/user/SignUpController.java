@@ -1,9 +1,5 @@
 package com.decagon.decapay.controller.user;
 
-import static com.decagon.decapay.constants.ResponseMessageConstants.INVALID_REQUEST;
-import static com.decagon.decapay.constants.ResponseMessageConstants.USER_EMAIL_ALREADY_EXISTS;
-import static com.decagon.decapay.constants.ResponseMessageConstants.USER_SUCCESSFULLY_REGISTERED;
-
 import javax.validation.Valid;
 
 import com.decagon.decapay.dto.UserDTO;
@@ -27,6 +23,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
+import static com.decagon.decapay.constants.ResponseMessageConstants.*;
+import static com.decagon.decapay.constants.ResponseMessageConstants.NOT_FOUND;
+
 @Tag(name ="Register User Controller")
 @SecurityRequirements
 @RestController
@@ -41,7 +40,9 @@ public class SignUpController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "201", description = USER_SUCCESSFULLY_REGISTERED),
 		@ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
-		@ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS,content = @Content) })
+		@ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS,content = @Content),
+		@ApiResponse(responseCode = "404", description = NOT_FOUND)
+	})
 	@Operation(summary = "Register user", description = "Register new user account with all mandatory fields.")
 	@PostMapping("/register")
 	public ResponseEntity<ApiDataResponse<IdResponseDto>> registerUser(@Valid @RequestBody UserDTO userRegistrationRequest) {
