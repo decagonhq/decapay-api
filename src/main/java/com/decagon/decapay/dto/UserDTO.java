@@ -6,12 +6,10 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "DTO containing information needed to create a user. All fields required.")
 public class UserDTO {
@@ -34,8 +32,29 @@ public class UserDTO {
 	@Schema(description = "Password, at least seven characters", required = true)
 	private String password;
 
+	@Size(min = 2, max = 2, message = "Country code  must be two characters long.")
+	@Schema(description = "Country code  must be two characters long.", required = true)
+	private String countryCode;
+
+	@Size(min = 3, max = 3, message = "Currency code  must be three characters long.")
+	@Schema(description = "Currency code  must be three characters long.", required = true)
+	private String currencyCode;
+
+	@Size(min = 2, max = 2, message = "language must be two characters long.")
+	@Schema(description = "language must be two characters long.", required = true)
+	private String languageCode;
+
 	@Pattern(regexp = "^\\d{7,15}$", message = "Phone number must be a valid number format")
 	@Schema(description = "Phone number, all digits, at least seven and at most 15 characters", required = true)
 	private String phoneNumber;
+
+
+	public UserDTO(String firstName, String lastName, String email, String password, String phoneNumber) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.phoneNumber = phoneNumber;
+	}
 }
 
