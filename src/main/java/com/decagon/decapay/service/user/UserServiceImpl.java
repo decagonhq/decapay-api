@@ -9,6 +9,8 @@ import com.decagon.decapay.model.reference.country.Country;
 import com.decagon.decapay.model.reference.currency.Currency;
 import com.decagon.decapay.model.reference.language.Language;
 import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.populator.UserAccountPopulator;
+import com.decagon.decapay.populator.UserSettingPopulator;
 import com.decagon.decapay.repositories.reference.currency.CurrencyRepository;
 import com.decagon.decapay.repositories.reference.language.LanguageRepository;
 import com.decagon.decapay.repositories.reference.zone.country.CountryRepository;
@@ -59,22 +61,15 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("Resource not found for currency with code " + userDTO.getCurrencyCode());
         }
 
-        User user = new User();
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setEmail(userDTO.getEmail().toLowerCase());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setPhoneNumber(userDTO.getPhoneNumber());
-
-        UserSettings userSettings = new UserSettings();
-
-        userSettings.setCountryCode(userDTO.getCountryCode());
-        userSettings.setCurrencyCode(userDTO.getCurrencyCode());
-        userSettings.setLanguage(userDTO.getLanguageCode());
-
-        user.setUserSetting(userSettings.toJSONString());
-
+        User user = this.createModelEntity(userDTO);
         return new IdResponseDto(userRepository.save(user).getId());
+    }
+
+    private User createModelEntity(UserDTO userDTO) {
+        User user = new User();
+        UserAccountPopulator userAccountPopulator = new UserAccountPopulator(passwordEncoder);
+        userAccountPopulator.populate(userDTO, user);
+        return user;
     }
 
     @Override
