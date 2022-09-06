@@ -3,6 +3,7 @@ package com.decagon.decapay.service.currency;
 import com.decagon.decapay.model.reference.currency.Currency;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
 public interface CurrencyService {
@@ -13,4 +14,6 @@ public interface CurrencyService {
     void create(Currency currency);
 
     boolean existCurrencies();
+
+    List<Currency> findAllByOrderByName();
 }
