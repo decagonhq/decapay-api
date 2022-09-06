@@ -1,4 +1,6 @@
 package com.decagon.decapay.utils;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Random;
 
 public class CommonUtil {
@@ -27,6 +29,20 @@ public class CommonUtil {
     public static int parseToInt(String value){
         return Integer.parseInt(value);
     }
+
+    /**
+     * Locale per country iso codes
+     */
+    public static HashMap<String, Locale> getLocales(){
+
+        HashMap<String, Locale> LOCALES = new HashMap<String, Locale>();
+        for (Locale locale : Locale.getAvailableLocales()) {
+            LOCALES.put(locale.getCountry(), locale);
+        }
+        return LOCALES;
+    }
+
+
 
 }
 

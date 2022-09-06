@@ -1,6 +1,9 @@
 package com.decagon.decapay.service.currency;
 
 import com.decagon.decapay.constants.AppConstants;
+import com.decagon.decapay.model.reference.currency.Currency;
+import com.decagon.decapay.repositories.reference.currency.CurrencyRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +13,10 @@ import java.util.Locale;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class CurrencyServiceImpl implements CurrencyService{
+
+    private final CurrencyRepository repository;
     @Override
     public String formatAmount(BigDecimal amount) {
         if(amount==null){
@@ -40,6 +46,16 @@ public class CurrencyServiceImpl implements CurrencyService{
 
         return currencyInstance.format(amount.doubleValue());
 
+    }
+
+    @Override
+    public void create(Currency currency) {
+       this.repository.save(currency);
+    }
+
+    @Override
+    public boolean existCurrencies() {
+        return this.repository.count()>0;
     }
 
 }
