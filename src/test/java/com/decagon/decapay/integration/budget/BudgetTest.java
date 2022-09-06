@@ -1,6 +1,7 @@
 package com.decagon.decapay.integration.budget;
 
 
+import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
@@ -79,9 +80,7 @@ public class BudgetTest {
     @Autowired
     private ExpenseRepository expenseRepository;
 
-    Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
-
-    Currency currency = AppConstants.DEFAULT_CURRENCY;
+    private final UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
 
     @BeforeEach
     public void runBeforeAllTestMethods() throws Exception {
@@ -122,6 +121,8 @@ public class BudgetTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + token);
     }
+
+
 
     @Test
     void shouldReturn404WhenViewBudgetAndBudgetNotExist() throws Exception {
@@ -169,12 +170,12 @@ public class BudgetTest {
 
     @Test
     void shouldViewBudgetDetailsSuccessfully() throws Exception {
-        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
-        Currency currency = AppConstants.DEFAULT_CURRENCY;
 
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+
+        user.setUserSetting(userSettings.toJSONString());
 
         LocalDate today = LocalDate.now();
 
@@ -208,7 +209,7 @@ public class BudgetTest {
         this.mockMvc.perform(get(path + "/budgets/{budgetId}", budget.getId()).headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.projectedAmount").value(5000.00))
-                .andExpect(jsonPath("$.data.displayProjectedAmount").value(currency.getSymbol(locale) + "5,000.00"))
+                .andExpect(jsonPath("$.data.displayProjectedAmount").value("₦5,000.00"))
                 .andExpect(jsonPath("$.data.notificationThreshold").value("Notification Trashold"))
                 .andExpect(jsonPath("$.data.title").value("Transportation Budget"))
                 .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DB_FORMAT)))
@@ -216,7 +217,7 @@ public class BudgetTest {
                 .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DB_FORMAT)))
                 .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
                 .andExpect(jsonPath("$.data.totalAmountSpentSoFar").value(2500.00))
-                .andExpect(jsonPath("$.data.displayTotalAmountSpentSoFar").value(currency.getSymbol(locale) + "2,500.00"))
+                .andExpect(jsonPath("$.data.displayTotalAmountSpentSoFar").value("₦2,500.00"))
                 .andExpect(jsonPath("$.data.percentageSpentSoFar").value(50.0))
                 .andExpect(jsonPath("$.data.displayPercentageSpentSoFar").value("50.0%"))
                 .andExpect(jsonPath("$.data.budgetPeriod").value(MONTHLY.name()))
@@ -226,9 +227,9 @@ public class BudgetTest {
                 .andExpect(jsonPath("$.data.lineItems[*].category", Matchers.containsInAnyOrder("Food","Water")))
                 .andExpect(jsonPath("$.data.lineItems[*].budgetId", Matchers.containsInAnyOrder(budget.getId().intValue(),budget.getId().intValue())))
                 .andExpect(jsonPath("$.data.lineItems[*].projectedAmount", Matchers.containsInAnyOrder(2000.00,2500.00)))
-                .andExpect(jsonPath("$.data.lineItems[*].displayProjectedAmount", Matchers.containsInAnyOrder(currency.getSymbol(locale) + "2,000.00",currency.getSymbol(locale) + "2,500.00")))
+                .andExpect(jsonPath("$.data.lineItems[*].displayProjectedAmount", Matchers.containsInAnyOrder("₦2,000.00", "₦2,500.00")))
                 .andExpect(jsonPath("$.data.lineItems[*].totalAmountSpentSoFar", Matchers.containsInAnyOrder(0.00,0.00)))
-                .andExpect(jsonPath("$.data.lineItems[*].displayTotalAmountSpentSoFar", Matchers.containsInAnyOrder(currency.getSymbol(locale) + "0.00",currency.getSymbol(locale) + "0.00")))
+                .andExpect(jsonPath("$.data.lineItems[*].displayTotalAmountSpentSoFar", Matchers.containsInAnyOrder("₦0.00", "₦0.00")))
                 .andExpect(jsonPath("$.data.lineItems[*].percentageSpentSoFar", Matchers.containsInAnyOrder(0.0,0.0)))
                 .andExpect(jsonPath("$.data.lineItems[*].displayPercentageSpentSoFar", Matchers.containsInAnyOrder("0.0%","0.0%")));
     }
@@ -242,6 +243,8 @@ public class BudgetTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
+
 
         Budget budget = new Budget();
         budget.setTitle("Transportation Budget");
@@ -270,6 +273,10 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056355667");
+
+        user.setUserSetting(userSettings.toJSONString());
+
+
         userRepository.save(user);
 
 
@@ -312,9 +319,9 @@ public class BudgetTest {
                 .andExpect(jsonPath("$.data.content[0].id").value(budget.getId()))
                 .andExpect(jsonPath("$.data.content[0].title").value("Transport"))
                 .andExpect(jsonPath("$.data.content[0].totalAmountSpentSoFar").value(200000.00))
-                .andExpect(jsonPath("$.data.content[0].displayTotalAmountSpentSoFar").value(currency.getSymbol(locale) + "200,000.00"))
+                .andExpect(jsonPath("$.data.content[0].displayTotalAmountSpentSoFar").value("₦200,000.00"))
                 .andExpect(jsonPath("$.data.content[0].projectedAmount").value(400000.00))
-                .andExpect(jsonPath("$.data.content[0].displayProjectedAmount").value(currency.getSymbol(locale) + "400,000.00"))
+                .andExpect(jsonPath("$.data.content[0].displayProjectedAmount").value("₦400,000.00"))
                 .andExpect(jsonPath("$.data.content[0].period").value(ANNUAL.name()))
                 .andExpect(jsonPath("$.data.content[0].percentageSpentSoFar").value(50.00))
                 .andExpect(jsonPath("$.data.content[0].displayPercentageSpentSoFar").value("50.0%"));
@@ -330,6 +337,7 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056357667");
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername("o4g@gmail.com");
@@ -359,6 +367,7 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056389667");
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         Budget budget = new Budget();
@@ -378,6 +387,7 @@ public class BudgetTest {
         user2.setFirstName("Goodluck");
         user2.setLastName("Nwoko");
         user2.setPhoneNumber("07050359667");
+        user2.setUserSetting(userSettings.toJSONString());
         userRepository.save(user2);
 
         Budget budget2 = new Budget();
@@ -442,6 +452,8 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056389667");
+        user.setUserSetting(userSettings.toJSONString());
+
         userRepository.save(user);
 
         Budget budget = new Budget();
@@ -485,6 +497,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -512,6 +525,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -539,6 +553,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -565,6 +580,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -592,6 +608,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -619,6 +636,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -645,6 +663,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -673,6 +692,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -707,6 +727,7 @@ public class BudgetTest {
         user.addBudget(budget2);
         user.addBudget(budget3);
         user.addBudget(budget4);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         setAuthHeader(user);

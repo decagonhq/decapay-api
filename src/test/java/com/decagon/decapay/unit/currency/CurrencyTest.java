@@ -67,4 +67,26 @@ public class CurrencyTest {
     }
 
 
+
+
+    @ParameterizedTest
+    @MethodSource("amountProvider1")
+    void testShouldFormatZeroAmountSuccessfully_GivenALocale(BigDecimal amount, String expectedFormattedAmount, Locale locale, Currency currency) throws Exception {
+        String formattedAmount = this.currencyService.formatAmount(amount, locale, currency);
+        assertEquals(expectedFormattedAmount, formattedAmount);
+    }
+
+    static Stream<Arguments> amountProvider1() {
+        Locale locale1 = new Locale("en", "US");
+        Currency currency1 = Currency.getInstance("USD");
+
+        Locale locale2 = new Locale("en", "NG");
+        Currency currency2 = Currency.getInstance("NGN");
+
+        return Stream.of(
+                arguments(BigDecimal.valueOf(2), "$2.00", locale1, currency1),
+                arguments(BigDecimal.valueOf(2), "₦2.00", locale2, currency2)
+        );
+
+    }
 }
