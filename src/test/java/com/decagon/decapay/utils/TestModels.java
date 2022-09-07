@@ -1,7 +1,9 @@
 package com.decagon.decapay.utils;
 
+import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.model.auth.PasswordReset;
 import com.decagon.decapay.model.budget.*;
+import com.decagon.decapay.model.reference.language.Language;
 import com.decagon.decapay.model.user.User;
 
 import java.math.BigDecimal;
@@ -58,6 +60,15 @@ public class TestModels {
         BudgetCategory budgetCategory = new BudgetCategory();
         budgetCategory.setTitle(title);
         return budgetCategory;
+    }
+
+
+    public static UserSettings userSettings(String languageCode, String countryCode, String currencyCode){
+        UserSettings userSettings = new UserSettings();
+        userSettings.setLanguage(languageCode);
+        userSettings.setCurrencyCode(currencyCode);
+        userSettings.setCountryCode(countryCode);
+        return userSettings;
     }
 
 }

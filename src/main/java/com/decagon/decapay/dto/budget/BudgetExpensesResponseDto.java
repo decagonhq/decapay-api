@@ -23,6 +23,8 @@ public class BudgetExpensesResponseDto {
     private BigDecimal amount;
     private String displayAmount;
     private String description;
+
+    @JsonFormat(pattern = DateDisplayConstants.DATE_DB_FORMAT)
     private LocalDate transactionDate;
 
     @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)

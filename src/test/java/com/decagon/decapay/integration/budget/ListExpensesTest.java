@@ -1,5 +1,6 @@
 package com.decagon.decapay.integration.budget;
 
+import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.constants.DateDisplayConstants;
 import com.decagon.decapay.model.budget.*;
@@ -38,6 +39,7 @@ import java.util.Locale;
 
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,8 +67,9 @@ class ListExpensesTest {
     private ExpenseRepository expenseRepository;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-
     private HttpHeaders headers;
+    private UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
+
     @BeforeEach
     public void runBeforeAllTestMethods() throws Exception {
         headers = new HttpHeaders();
@@ -92,6 +95,7 @@ class ListExpensesTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -116,6 +120,7 @@ class ListExpensesTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -139,6 +144,7 @@ class ListExpensesTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -163,10 +169,14 @@ class ListExpensesTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
+
 
         User otherUser = TestModels.user("ola2", "dip2", "ola2@gmail.com",
                 passwordEncoder.encode("password"), "08067644802");
         otherUser.setUserStatus(UserStatus.ACTIVE);
+        otherUser.setUserSetting(userSettings.toJSONString());
+
         userRepository.saveAll(List.of(user, otherUser));
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -199,13 +209,11 @@ class ListExpensesTest {
 
     @Test
     void givenABudgetLineItemCreatedByUserExistsWithAtLeastTwoExpenses_WhenUserListExpensesForTheBudgetLineItem_ShouldReturnListSuccessfully() throws Exception {
-        Currency currency = AppConstants.DEFAULT_CURRENCY;
-        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
-
 
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -236,10 +244,11 @@ class ListExpensesTest {
                 .andExpect(jsonPath("$.data.content[*].id", Matchers.containsInRelativeOrder(expense.getId().intValue(), expense2.getId().intValue())))
                 .andExpect(jsonPath("$.data.content[0].id").value(expense.getId()))
                 .andExpect(jsonPath("$.data.content[0].amount").value(500))
-                .andExpect(jsonPath("$.data.content[0].displayAmount").value(currency.getSymbol(locale) + "500.00"))
+                .andExpect(jsonPath("$.data.content[0].displayAmount").value("₦500.00"))
                 .andExpect(jsonPath("$.data.content[0].description").value("descriptin 1"))
                 .andExpect(jsonPath("$.data.content[0].transactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                .andExpect(jsonPath("$.data.content[0].displayTransactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)));
+                .andExpect(jsonPath("$.data.content[0].displayTransactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                .andDo(print());
     }
 
 

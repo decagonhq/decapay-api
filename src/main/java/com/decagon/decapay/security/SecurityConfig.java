@@ -50,7 +50,8 @@ public class SecurityConfig {
                 path + "/forgot-password",
                 path + "/reset-password",
                 path + "/register",
-                path + "/verify-code"
+                path + "/verify-code",
+                path + "/references"
         };
 
         @Override

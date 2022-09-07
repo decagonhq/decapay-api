@@ -31,6 +31,9 @@ public class DBCleanerUtil {
         tables.add(TABLE_BUDGET);
         tables.add(TABLE_PASSWORD_RESET);
         tables.add(TABLE_USER);
+        tables.add(TABLE_LANGUAGE);
+        tables.add(TABLE_COUNTRY);
+        tables.add(TABLE_CURRENCY);
 
 
         String[] excludes={};

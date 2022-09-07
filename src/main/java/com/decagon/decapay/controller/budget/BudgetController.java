@@ -11,6 +11,7 @@ import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.utils.ApiResponseUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -63,7 +64,7 @@ public class BudgetController {
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "View Budget", description = "View Budget Details")
     @GetMapping("/budgets/{budgetId}")
-    public ResponseEntity<ApiDataResponse<ViewBudgetDto>> fetchBudgetDetails(@PathVariable Long budgetId) {
+    public ResponseEntity<ApiDataResponse<ViewBudgetDto>> fetchBudgetDetails(@PathVariable Long budgetId) throws JsonProcessingException {
         ViewBudgetDto budgetDto = this.budgetService.viewBudgetDetails(budgetId);
         return ApiResponseUtil.response(HttpStatus.OK, budgetDto);
     }
@@ -93,7 +94,7 @@ public class BudgetController {
     @GetMapping("/budgets")
     public ResponseEntity<ApiDataResponse<Page<BudgetResponseDto>>> getAllBudgetsForAParticularUser(
             @RequestParam(name="page" ,defaultValue = "0") int pageNo, @RequestParam(name="size" ,defaultValue = "10") int pageSize
-            , @RequestParam(name = "state", required = false) String state) {
+            , @RequestParam(name = "state", required = false) String state) throws JsonProcessingException {
         List<SearchCriteria> searchCriterias = null;
         if (StringUtils.isNotEmpty(state)) {
             searchCriterias = new ArrayList<>();
