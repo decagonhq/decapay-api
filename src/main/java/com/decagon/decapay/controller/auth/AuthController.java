@@ -45,8 +45,7 @@ public class AuthController {
     @Operation(summary = "Validate User credentials to authenticate sign-in and generate token")
     @PostMapping("/signin")
     public ResponseEntity<ApiDataResponse<AuthResponse>> signIn(@Validated @RequestBody LoginDto loginDto) throws Exception {
-        String token = loginService.authenticate(loginDto);
-        AuthResponse authResponse = new AuthResponse(token);
+        AuthResponse authResponse = loginService.authenticate(loginDto);
         return ApiResponseUtil.response(HttpStatus.OK, authResponse, "Sign in successfully");
     }
 

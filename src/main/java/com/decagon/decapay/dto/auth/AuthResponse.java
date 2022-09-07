@@ -1,8 +1,16 @@
 package com.decagon.decapay.dto.auth;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@Data
 public class AuthResponse {
     private String token;
+    private String country;
+    private String language;
+    private String currency;
+
 
     public AuthResponse(String jwt) {
         this.token = jwt;

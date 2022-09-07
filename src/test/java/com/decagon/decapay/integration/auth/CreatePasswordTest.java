@@ -1,11 +1,12 @@
 package com.decagon.decapay.integration.auth;
 
 
+import com.decagon.decapay.config.userSetting.UserSettings;
+import com.decagon.decapay.dto.auth.CreatePasswordRequestDto;
 import com.decagon.decapay.dto.auth.LoginDto;
+import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.model.auth.PasswordReset;
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.dto.auth.CreatePasswordRequestDto;
-import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.TestModels;
@@ -30,8 +31,8 @@ import java.time.LocalDateTime;
 
 import static com.decagon.decapay.constants.AppConstants.*;
 import static com.decagon.decapay.constants.ResponseMessageConstants.PASSWORD_CREATED_SUCCESSFULLY;
-import static com.decagon.decapay.model.auth.ResetCodeStatus.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.decagon.decapay.model.auth.ResetCodeStatus.UNVERIFIED;
+import static com.decagon.decapay.model.auth.ResetCodeStatus.VERIFIED;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +54,9 @@ class CreatePasswordTest {
     @Autowired
     private PasswordResetRepository passwordResetRepository;
     private HttpHeaders headers;
+
+    private final UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
+
 
     @BeforeAll
     public void setup() {
@@ -181,6 +185,7 @@ class CreatePasswordTest {
     @Test
     void shouldCreateNewPasswordForMobileDeviceSuccessfully() throws Exception {
         User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
+        user.setUserSetting(userSettings.toJSONString());
         user = this.userRepository.save(user);
 
         PasswordReset passwordReset = TestModels.passwordReset(user.getEmail(), "3215");
@@ -217,6 +222,7 @@ class CreatePasswordTest {
     @Test
     void shouldCreateNewPasswordForWebDeviceSuccessfully() throws Exception {
         User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
+        user.setUserSetting(userSettings.toJSONString());
         user = this.userRepository.save(user);
 
         PasswordReset passwordReset = TestModels.passwordReset(user.getEmail(), "3215");
