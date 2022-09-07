@@ -4,6 +4,7 @@ import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.budget.BudgetExpensesResponseDto;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -63,7 +64,7 @@ public class ExpenseController {
                     , content = @Content(schema = @Schema(type = "integer", defaultValue = "10"))),
     })
     @GetMapping("/budgets/{budgetId}/lineItems/{categoryId}/expenses")
-    public ResponseEntity<ApiDataResponse<Page<BudgetExpensesResponseDto>>> listExpenses(@PathVariable Long budgetId, @PathVariable Long categoryId,Pageable pageable) {
+    public ResponseEntity<ApiDataResponse<Page<BudgetExpensesResponseDto>>> listExpenses(@PathVariable Long budgetId, @PathVariable Long categoryId,Pageable pageable) throws JsonProcessingException {
         Page<BudgetExpensesResponseDto> budgetExpensesResponse =budgetService.getListOfBudgetExpenses(budgetId, categoryId, pageable);
         return ApiResponseUtil.response(HttpStatus.OK, budgetExpensesResponse);
     }

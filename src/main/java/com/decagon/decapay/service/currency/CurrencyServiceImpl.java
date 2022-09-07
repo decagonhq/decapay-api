@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -49,6 +50,21 @@ public class CurrencyServiceImpl implements CurrencyService{
     }
 
     @Override
+    public String formatAmount(BigDecimal amount, Locale locale, java.util.Currency currency) {
+        if(amount==null){
+            amount=BigDecimal.ZERO;
+        }
+
+        NumberFormat currencyInstance = null;
+
+        currencyInstance = NumberFormat.getCurrencyInstance(locale);//national
+
+        currencyInstance.setCurrency(currency);
+
+        return currencyInstance.format(amount.doubleValue());
+    }
+
+    @Override
     public void create(Currency currency) {
        this.repository.save(currency);
     }
@@ -56,6 +72,11 @@ public class CurrencyServiceImpl implements CurrencyService{
     @Override
     public boolean existCurrencies() {
         return this.repository.count()>0;
+    }
+
+    @Override
+    public List<Currency> findAllByOrderByName() {
+        return repository.findAllByOrderByName();
     }
 
 }

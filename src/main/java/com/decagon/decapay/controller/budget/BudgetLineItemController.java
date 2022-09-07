@@ -6,6 +6,7 @@ import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.utils.ApiResponseUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,7 +33,7 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Create Budget Line Item", description = "Create Budget Line Item")
     @PostMapping("/budgets/{budgetId}/lineItems")
-    public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody CreateBudgetLineItemDto budgetLineItemDto) {
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> createBudgetLineItem(@PathVariable Long budgetId, @RequestBody CreateBudgetLineItemDto budgetLineItemDto) throws JsonProcessingException {
         return ApiResponseUtil.response(HttpStatus.OK, this.budgetService.createLineItem(budgetId, budgetLineItemDto), LINE_ITEM_CREATED_SUCCESSFULLY);
     }
 
@@ -43,7 +44,7 @@ public class BudgetLineItemController {
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Edit Budget Line Item", description = "Edit Budget Line Item")
     @PutMapping("/budgets/{budgetId}/lineItems/{categoryId}")
-    public ResponseEntity<ApiDataResponse<IdResponseDto>> editBudgetLineItem(@PathVariable Long budgetId, @PathVariable Long categoryId, @RequestBody EditBudgetLineItemDto budgetLineItemDto) {
+    public ResponseEntity<ApiDataResponse<IdResponseDto>> editBudgetLineItem(@PathVariable Long budgetId, @PathVariable Long categoryId, @RequestBody EditBudgetLineItemDto budgetLineItemDto) throws JsonProcessingException {
         this.budgetService.updateLineItem(budgetId, categoryId, budgetLineItemDto);
         return ApiResponseUtil.response(HttpStatus.OK, LINE_ITEM_UPDATED_SUCCESSFULLY);
     }

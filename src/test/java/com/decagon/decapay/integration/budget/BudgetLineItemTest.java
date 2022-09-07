@@ -1,6 +1,7 @@
 package com.decagon.decapay.integration.budget;
 
 
+import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
 import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
 import com.decagon.decapay.model.budget.Budget;
@@ -74,6 +75,8 @@ class BudgetLineItemTest {
     @Autowired
     private ExpenseRepository expenseRepository;
 
+    private UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
+
     private HttpHeaders headers;
     @BeforeEach
     public void runBeforeAllTestMethods() throws Exception {
@@ -95,6 +98,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -118,6 +122,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
@@ -141,6 +146,8 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
+
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -173,10 +180,14 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
+
 
         User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
                 passwordEncoder.encode("password"), "08067644802");
         user2.setUserStatus(UserStatus.ACTIVE);
+        user2.setUserSetting(userSettings.toJSONString());
+
 
         userRepository.saveAll(List.of(user, user2));
 
@@ -208,10 +219,14 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
+
 
         User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
                 passwordEncoder.encode("password"), "08067644802");
         user2.setUserStatus(UserStatus.ACTIVE);
+        user2.setUserSetting(userSettings.toJSONString());
+
 
         userRepository.saveAll(List.of(user, user2));
 
@@ -244,6 +259,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
 
@@ -288,6 +304,9 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+
+        user.setUserSetting(userSettings.toJSONString());
+
         userRepository.save(user);
 
 
@@ -354,10 +373,14 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
+
 
         User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
                 passwordEncoder.encode("password"), "08067644802");
         user2.setUserStatus(UserStatus.ACTIVE);
+        user2.setUserSetting(userSettings.toJSONString());
+
 
         userRepository.saveAll(List.of(user, user2));
 
@@ -389,6 +412,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -413,6 +437,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
 
@@ -445,6 +470,9 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
+
+        user.setUserSetting(userSettings.toJSONString());
+
         userRepository.save(user);
 
 
@@ -488,6 +516,13 @@ class BudgetLineItemTest {
         assertEquals(category.getId(), lineItem.getBudgetCategory().getId());
         assertEquals(budget.getId(), lineItem.getBudget().getId());
         assertEquals(dto.getAmount().setScale(2), lineItem.getProjectedAmount());
+
+        UserSettings settings = new UserSettings();
+        settings.setLanguage("en");
+        settings.setCountryCode("NG");
+        settings.setCurrencyCode("NGN");
+
+        assertEquals(settings.toJSONString(), user.getUserSetting());
     }
 
     @Test
