@@ -61,12 +61,8 @@ public class CurrencyServiceImpl implements CurrencyService{
 
         currencyInstance.setCurrency(currency);
 
-
         return currencyInstance.format(amount.doubleValue());
     }
-
-
-
 
     @Override
     public void create(Currency currency) {

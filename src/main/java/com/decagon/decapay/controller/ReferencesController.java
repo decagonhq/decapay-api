@@ -1,7 +1,6 @@
 package com.decagon.decapay.controller;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.dto.reference.ReferenceListingDto;
 import com.decagon.decapay.dto.reference.UserSettingReferencesDto;
 import com.decagon.decapay.model.reference.country.Country;
 import com.decagon.decapay.model.reference.currency.Currency;
@@ -10,6 +9,7 @@ import com.decagon.decapay.service.currency.CurrencyService;
 import com.decagon.decapay.service.reference.country.CountryService;
 import com.decagon.decapay.service.reference.language.LanguageService;
 import com.decagon.decapay.utils.ApiResponseUtil;
+import com.decagon.decapay.utils.ConverterUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
@@ -48,45 +46,17 @@ public class ReferencesController {
     public ResponseEntity<ApiDataResponse<UserSettingReferencesDto>> listReferences() {
 
         UserSettingReferencesDto referencesDto = new UserSettingReferencesDto();
-        System.out.println("CONTROLLER");
 
         List<Language> languagesList = languageService.getLanguages();
-        referencesDto.setLanguages(this.convertLanguages(languagesList));
+        referencesDto.setLanguages(ConverterUtil.convertLanguages(languagesList));
 
         List<Country> countryList = countryService.listCountries();
-        referencesDto.setCountries(this.convertCountries(countryList));
+        referencesDto.setCountries(ConverterUtil.convertCountries(countryList));
 
         List<Currency> currencies = currencyService.findAllByOrderByName();
-        referencesDto.setCurrencies(this.convertCurrency(currencies));
+        referencesDto.setCurrencies(ConverterUtil.convertCurrency(currencies));
 
         return ApiResponseUtil.response(HttpStatus.OK, referencesDto, RESOURCE_RETRIEVED_SUCCESSFULLY);
-    }
-
-    private Collection<ReferenceListingDto> convertCurrency(List<Currency> currencies) {
-        return currencies.stream().map(currency -> {
-            ReferenceListingDto dto = new ReferenceListingDto();
-            dto.setId(currency.getId());
-            dto.setName(currency.getName());
-            return dto;
-        }).collect(Collectors.toList());
-    }
-
-    private Collection<ReferenceListingDto> convertCountries(List<Country> countryList) {
-        return countryList.stream().map(country -> {
-            ReferenceListingDto dto = new ReferenceListingDto();
-            dto.setId(country.getId());
-            dto.setName(country.getName());
-            return dto;
-        }).collect(Collectors.toList());
-    }
-
-    private Collection<ReferenceListingDto> convertLanguages(List<Language> languagesList) {
-      return   languagesList.stream().map(language -> {
-            ReferenceListingDto dto = new ReferenceListingDto();
-            dto.setId(language.getId());
-            dto.setName(language.getTitle());
-            return dto;
-        }).collect(Collectors.toList());
     }
 
 }

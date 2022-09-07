@@ -508,8 +508,6 @@ public class BudgetServiceImpl implements BudgetService {
             dto.setDisplayAmount(currencyService.formatAmount(dto.getAmount(), locale, currency));
 
         }
-        System.out.println("EXPENSES " + expenses.getContent() );
-
         return expenses;
     }
 
