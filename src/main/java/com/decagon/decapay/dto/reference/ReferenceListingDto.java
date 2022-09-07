@@ -6,4 +6,5 @@ import lombok.Data;
 public class ReferenceListingDto {
     private Long id;
     private String name;
+    private String code;
 }

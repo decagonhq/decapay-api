@@ -15,6 +15,7 @@ public class ConverterUtil {
             ReferenceListingDto dto = new ReferenceListingDto();
             dto.setId(currency.getId());
             dto.setName(currency.getName());
+            dto.setCode(currency.getCode());
             return dto;
         }).collect(Collectors.toList());
     }
@@ -24,6 +25,7 @@ public class ConverterUtil {
             ReferenceListingDto dto = new ReferenceListingDto();
             dto.setId(country.getId());
             dto.setName(country.getName());
+            dto.setCode(country.getIsoCode());
             return dto;
         }).collect(Collectors.toList());
     }
@@ -33,6 +35,7 @@ public class ConverterUtil {
             ReferenceListingDto dto = new ReferenceListingDto();
             dto.setId(language.getId());
             dto.setName(language.getTitle());
+            dto.setCode(language.getCode());
             return dto;
         }).collect(Collectors.toList());
     }
