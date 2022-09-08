@@ -1,10 +1,12 @@
 package com.decagon.decapay.integration.auth;
 
 
+import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.auth.LoginDto;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
 
+import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.TestUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +47,9 @@ public class SignInTest {
 
     private HttpHeaders headers;
 
+    private final UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
+
+
     @Value("${api.basepath-api}")
     private String path = "";
 
@@ -61,6 +66,7 @@ public class SignInTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056155664");
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         LoginDto loginDto = new LoginDto();
@@ -85,12 +91,12 @@ public class SignInTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056355664");
+        user.setUserSetting(userSettings.toJSONString());
         userRepository.save(user);
 
         LoginDto loginDto = new LoginDto();
         loginDto.setEmail("ogg@gmail.com");
         loginDto.setPassword("123456");
-
 
         MvcResult result =  this.mockMvc
                 .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
@@ -98,6 +104,9 @@ public class SignInTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.token").exists())
+                .andExpect(jsonPath("$.data.country").value("NG"))
+                .andExpect(jsonPath("$.data.language").value("en"))
+                .andExpect(jsonPath("$.data.currency").value("NGN"))
                 .andReturn();
     }
 }
