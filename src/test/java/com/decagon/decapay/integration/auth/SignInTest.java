@@ -98,13 +98,15 @@ public class SignInTest {
         loginDto.setEmail("ogg@gmail.com");
         loginDto.setPassword("123456");
 
-
         MvcResult result =  this.mockMvc
                 .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.token").exists())
+                .andExpect(jsonPath("$.data.country").value("NG"))
+                .andExpect(jsonPath("$.data.language").value("en"))
+                .andExpect(jsonPath("$.data.currency").value("NGN"))
                 .andReturn();
     }
 }
