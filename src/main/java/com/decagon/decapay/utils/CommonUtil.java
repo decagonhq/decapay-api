@@ -1,8 +1,15 @@
 package com.decagon.decapay.utils;
+
+import com.decagon.decapay.config.userSetting.UserSettings;
+import com.decagon.decapay.constants.AppConstants;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
-
+@Slf4j
 public class CommonUtil {
 
 
@@ -42,6 +49,28 @@ public class CommonUtil {
         return LOCALES;
     }
 
+
+    public static Object[] getLocaleAndCurrency(String userSettings, ObjectMapper objectMapper){
+        Locale finalLocale;
+        Currency finalCurrency;
+
+        if (userSettings == null){
+            finalLocale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
+            finalCurrency = AppConstants.DEFAULT_CURRENCY;
+        }else {
+            UserSettings currentUserSettings = null;
+            try {
+                currentUserSettings = objectMapper.readValue(userSettings, UserSettings.class);
+                finalLocale = new Locale(currentUserSettings.getLanguage(), currentUserSettings.getCountryCode());
+                finalCurrency = Currency.getInstance(currentUserSettings.getCurrencyCode());
+            } catch (Exception e) {
+                log.error("error while converting user setting JSON String to object ", e );
+                finalLocale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
+                finalCurrency = AppConstants.DEFAULT_CURRENCY;
+            }
+        }
+        return new Object[]{finalLocale, finalCurrency};
+    }
 
 
 }
