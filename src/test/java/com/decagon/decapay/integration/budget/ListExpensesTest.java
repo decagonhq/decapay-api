@@ -251,6 +251,49 @@ class ListExpensesTest {
                 .andDo(print());
     }
 
+    @Test
+    void givenDefaultLocaleExistsAndUserSettingNotSetWhenUserListExpensesShouldReturnDefaultCurrencyForExpenseAmount() throws Exception {
+
+        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
+        Currency currency = Currency.getInstance("NGN");
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(null);//user setting not set
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+        this.budgetCategoryRepository.save(category);
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        budget.addBudgetLineItem(category, BigDecimal.valueOf(2000.00));
+        this.budgetRepository.save(budget);
+
+        BudgetLineItem lineItem = budget.getBudgetLineItem(category);
+
+        Expenses expense = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now().plusDays(3));
+        expense.setDescription("descriptin 1");
+        expense.setBudgetLineItem(lineItem);
+
+        Expenses expense2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now().plusDays(1));
+        expense2.setDescription("description 2");
+        expense2.setBudgetLineItem(lineItem);
+
+        expenseRepository.saveAll(List.of(expense, expense2));
+
+        setAuthHeader(user);
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}/lineItems/{categoryId}/expenses", budget.getId(), category.getId()).contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content[0].displayAmount").value(currency.getSymbol(locale)+"500.00"))
+                .andExpect(jsonPath("$.data.content[1].displayAmount").value(currency.getSymbol(locale)+"1,000.00"));
+
+    }
+
+
+
 
 
 

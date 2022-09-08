@@ -1,10 +1,11 @@
 package com.decagon.decapay.service.budget;
 
-import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.SearchCriteria;
 import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
-import com.decagon.decapay.exception.*;
+import com.decagon.decapay.exception.InvalidRequestException;
+import com.decagon.decapay.exception.ResourceConflictException;
+import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
@@ -17,6 +18,7 @@ import com.decagon.decapay.repositories.budget.ExpenseRepository;
 import com.decagon.decapay.service.budget.category.BudgetCategoryService;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;
 import com.decagon.decapay.service.currency.CurrencyService;
+import com.decagon.decapay.utils.CommonUtil;
 import com.decagon.decapay.utils.PageUtil;
 import com.decagon.decapay.utils.UserInfoUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,6 +45,7 @@ public class BudgetServiceImpl implements BudgetService {
     private final ExpenseRepository expenseRepository;
     private final UserInfoUtil userInfoUtil;
     private final ObjectMapper objectMapper;
+
 
     public BudgetServiceImpl(final BudgetRepository budgetRepository, CurrencyService currencyService, BudgetCategoryService budgetCategoryService, UserInfoUtil userInfoUtil, ExpenseRepository expenseRepository, ObjectMapper objectMapper) {
         this.budgetRepository = budgetRepository;
@@ -91,10 +94,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         String userSettings = currentUser.getUserSetting();
 
-        UserSettings currentUserSettings = objectMapper.readValue(userSettings, UserSettings.class);
-
-        Locale locale = new Locale(currentUserSettings.getLanguage(), currentUserSettings.getCountryCode());
-        Currency currency = Currency.getInstance(currentUserSettings.getCurrencyCode());
+        Object[] currencyLocale = CommonUtil.getLocaleAndCurrency(userSettings, objectMapper);
 
         Page<BudgetResponseDto> budgets = budgetRepository.findBudgetsByUserId(pageable, currentUser.getId(), searchCriterias);
 
@@ -102,8 +102,8 @@ public class BudgetServiceImpl implements BudgetService {
 
         return budgets.map(budgetResponseDto -> {
 
-            budgetResponseDto.setDisplayTotalAmountSpentSoFar(currencyService.formatAmount(budgetResponseDto.getTotalAmountSpentSoFar(),locale, currency));
-            budgetResponseDto.setDisplayProjectedAmount(currencyService.formatAmount(budgetResponseDto.getProjectedAmount(), locale, currency));
+            budgetResponseDto.setDisplayTotalAmountSpentSoFar(currencyService.formatAmount(budgetResponseDto.getTotalAmountSpentSoFar(), (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
+            budgetResponseDto.setDisplayProjectedAmount(currencyService.formatAmount(budgetResponseDto.getProjectedAmount(),  (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
             budget1.setTotalAmountSpentSoFar(budgetResponseDto.getTotalAmountSpentSoFar());
             budget1.setProjectedAmount(budgetResponseDto.getProjectedAmount());
             BigDecimal percentageSpentSoFar = budget1.calculatePercentageAmountSpent();
@@ -114,7 +114,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public ViewBudgetDto viewBudgetDetails(Long budgetId) throws JsonProcessingException {
+    public ViewBudgetDto viewBudgetDetails(Long budgetId) {
 
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
@@ -133,13 +133,11 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
 
-    private ViewBudgetDto convertBudgetViewDto(Budget budget, User currentUser) throws JsonProcessingException {
+    private ViewBudgetDto convertBudgetViewDto(Budget budget, User currentUser) {
 
         String userSettings = currentUser.getUserSetting();
-        UserSettings currentUserSettings = objectMapper.readValue(userSettings, UserSettings.class);
 
-        Locale locale = new Locale(currentUserSettings.getLanguage(), currentUserSettings.getCountryCode());
-        Currency currency = Currency.getInstance(currentUserSettings.getCurrencyCode());
+        Object[] currencyLocale = CommonUtil.getLocaleAndCurrency(userSettings, objectMapper);
 
         ViewBudgetDto budgetViewDto = new ViewBudgetDto();
         budgetViewDto.setId(budget.getId());
@@ -152,13 +150,13 @@ public class BudgetServiceImpl implements BudgetService {
         budgetViewDto.setStartDate(budget.getBudgetStartDate());
         budgetViewDto.setDisplayEndDate(budget.getBudgetEndDate());
         budgetViewDto.setDisplayStartDate(budget.getBudgetStartDate());
-        budgetViewDto.setDisplayProjectedAmount(currencyService.formatAmount(budget.getProjectedAmount(), locale, currency));
-        budgetViewDto.setDisplayTotalAmountSpentSoFar(currencyService.formatAmount(budget.getTotalAmountSpentSoFar(), locale, currency));
+        budgetViewDto.setDisplayProjectedAmount(currencyService.formatAmount(budget.getProjectedAmount(), (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
+        budgetViewDto.setDisplayTotalAmountSpentSoFar(currencyService.formatAmount(budget.getTotalAmountSpentSoFar(), (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
         BigDecimal percentageSpentSoFar = budget.calculatePercentageAmountSpent();
         budgetViewDto.setPercentageSpentSoFar(percentageSpentSoFar);
         budgetViewDto.setDisplayPercentageSpentSoFar(percentageSpentSoFar + "%");
         //convert budget line items
-        Collection<ViewBudgetDto.LineItemDto> lineItems = convertBudgetLineItemToDto(budget.getBudgetLineItems(), locale, currency);
+        Collection<ViewBudgetDto.LineItemDto> lineItems = convertBudgetLineItemToDto(budget.getBudgetLineItems(), (Locale) currencyLocale[0], (Currency) currencyLocale[1]);
         budgetViewDto.setLineItems(lineItems);
         return budgetViewDto;
     }
@@ -267,16 +265,13 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     @Transactional
-    public IdResponseDto createLineItem(Long budgetId, CreateBudgetLineItemDto budgetLineItemDto) throws JsonProcessingException {
+    public IdResponseDto createLineItem(Long budgetId, CreateBudgetLineItemDto budgetLineItemDto) {
 
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
         String userSettings = currentUser.getUserSetting();
-        UserSettings currentUserSettings = objectMapper.readValue(userSettings, UserSettings.class);
 
-
-        Locale locale = new Locale(currentUserSettings.getLanguage(), currentUserSettings.getCountryCode());
-        Currency currency = Currency.getInstance(currentUserSettings.getCurrencyCode());
+        Object[] currencyLocale = CommonUtil.getLocaleAndCurrency(userSettings, objectMapper);
 
         Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
@@ -291,7 +286,7 @@ public class BudgetServiceImpl implements BudgetService {
         BigDecimal expectedLineItemsTotalAmountAfterSave = calculateExpectedNewTotalLineItemsAmountAfterSave(budget, budgetLineItemDto);
 
         if (isBudgetProjectedAmountLessThanLineItemsTotalAmountAfterSave(budget, expectedLineItemsTotalAmountAfterSave)) {
-            throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountAfterSave, locale, currency), budget.getProjectedAmount()));
+            throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountAfterSave, (Locale) currencyLocale[0], (Currency) currencyLocale[1]), budget.getProjectedAmount()));
         }
 
         this.saveBudgetLineItem(budget, category, budgetLineItemDto.getAmount());
@@ -333,15 +328,12 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     @Transactional
-    public void updateLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto) throws JsonProcessingException {
+    public void updateLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto){
 
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
         String userSettings = currentUser.getUserSetting();
-        UserSettings currentUserSettings = objectMapper.readValue(userSettings, UserSettings.class);
-
-        Locale locale = new Locale(currentUserSettings.getLanguage(), currentUserSettings.getCountryCode());
-        Currency currency = Currency.getInstance(currentUserSettings.getCurrencyCode());
+        Object[] currencyLocale = CommonUtil.getLocaleAndCurrency(userSettings, objectMapper);
 
         Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
@@ -354,7 +346,7 @@ public class BudgetServiceImpl implements BudgetService {
         BigDecimal expectedLineItemsTotalAmountForNewEditRequestAfterSave = calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(budget, lineItem, budgetLineItemDto);
 
         if (isBudgetProjectedAmountLessThanLineItemsTotalAmountAfterSave(budget, expectedLineItemsTotalAmountForNewEditRequestAfterSave)) {
-            throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountForNewEditRequestAfterSave, locale, currency), budget.getProjectedAmount()));
+            throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountForNewEditRequestAfterSave, (Locale) currencyLocale[0], (Currency) currencyLocale[1]), budget.getProjectedAmount()));
         }
 
         this.updateBudgetLineItem(lineItem, budgetLineItemDto.getAmount());
@@ -477,14 +469,13 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable) throws JsonProcessingException {
+    public Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable){
+
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
         String userSettings = currentUser.getUserSetting();
-        UserSettings currentUserSettings = objectMapper.readValue(userSettings, UserSettings.class);
 
-        Locale locale = new Locale(currentUserSettings.getLanguage(), currentUserSettings.getCountryCode());
-        Currency currency = Currency.getInstance(currentUserSettings.getCurrencyCode());
+        Object[] currencyLocale = CommonUtil.getLocaleAndCurrency(userSettings, objectMapper);
 
         Optional<Budget> budget = this.budgetRepository.findBudgetByIdAndUserId(budgetId, currentUser.getId());
         if (budget.isEmpty()) {
@@ -505,8 +496,7 @@ public class BudgetServiceImpl implements BudgetService {
         }
 
         for (BudgetExpensesResponseDto dto : expenses) {
-            dto.setDisplayAmount(currencyService.formatAmount(dto.getAmount(), locale, currency));
-
+            dto.setDisplayAmount(currencyService.formatAmount(dto.getAmount(), (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
         }
         return expenses;
     }
@@ -546,4 +536,5 @@ public class BudgetServiceImpl implements BudgetService {
         CreateExpensePopulator populator = new CreateExpensePopulator();
         return populator.populate(expenseDto, expense);
     }
+
 }

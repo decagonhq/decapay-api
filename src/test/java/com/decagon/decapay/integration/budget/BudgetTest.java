@@ -263,6 +263,48 @@ public class BudgetTest {
                 .andExpect(jsonPath("$.data.lineItems.size()").value(0));
     }
 
+    @Test
+    void givenDefaultLocaleExistsAndUserSettingNotSetWhenUserViewBudgetDetailsShouldReturnDefaultCurrencyForBudgetDetailsAmount() throws Exception {
+
+        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
+        Currency currency = Currency.getInstance("NGN");
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(null);
+
+        LocalDate today = LocalDate.now();
+
+        Budget budget = new Budget();
+        budget.setTitle("Transportation Budget");
+        budget.setNotificationThreshold("Notification Trashold");
+        budget.setBudgetPeriod(MONTHLY);
+        budget.setBudgetStartDate(today);
+        budget.setBudgetEndDate(today.plusWeeks(3));
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(2500));
+        budget.setProjectedAmount(BigDecimal.valueOf(5000));
+
+        user.addBudget(budget);
+        userRepository.save(user);
+
+        //budget line items
+        BudgetCategory category1 = TestModels.budgetCategory("Food");
+        category1.setUser(user);
+
+        this.budgetCategoryRepository.saveAll(List.of(category1));
+
+        budget.addBudgetLineItem(category1, BigDecimal.valueOf(2000));
+        this.budgetRepository.save(budget);
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(get(path + "/budgets/{budgetId}", budget.getId()).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.displayProjectedAmount").value(currency.getSymbol(locale)+"5,000.00"))
+                .andExpect(jsonPath("$.data.lineItems[*].displayProjectedAmount").value(currency.getSymbol(locale)+"2,000.00"));
+    }
+
 
     @Test
     void testShouldReturnListOfBudgetsSuccesfullyWhenAUserHasBudget() throws Exception {
@@ -325,6 +367,50 @@ public class BudgetTest {
                 .andExpect(jsonPath("$.data.content[0].period").value(ANNUAL.name()))
                 .andExpect(jsonPath("$.data.content[0].percentageSpentSoFar").value(50.00))
                 .andExpect(jsonPath("$.data.content[0].displayPercentageSpentSoFar").value("50.0%"));
+    }
+
+    @Test
+    void  givenDefaultLocaleExistsAndUserSettingNotSetWhenUserListBudgetShouldReturnDefaultCurrencyForBudgetAmount() throws Exception {
+
+        Locale locale = new Locale(AppConstants.DEFAULT_LANGUAGE, AppConstants.DEFAULT_COUNTRY);
+        Currency currency = Currency.getInstance("NGN");
+
+        User user = new User();
+        user.setEmail("o2g@gmail.com");
+        user.setPassword(passwordEncoder.encode("1234567"));
+        user.setFirstName("Goodluck");
+        user.setLastName("Nwoko");
+        user.setPhoneNumber("07056355667");
+
+        user.setUserSetting(null);
+        userRepository.save(user);
+
+        Budget budget = new Budget();
+        budget.setTitle("Transport");
+        budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(200000));
+        budget.setProjectedAmount(BigDecimal.valueOf(400000));
+        budget.setBudgetStartDate(LocalDate.now().minusDays(1));
+        budget.setBudgetEndDate(LocalDate.MAX);
+        budget.setUser(user);
+        budget.setBudgetPeriod(ANNUAL);
+        budgetRepository.save(budget);
+
+
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername("o2g@gmail.com");
+
+        String token = jwtUtil.generateToken(userDetails);
+
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + token);
+
+        this.mockMvc
+                .perform(get(path + "/budgets")
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content[0].displayTotalAmountSpentSoFar").value(currency.getSymbol(locale)+"200,000.00"))
+                .andExpect(jsonPath("$.data.content[0].displayProjectedAmount").value(currency.getSymbol(locale)+"400,000.00"));
     }
 
 
@@ -749,6 +835,9 @@ public class BudgetTest {
                 .andExpect(jsonPath("$.data.content.size()").value(2))
                 .andExpect(jsonPath("$.data.content[*].id", Matchers.containsInRelativeOrder(budget3.getId().intValue(), budget4.getId().intValue())));
     }
+
+
+
 
     @Test
     void shouldThrowInvalidRequestWhenTryingToUpdateBudgetAndBudgetAmountLessLineItemsTotalAmount() throws Exception {
