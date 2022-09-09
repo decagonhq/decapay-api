@@ -5,7 +5,6 @@ import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetLineItem;
 import com.decagon.decapay.utils.TestModels;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,11 +34,16 @@ public class BudgetTest {
 
    static   Stream<Arguments> budgetProvider() {
 
-        return Stream.of(
-                arguments(budget(500.00, 500.00), BigDecimal.valueOf(100.0)),
-                arguments(budget(250.00, 500.00), BigDecimal.valueOf(50.0)),
-                arguments(budget(0.00, 500.00), BigDecimal.valueOf(0.0)),
-                arguments(budget(null, 500.00), BigDecimal.valueOf(0.0)));
+       return Stream.of(
+               arguments(budget(500.00, 500.00), BigDecimal.valueOf(100.0)),
+               arguments(budget(250.00, 500.00), BigDecimal.valueOf(50.0)),
+               arguments(budget(0.00, 500.00), BigDecimal.valueOf(0.0)),
+               arguments(budget(null, 500.00), BigDecimal.valueOf(0.0)),
+               arguments(budget(0.00, 0.00), BigDecimal.valueOf(0.0)),
+               arguments(budget(0.00, 0.0), BigDecimal.valueOf(0.0)),
+               arguments(budget(500.00, 0.00), BigDecimal.valueOf(0.0)),
+               arguments(budget(500.00, null), BigDecimal.valueOf(0.0)),
+               arguments(budget(null, null), BigDecimal.valueOf(0.0)));
     }
 
     private static Budget budget(Double amountSpentSoFar, Double projectedAmount){
