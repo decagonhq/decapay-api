@@ -65,9 +65,11 @@ public class MonthPeriodTest {
                 //invalid month field
                 arguments(req((short) 0,(short)2022)),
                 arguments(req((short) 13,(short)2022)),
+                arguments(req((short) -5,(short)2022)),
                 //invalid year
                 arguments(req((short) 1,(short)999)),
-                arguments(req((short) 2,(short)10000))
+                arguments(req((short) 2,(short)10000)),
+                arguments(req((short) 2,(short)-2000))
         );
     }
 
@@ -105,7 +107,8 @@ public class MonthPeriodTest {
 
         return Stream.of(
                 //if month and year are current, then startdate is current date and enddate last date of month
-                arguments(req(currMnth,currYr),new LocalDate[]{CustomDateUtil.today(),CustomDateUtil.lastDateOfMonth(currYr,currMnth)}),
+                //arguments(req(currMnth,currYr),new LocalDate[]{CustomDateUtil.today(),CustomDateUtil.lastDateOfMonth(currYr,currMnth)}),
+                arguments(req(currMnth,currYr),new LocalDate[]{CustomDateUtil.firstDateOfMonth((short)currYr,currMnth),CustomDateUtil.lastDateOfMonth(currYr,currMnth)}),
 
                 //if month current and year not current , then start date is first date and enddate lastDateOfMonth
                 arguments(req(currMnth,(short)notActiveYr1),new LocalDate[]{CustomDateUtil.firstDateOfMonth((short)notActiveYr1,currMnth),CustomDateUtil.lastDateOfMonth((short)notActiveYr1,currMnth)}),

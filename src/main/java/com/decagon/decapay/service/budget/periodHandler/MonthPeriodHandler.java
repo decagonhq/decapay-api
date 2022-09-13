@@ -51,9 +51,10 @@ public class MonthPeriodHandler extends AbstractBudgetPeriodHandler {
         LocalDate startDate = null;
         LocalDate endDate = CustomDateUtil.lastDateOfMonth(requestBudgetYr, requestBudgetMnth);
 
-        //if not current month and year , then start date is current date and end date is last date of month
-        if (currentMnth == requestBudgetMnth && currentYr == requestBudgetYr) {
-            startDate = CustomDateUtil.today();
+        //if not current month and year , then start date is current date and end date is last date of month//
+        if (currentMnth == requestBudgetMnth && currentYr == requestBudgetYr) {//todo:remove redundant conditional check when confirm above commented requirement changes permanently
+            //startDate = CustomDateUtil.today();
+            startDate = CustomDateUtil.firstDateOfMonth(requestBudgetYr, requestBudgetMnth);
         } else {
             startDate = CustomDateUtil.firstDateOfMonth(requestBudgetYr, requestBudgetMnth);
         }
