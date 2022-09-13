@@ -242,7 +242,8 @@ class CreateBudgetTest {
                 //if current month and year
                 if (budgetRequest.getMonth() == (short) ym.getMonthValue() &&
                         budgetRequest.getYear() == (short) ym.getYear()) {
-                    assertEquals(CustomDateUtil.today(), budget.getBudgetStartDate());
+                    //assertEquals(CustomDateUtil.today(), budget.getBudgetStartDate());
+                    assertEquals(CustomDateUtil.firstDateOfMonth(budgetRequest.getYear(), budgetRequest.getMonth()), budget.getBudgetStartDate());//todo:remove redundant conditional statement when confirm requirement changes permanently
                     assertEquals(CustomDateUtil.lastDateOfMonth(budgetRequest.getYear(), budgetRequest.getMonth()), budget.getBudgetEndDate());
                 } else {
                     assertEquals(CustomDateUtil.firstDateOfMonth(budgetRequest.getYear(), budgetRequest.getMonth()), budget.getBudgetStartDate());
@@ -250,8 +251,9 @@ class CreateBudgetTest {
                 }
             }
             case ANNUAL -> {
-                if (budgetRequest.getYear() == (short) ym.getYear()) {
-                    assertEquals(CustomDateUtil.today(), budget.getBudgetStartDate());
+                if (budgetRequest.getYear() == (short) ym.getYear()) { //todo: remove redundant conditional statement
+                    //assertEquals(CustomDateUtil.today(), budget.getBudgetStartDate());
+                    assertEquals(CustomDateUtil.firstDateOfYear(budgetRequest.getYear()), budget.getBudgetStartDate());
                     assertEquals(CustomDateUtil.lastDateOfYear(budgetRequest.getYear()), budget.getBudgetEndDate());
                 } else {
                     assertEquals(CustomDateUtil.firstDateOfYear(budgetRequest.getYear()), budget.getBudgetStartDate());

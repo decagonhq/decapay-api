@@ -32,8 +32,9 @@ public class AnnualPeriodHandler extends AbstractBudgetPeriodHandler {
         LocalDate endDate = CustomDateUtil.lastDateOfYear(requestBudgetYr);
 
         //if  current year, then startdate is current date and enddate last date of year
-        if (currentYr == requestBudgetYr) {
-            startDate = CustomDateUtil.today();
+        if (currentYr == requestBudgetYr) {//todo: remove redundant conditional statement
+            //startDate = CustomDateUtil.today();
+            startDate = CustomDateUtil.firstDateOfYear(requestBudgetYr);
         }else if(currentYr != requestBudgetYr){
             startDate = CustomDateUtil.firstDateOfYear(requestBudgetYr);
         }

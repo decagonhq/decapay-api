@@ -89,7 +89,8 @@ public class AnnualPeriodTest {
         int notActiveYr2=currYr-1;
         return Stream.of(
                 //if year current, then startdate is current date and enddate last date of year
-                arguments(req(currYr),new LocalDate[]{CustomDateUtil.today(),CustomDateUtil.lastDateOfYear(currYr)}),
+                //arguments(req(currYr),new LocalDate[]{CustomDateUtil.today(),CustomDateUtil.lastDateOfYear(currYr)}),
+                arguments(req(currYr),new LocalDate[]{CustomDateUtil.firstDateOfYear(currYr),CustomDateUtil.lastDateOfYear(currYr)}),
                 //if year not current, then startdate is first date of year and enddate last date of year
                 arguments(req((short)notActiveYr1),new LocalDate[]{CustomDateUtil.firstDateOfYear((short)notActiveYr1),CustomDateUtil.lastDateOfYear((short)notActiveYr1)}),
                 arguments(req((short)notActiveYr2),new LocalDate[]{CustomDateUtil.firstDateOfYear((short)notActiveYr2),CustomDateUtil.lastDateOfYear((short)notActiveYr2)})
