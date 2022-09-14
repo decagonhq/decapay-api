@@ -18,6 +18,7 @@ import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,7 +80,8 @@ public class BudgetTest {
     private BudgetCategoryRepository budgetCategoryRepository;
     @Autowired
     private ExpenseRepository expenseRepository;
-
+    @Autowired
+    ObjectMapper objectMapper;
     private final UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
 
     @BeforeEach
@@ -175,7 +177,7 @@ public class BudgetTest {
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
 
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
         LocalDate today = LocalDate.now();
 
@@ -243,7 +245,7 @@ public class BudgetTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         Budget budget = new Budget();
@@ -316,7 +318,7 @@ public class BudgetTest {
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056355667");
 
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         userRepository.save(user);
@@ -423,7 +425,7 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056357667");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername("o4g@gmail.com");
@@ -453,7 +455,7 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056389667");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         Budget budget = new Budget();
@@ -473,7 +475,7 @@ public class BudgetTest {
         user2.setFirstName("Goodluck");
         user2.setLastName("Nwoko");
         user2.setPhoneNumber("07050359667");
-        user2.setUserSetting(userSettings.toJSONString());
+        user2.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user2);
 
         Budget budget2 = new Budget();
@@ -538,7 +540,7 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056389667");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
         userRepository.save(user);
 
@@ -583,7 +585,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -611,7 +613,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -639,7 +641,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -666,7 +668,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -694,7 +696,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -722,7 +724,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -749,7 +751,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -778,7 +780,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -813,7 +815,7 @@ public class BudgetTest {
         user.addBudget(budget2);
         user.addBudget(budget3);
         user.addBudget(budget4);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);

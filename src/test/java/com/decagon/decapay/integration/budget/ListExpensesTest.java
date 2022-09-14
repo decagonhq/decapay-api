@@ -15,6 +15,7 @@ import com.decagon.decapay.security.JwtUtil;
 import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,8 @@ class ListExpensesTest {
     private ExpenseRepository expenseRepository;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    ObjectMapper objectMapper;
     private HttpHeaders headers;
     private UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
 
@@ -95,7 +98,7 @@ class ListExpensesTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -120,7 +123,7 @@ class ListExpensesTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -144,7 +147,7 @@ class ListExpensesTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -169,14 +172,13 @@ class ListExpensesTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         User otherUser = TestModels.user("ola2", "dip2", "ola2@gmail.com",
                 passwordEncoder.encode("password"), "08067644802");
         otherUser.setUserStatus(UserStatus.ACTIVE);
-        otherUser.setUserSetting(userSettings.toJSONString());
-
+        otherUser.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.saveAll(List.of(user, otherUser));
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -213,7 +215,7 @@ class ListExpensesTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");

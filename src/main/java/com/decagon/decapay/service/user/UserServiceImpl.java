@@ -15,6 +15,7 @@ import com.decagon.decapay.repositories.reference.currency.CurrencyRepository;
 import com.decagon.decapay.repositories.reference.language.LanguageRepository;
 import com.decagon.decapay.repositories.reference.zone.country.CountryRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +30,16 @@ public class UserServiceImpl implements UserService {
     private final CurrencyRepository currencyRepository;
     private final LanguageRepository languageRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
 
     public UserServiceImpl(UserRepository userRepository, CountryRepository countryRepository, CurrencyRepository currencyRepository,
-                           LanguageRepository languageRepository, PasswordEncoder passwordEncoder) {
+                           LanguageRepository languageRepository, PasswordEncoder passwordEncoder,ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.currencyRepository = currencyRepository;
         this.languageRepository = languageRepository;
         this.passwordEncoder = passwordEncoder;
+        this.objectMapper=objectMapper;
     }
 
     @Override
@@ -68,6 +71,7 @@ public class UserServiceImpl implements UserService {
     private User createModelEntity(UserDTO userDTO) {
         User user = new User();
         UserAccountPopulator userAccountPopulator = new UserAccountPopulator(passwordEncoder);
+        userAccountPopulator.setObjectMapper(objectMapper);
         userAccountPopulator.populate(userDTO, user);
         return user;
     }
