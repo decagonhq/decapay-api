@@ -1,7 +1,7 @@
 package com.decagon.decapay.integration.budget;
 
 
-import com.decagon.decapay.config.userSetting.UserBudgetPeriodCategorySetting;
+import com.decagon.decapay.config.userSetting.UserBudgetLineItemTemplate;
 import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
 import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
@@ -39,13 +39,14 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_CREATED_SUCCESSFULLY;
 import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_UPDATED_SUCCESSFULLY;
 import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_REMOVED_SUCCESSFULLY;
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -362,6 +363,104 @@ class BudgetLineItemTest {
         assertEquals(budget.getId(), lineItem.getBudget().getId());
         assertEquals(dto.getAmount().setScale(2), lineItem.getProjectedAmount());
     }
+
+
+    @Test
+    void shouldCreateBudgetLineItemTemplate_WhenCreateLineItem_AndSetAsItemTemplateSelectedByUser() throws Exception {
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
+
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+
+        this.budgetCategoryRepository.saveAll(List.of(category));
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        this.budgetRepository.save(budget);
+
+
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
+        dto.setBudgetCategoryId(category.getId());
+        dto.setAmount(BigDecimal.valueOf(500.00));
+        dto.setSetLineItemAsTemplate(true);
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+                        .content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(LINE_ITEM_CREATED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.id").value(budget.getId()));
+
+        budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
+        assertEquals(1, budget.getBudgetLineItems().size());
+
+        //assert line item template set
+        user=this.userRepository.findByEmail(user.getEmail()).get();
+        UserSettings settings=objectMapper.readValue(user.getUserSetting(),UserSettings.class);
+        UserBudgetLineItemTemplate budgetLineItemTemplate=settings.getUserBudgetLineItemTemplate().stream().filter(period->period.getPeriod().equals(MONTHLY)).findFirst().get();
+        assertTrue(budgetLineItemTemplate.getBudgetCategories().contains(category.getId()));
+    }
+
+
+    @Test
+    void shouldNotCreateBudgetLineItemTemplate_WhenCreateLineItem_AndSetAsItemTemplateNotSelectedByUser() throws Exception {
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        UserBudgetLineItemTemplate budgetLineItemTemplate=new UserBudgetLineItemTemplate();
+        budgetLineItemTemplate.setPeriod(MONTHLY);
+        budgetLineItemTemplate.setBudgetCategories(new ArrayList<>());
+        userSettings.addUserBudgetPeriodCategorySetting(budgetLineItemTemplate);
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
+
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+
+        this.budgetCategoryRepository.saveAll(List.of(category));
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        this.budgetRepository.save(budget);
+
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
+        dto.setBudgetCategoryId(category.getId());
+        dto.setAmount(BigDecimal.valueOf(500.00));
+        dto.setSetLineItemAsTemplate(false);
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+                        .content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(LINE_ITEM_CREATED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.id").value(budget.getId()));
+
+        budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
+        assertEquals(1, budget.getBudgetLineItems().size());
+
+        //assert line item template not set
+        user=this.userRepository.findByEmail(user.getEmail()).get();
+        UserSettings settings=objectMapper.readValue(user.getUserSetting(),UserSettings.class);
+        budgetLineItemTemplate=settings.getUserBudgetLineItemTemplate().stream().filter(item ->item.getPeriod().equals(MONTHLY)).findFirst().get();
+        assertNotNull(budgetLineItemTemplate);
+        assertFalse(budgetLineItemTemplate.getBudgetCategories().contains(category.getId()));
+    }
+
+
 
     private Budget fetchTestBudget(BudgetPeriod period, LocalDate startDate, LocalDate endDate, User user){
         Budget budget = TestModels.budget( period, startDate, endDate);

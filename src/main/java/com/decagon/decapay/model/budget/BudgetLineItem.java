@@ -77,7 +77,7 @@ public class BudgetLineItem implements Auditable, Serializable {
         return spentSoFar.multiply(BigDecimal.valueOf(100)).setScale(1, RoundingMode.CEILING);
     }
 
-    public void updateExpense(Expenses expense, BigDecimal oldExpenseAmount) {
+    public void updateAmountSpentSoFar(Expenses expense, BigDecimal oldExpenseAmount) {
         this.totalAmountSpentSoFar = this.totalAmountSpentSoFar
                 .subtract(oldExpenseAmount)
                 .add(expense.getAmount());

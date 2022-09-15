@@ -10,4 +10,5 @@ public class CreateBudgetLineItemDto extends BudgetLineItemDto {
     @Schema(description = "The id of the budget category", example = "1", required = true)
     @Positive(message = "Budget category id must be a positive number")
     private Long budgetCategoryId;
+    private boolean isSetLineItemAsTemplate;
 }
