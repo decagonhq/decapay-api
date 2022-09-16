@@ -1,6 +1,6 @@
 package com.decagon.decapay.dto.budget;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.validators.enumValidator.Enum;
@@ -34,10 +34,10 @@ public class CreateBudgetRequestDTO {
 	@Schema(description = "Period, allowable values (ANNUAL,MONTHLY,WEEKLY,DAILY,CUSTOM)", required = true)
 	private String period;
 
-	@Schema(description = "Budget start date in format "+ DateDisplayConstants.DATE_INPUT_FORMAT +". Required for CUSTOM,DAILY,WEEKLY period")
+	@Schema(description = "Budget start date in format "+ DateConstants.DATE_INPUT_FORMAT +". Required for CUSTOM,DAILY,WEEKLY period")
 	private String budgetStartDate;
 
-	@Schema(description = "Budget end date in format "+DateDisplayConstants.DATE_INPUT_FORMAT+".  Required for CUSTOM,DAILY period, Same value as budget start date for DAILY")
+	@Schema(description = "Budget end date in format "+ DateConstants.DATE_INPUT_FORMAT+".  Required for CUSTOM,DAILY period, Same value as budget start date for DAILY")
 	private String budgetEndDate;
 
 	@Schema(description = "budget description")

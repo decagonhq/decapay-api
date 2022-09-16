@@ -1,11 +1,11 @@
 package com.decagon.decapay.integration.budget;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.dto.budget.ExpenseDto;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetPeriod;
-import com.decagon.decapay.model.budget.Expenses;
+import com.decagon.decapay.model.budget.Expense;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
@@ -128,7 +128,7 @@ class EditExpenseTest {
 
         var lineItem1 = budget.getBudgetLineItem(category);
 
-        Expenses expense1 = new Expenses();
+        Expense expense1 = new Expense();
         expense1.setAmount(BigDecimal.valueOf(500.00));
         expense1.setTransactionDate(LocalDate.now().plusDays(2));
         expense1.setDescription("Food expense1");
@@ -142,7 +142,7 @@ class EditExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(1000));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(null, dto, status().isNotFound());
@@ -167,7 +167,7 @@ class EditExpenseTest {
 
         var lineItem1 = budget.getBudgetLineItem(category);
 
-        Expenses expense1 = new Expenses();
+        Expense expense1 = new Expense();
         expense1.setAmount(BigDecimal.valueOf(500.00));
         expense1.setTransactionDate(LocalDate.now().plusDays(2));
         expense1.setDescription("Food expense1");
@@ -178,7 +178,7 @@ class EditExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(1000));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(LocalDate.now().plusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now().plusDays(1), DateConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(expense1, dto, status().isBadRequest());
@@ -209,7 +209,7 @@ class EditExpenseTest {
 
         var lineItem1 = budget.getBudgetLineItem(category);
 
-        Expenses expense1 = new Expenses();
+        Expense expense1 = new Expense();
         expense1.setAmount(BigDecimal.valueOf(500.00));
         expense1.setTransactionDate(LocalDate.now().plusDays(2));
         expense1.setDescription("Food expense1");
@@ -257,14 +257,14 @@ class EditExpenseTest {
         lineItem2.setTotalAmountSpentSoFar(BigDecimal.valueOf(1000.00));
         this.budgetRepository.save(budget);
 
-        Expenses expense1 = new Expenses();
+        Expense expense1 = new Expense();
         expense1.setAmount(BigDecimal.valueOf(500.00));
         expense1.setTransactionDate(LocalDate.now().plusDays(2));
         expense1.setDescription("Food expense1");
         expense1.setBudgetLineItem(lineItem1);
         expense1.getAuditSection().setDelF("0");
 
-        Expenses expense2 = new Expenses();
+        Expense expense2 = new Expense();
         expense2.setAmount(BigDecimal.valueOf(1000.00));
         expense2.setTransactionDate(LocalDate.now().plusDays(3));
         expense2.setDescription("Food expense2");
@@ -276,7 +276,7 @@ class EditExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(1000));
         dto.setDescription("Updated Food");
-        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         var response = this.validateExpectation(expense1, dto, status().isOk())
@@ -291,12 +291,12 @@ class EditExpenseTest {
         assertNotNull(updatedExpense.getId());
         assertThat(updatedExpense.getAmount().setScale(2)).isEqualTo(dto.getAmount().setScale(2));
         assertThat(updatedExpense.getDescription()).isEqualTo(dto.getDescription());
-        assertThat(updatedExpense.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate(),DateDisplayConstants.DATE_INPUT_FORMAT));
+        assertThat(updatedExpense.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate(), DateConstants.DATE_INPUT_FORMAT));
         assertThat(lineItem1.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(1000.00).setScale(2));
         assertThat(budget.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(2000.00).setScale(2));
     }
 
-    private ResultActions validateExpectation(Expenses expense, ExpenseDto dto, ResultMatcher expectedResult) throws Exception {
+    private ResultActions validateExpectation(Expense expense, ExpenseDto dto, ResultMatcher expectedResult) throws Exception {
         Long expenseId = expense == null ? 0 : expense.getId();
         return this.mockMvc.perform(put(path + "/expenses/{expenseId}", expenseId)
                         .content(TestUtils.asJsonString(dto))

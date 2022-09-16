@@ -733,7 +733,7 @@ class BudgetLineItemTest {
 
         BudgetLineItem lineItem = budget.getBudgetLineItem(category);
 
-        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
+        Expense expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
         expenses.setBudgetLineItem(lineItem);
         expenseRepository.save(expenses);
 

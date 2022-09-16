@@ -1,6 +1,6 @@
 package com.decagon.decapay.dto.budget;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.validators.dateValidator.CustomDate;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,8 +20,8 @@ public class ExpenseDto extends BudgetLineItemDto {
     @Size(max = SchemaConstants.EXPENSE_DESC_SIZE, message = "Description should be maximum of " + SchemaConstants.EXPENSE_DESC_SIZE + " characters")
     @NotBlank
     private String description;
-    @Schema(description = "Expense Log date in format " + DateDisplayConstants.DATE_INPUT_FORMAT, required = true)
+    @Schema(description = "Expense Log date in format " + DateConstants.DATE_INPUT_FORMAT, required = true)
     @NotBlank
-    @CustomDate(message="Date not in valid format:"+DateDisplayConstants.DATE_INPUT_FORMAT)
+    @CustomDate(message="Date not in valid format:"+ DateConstants.DATE_INPUT_FORMAT)
     private String transactionDate;
 }

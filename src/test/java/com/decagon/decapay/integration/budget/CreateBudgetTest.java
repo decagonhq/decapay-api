@@ -4,7 +4,7 @@ import com.decagon.decapay.config.userSetting.UserBudgetLineItemTemplate;
 import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.constants.AppConstants;
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.model.user.UserStatus;
@@ -151,8 +151,8 @@ class CreateBudgetTest {
     void createBudgetSucceedsWithCustomPeriod() throws Exception {
         CreateBudgetRequestDTO budgetRequest = this.budgetRequest();
         budgetRequest.setPeriod(BudgetPeriod.CUSTOM.name());
-        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateDisplayConstants.DATE_INPUT_FORMAT));
-        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 2), DateDisplayConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 2), DateConstants.DATE_INPUT_FORMAT));
         assertCreateBudgetWithPeriod(budgetRequest);
     }
 
@@ -160,7 +160,7 @@ class CreateBudgetTest {
     void createBudgetSucceedsWithDailyPeriod() throws Exception {
         CreateBudgetRequestDTO budgetRequest = this.budgetRequest();
         budgetRequest.setPeriod(BudgetPeriod.DAILY.name());
-        String startDate = CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateDisplayConstants.DATE_INPUT_FORMAT);
+        String startDate = CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateConstants.DATE_INPUT_FORMAT);
         budgetRequest.setBudgetStartDate(startDate);
         budgetRequest.setBudgetEndDate(startDate);//same date
         assertCreateBudgetWithPeriod(budgetRequest);
@@ -209,7 +209,7 @@ class CreateBudgetTest {
     void createBudgetSucceedsWithWeeklyPeriod() throws Exception {
         CreateBudgetRequestDTO budgetRequest = this.budgetRequest();
         budgetRequest.setPeriod(BudgetPeriod.WEEKLY.name());
-        String startDate = CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateDisplayConstants.DATE_INPUT_FORMAT);
+        String startDate = CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateConstants.DATE_INPUT_FORMAT);
         budgetRequest.setBudgetStartDate(startDate);
         budgetRequest.setDuration(1);//same date
         assertCreateBudgetWithPeriod(budgetRequest);
@@ -247,8 +247,8 @@ class CreateBudgetTest {
 
         switch (period) {
             case CUSTOM, DAILY -> {
-                assertEquals(CustomDateUtil.formatStringToLocalDate(budgetRequest.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT), budget.getBudgetStartDate());
-                assertEquals(CustomDateUtil.formatStringToLocalDate(budgetRequest.getBudgetEndDate(), DateDisplayConstants.DATE_INPUT_FORMAT), budget.getBudgetEndDate());
+                assertEquals(CustomDateUtil.formatStringToLocalDate(budgetRequest.getBudgetStartDate(), DateConstants.DATE_INPUT_FORMAT), budget.getBudgetStartDate());
+                assertEquals(CustomDateUtil.formatStringToLocalDate(budgetRequest.getBudgetEndDate(), DateConstants.DATE_INPUT_FORMAT), budget.getBudgetEndDate());
             }
             case MONTHLY -> {
                 //if current month and year
@@ -273,8 +273,8 @@ class CreateBudgetTest {
                 }
             }
             case WEEKLY -> {
-                assertEquals(CustomDateUtil.formatStringToLocalDate(budgetRequest.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT), budget.getBudgetStartDate());
-                assertEquals(CustomDateUtil.formatStringToLocalDate(budgetRequest.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT).plusDays(AppConstants.NUM_DAYS_IN_WEEK * budgetRequest.getDuration()), budget.getBudgetEndDate());
+                assertEquals(CustomDateUtil.formatStringToLocalDate(budgetRequest.getBudgetStartDate(), DateConstants.DATE_INPUT_FORMAT), budget.getBudgetStartDate());
+                assertEquals(CustomDateUtil.formatStringToLocalDate(budgetRequest.getBudgetStartDate(), DateConstants.DATE_INPUT_FORMAT).plusDays(AppConstants.NUM_DAYS_IN_WEEK * budgetRequest.getDuration()), budget.getBudgetEndDate());
             }
         }
     }
@@ -307,8 +307,8 @@ class CreateBudgetTest {
         budgetRequest.setYear((short) 2022);
 
         LocalDate today = LocalDate.now();
-        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(today, DateDisplayConstants.DATE_INPUT_FORMAT));
-        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(today.plusMonths(1), DateDisplayConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(today, DateConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(today.plusMonths(1), DateConstants.DATE_INPUT_FORMAT));
 
         mockMvc.perform(
                 post(path + "/budgets").headers(headers).contentType(MediaType.APPLICATION_JSON).content(
@@ -366,8 +366,8 @@ class CreateBudgetTest {
         budgetRequest.setYear((short) 2022);
 
         LocalDate today = LocalDate.now();
-        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(today, DateDisplayConstants.DATE_INPUT_FORMAT));
-        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(today.plusMonths(1), DateDisplayConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(today, DateConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(today.plusMonths(1), DateConstants.DATE_INPUT_FORMAT));
 
         mockMvc.perform(
                 post(path + "/budgets").headers(headers).contentType(MediaType.APPLICATION_JSON).content(

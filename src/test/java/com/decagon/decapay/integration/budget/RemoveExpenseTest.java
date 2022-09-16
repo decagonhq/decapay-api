@@ -127,7 +127,7 @@ public class RemoveExpenseTest {
         BudgetLineItem lineItem = budget.getBudgetLineItem(category);
 
 
-        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
+        Expense expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
         expenses.setBudgetLineItem(lineItem);
         expenseRepository.save(expenses);
 
@@ -160,11 +160,11 @@ public class RemoveExpenseTest {
         lineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(1200.00));
         this.budgetRepository.save(budget);
 
-        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
+        Expense expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
         expenses.setBudgetLineItem(lineItem);
-        Expenses expenses2 = TestModels.expenses(BigDecimal.valueOf(400.00), LocalDate.now());
+        Expense expenses2 = TestModels.expenses(BigDecimal.valueOf(400.00), LocalDate.now());
         expenses2.setBudgetLineItem(lineItem);
-        Expenses expenses3 = TestModels.expenses(BigDecimal.valueOf(300.00), LocalDate.now());
+        Expense expenses3 = TestModels.expenses(BigDecimal.valueOf(300.00), LocalDate.now());
         expenses3.setBudgetLineItem(lineItem);
         expenseRepository.saveAll(List.of(expenses, expenses2, expenses3));
 
@@ -188,7 +188,7 @@ public class RemoveExpenseTest {
         return this.budgetRepository.save(budget);
     }
 
-    private void assertEditExpense(Expenses expenses, ResultMatcher expectedResult) throws Exception {
+    private void assertEditExpense(Expense expenses, ResultMatcher expectedResult) throws Exception {
         Long expenseId = expenses == null ? 1L : expenses.getId();
         this.mockMvc.perform(delete(path + "/expenses/{expenseId}", expenseId).headers(headers))
                 .andExpect(expectedResult);

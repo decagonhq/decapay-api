@@ -1,6 +1,6 @@
 package com.decagon.decapay.dto.budget;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -21,10 +21,10 @@ public class ViewBudgetDto {
     private BigDecimal totalAmountSpentSoFar;
     private BigDecimal percentageSpentSoFar;
 
-    @JsonFormat(pattern = DateDisplayConstants.DATE_DB_FORMAT)
+    @JsonFormat(pattern = DateConstants.DATE_DB_FORMAT)
     //private LocalDateTime startDate;
     private LocalDate startDate;
-    @JsonFormat(pattern = DateDisplayConstants.DATE_DB_FORMAT)
+    @JsonFormat(pattern = DateConstants.DATE_DB_FORMAT)
     //private LocalDateTime endDate;
     private LocalDate endDate;
     private String notificationThreshold;
@@ -32,9 +32,9 @@ public class ViewBudgetDto {
     private String displayProjectedAmount;
     private String displayTotalAmountSpentSoFar;
     private String displayPercentageSpentSoFar;
-    @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)
+    @JsonFormat(pattern = DateConstants.DATE_DISPLAY_FORMAT)
     private LocalDate displayEndDate;
-    @JsonFormat(pattern = DateDisplayConstants.DATE_DISPLAY_FORMAT)
+    @JsonFormat(pattern = DateConstants.DATE_DISPLAY_FORMAT)
     private LocalDate displayStartDate;
     Collection<LineItemDto> lineItems = new ArrayList<>();
 

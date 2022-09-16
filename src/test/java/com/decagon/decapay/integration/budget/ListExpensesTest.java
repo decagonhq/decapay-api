@@ -2,7 +2,7 @@ package com.decagon.decapay.integration.budget;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.constants.AppConstants;
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.model.budget.*;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
@@ -192,11 +192,11 @@ class ListExpensesTest {
 
         BudgetLineItem lineItem = budget.getBudgetLineItem(category);
 
-        Expenses expense = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
+        Expense expense = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
         expense.setDescription("descriptin 1");
         expense.setBudgetLineItem(lineItem);
 
-        Expenses expense2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now());
+        Expense expense2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now());
         expense2.setDescription("description 2");
         expense2.setBudgetLineItem(lineItem);
 
@@ -229,11 +229,11 @@ class ListExpensesTest {
 
         BudgetLineItem lineItem = budget.getBudgetLineItem(category);
 
-        Expenses expense = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now().plusDays(3));
+        Expense expense = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now().plusDays(3));
         expense.setDescription("descriptin 1");
         expense.setBudgetLineItem(lineItem);
 
-        Expenses expense2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now().plusDays(1));
+        Expense expense2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now().plusDays(1));
         expense2.setDescription("description 2");
         expense2.setBudgetLineItem(lineItem);
 
@@ -248,8 +248,8 @@ class ListExpensesTest {
                 .andExpect(jsonPath("$.data.content[0].amount").value(500))
                 .andExpect(jsonPath("$.data.content[0].displayAmount").value("₦500.00"))
                 .andExpect(jsonPath("$.data.content[0].description").value("descriptin 1"))
-                .andExpect(jsonPath("$.data.content[0].transactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                .andExpect(jsonPath("$.data.content[0].displayTransactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                .andExpect(jsonPath("$.data.content[0].transactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.content[0].displayTransactionDate").value(CustomDateUtil.formatLocalDateToString(expense.getTransactionDate(), DateConstants.DATE_DISPLAY_FORMAT)))
                 .andDo(print());
     }
 
@@ -276,11 +276,11 @@ class ListExpensesTest {
 
         BudgetLineItem lineItem = budget.getBudgetLineItem(category);
 
-        Expenses expense = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now().plusDays(3));
+        Expense expense = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now().plusDays(3));
         expense.setDescription("descriptin 1");
         expense.setBudgetLineItem(lineItem);
 
-        Expenses expense2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now().plusDays(1));
+        Expense expense2 = TestModels.expenses(BigDecimal.valueOf(1000.00), LocalDate.now().plusDays(1));
         expense2.setDescription("description 2");
         expense2.setBudgetLineItem(lineItem);
 

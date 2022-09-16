@@ -1,6 +1,6 @@
 package com.decagon.decapay.unit.controller;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.controller.budget.BudgetController;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
@@ -44,8 +44,8 @@ class CreateBudgetControllerTest {
         budgetRequest.setTitle("Title");
         budgetRequest.setAmount(BigDecimal.TEN);
         budgetRequest.setPeriod(BudgetPeriod.DAILY.name());
-        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateDisplayConstants.DATE_INPUT_FORMAT));
-        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 2), DateDisplayConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 2), DateConstants.DATE_INPUT_FORMAT));
         budgetRequest.setDescription("des");
         budgetRequest.setYear((short)2022);
         budgetRequest.setMonth((short)8);
@@ -98,8 +98,8 @@ class CreateBudgetControllerTest {
     void createBudgetFailsWithInvalidRequestForCustomPeriod() throws Exception {
         CreateBudgetRequestDTO budgetRequest = budgetRequest();
         budgetRequest.setPeriod(BudgetPeriod.CUSTOM.name());
-        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateDisplayConstants.DATE_INPUT_FORMAT));
-        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateDisplayConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateConstants.DATE_INPUT_FORMAT));
         mockMvc.perform(
                         post(path + "/budgets").contentType(MediaType.APPLICATION_JSON).content(
                                 TestUtils.asJsonString(budgetRequest)))
@@ -112,8 +112,8 @@ class CreateBudgetControllerTest {
         CreateBudgetRequestDTO budgetRequest = budgetRequest();
         budgetRequest.setPeriod(BudgetPeriod.DAILY.name());
         //invalid different dates
-        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateDisplayConstants.DATE_INPUT_FORMAT));
-        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 03), DateDisplayConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 03), DateConstants.DATE_INPUT_FORMAT));
 
         mockMvc.perform(
                         post(path + "/budgets").contentType(MediaType.APPLICATION_JSON).content(

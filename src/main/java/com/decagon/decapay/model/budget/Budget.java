@@ -1,6 +1,6 @@
 package com.decagon.decapay.model.budget;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
@@ -118,7 +118,7 @@ public class Budget implements Auditable, Serializable {
      * @return true if transaction date is valid or false otherwise
      */
     public boolean isValidExpenseTransactionDate(String transactionDate) {
-        LocalDate transactionLocalDate = CustomDateUtil.formatStringToLocalDate(transactionDate, DateDisplayConstants.DATE_INPUT_FORMAT);
+        LocalDate transactionLocalDate = CustomDateUtil.formatStringToLocalDate(transactionDate, DateConstants.DATE_INPUT_FORMAT);
        LocalDate budgetValidTransactionEndDate=null;
        LocalDate now=LocalDate.now();
        if(now.isBefore(this.budgetEndDate)){
