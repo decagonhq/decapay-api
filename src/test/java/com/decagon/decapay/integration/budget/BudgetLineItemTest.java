@@ -421,7 +421,7 @@ class BudgetLineItemTest {
         UserBudgetLineItemTemplate budgetLineItemTemplate=new UserBudgetLineItemTemplate();
         budgetLineItemTemplate.setPeriod(MONTHLY);
         budgetLineItemTemplate.setBudgetCategories(new ArrayList<>());
-        userSettings.addUserBudgetPeriodCategorySetting(budgetLineItemTemplate);
+        userSettings.addBudgetLineItemTemplateSetting(budgetLineItemTemplate);
         user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
         userRepository.save(user);

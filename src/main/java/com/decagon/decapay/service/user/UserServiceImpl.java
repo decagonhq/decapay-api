@@ -10,7 +10,6 @@ import com.decagon.decapay.model.reference.currency.Currency;
 import com.decagon.decapay.model.reference.language.Language;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.UserAccountPopulator;
-import com.decagon.decapay.populator.UserSettingPopulator;
 import com.decagon.decapay.repositories.reference.currency.CurrencyRepository;
 import com.decagon.decapay.repositories.reference.language.LanguageRepository;
 import com.decagon.decapay.repositories.reference.zone.country.CountryRepository;

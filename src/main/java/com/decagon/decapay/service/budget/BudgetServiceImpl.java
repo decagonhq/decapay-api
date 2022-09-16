@@ -23,6 +23,7 @@ import com.decagon.decapay.utils.UserInfoUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -65,7 +66,38 @@ public class BudgetServiceImpl implements BudgetService {
 
         this.saveBudget(budget, currentUser);
 
+        //check if line item template exist for this new budget's period if exist then create the line items
+        UserSettings userSetting=null;
+        try {
+            userSetting=objectMapper.readValue(currentUser.getUserSetting(),UserSettings.class);
+        } catch (Exception e) {
+            //do nothing
+        }
+        if(userSetting!=null) {
+            this.createLineItemFromTemplateIfConfigured(userSetting,currentUser,budget);
+        }
+
         return new CreateBudgetResponseDTO(budget.getId());
+    }
+
+    /**
+     * @param userSetting
+     * @param currentUser
+     * @param budget
+     * @see UserBudgetLineItemTemplate
+     */
+    private void createLineItemFromTemplateIfConfigured(UserSettings userSetting,User currentUser,Budget budget) {
+        Optional<UserBudgetLineItemTemplate> budgetLineItemTemplate=userSetting.getBudgetLineItemTemplateByPeriod(budget.getBudgetPeriod());
+        if(budgetLineItemTemplate.isPresent()){
+            Collection<Long> templateLineItems=budgetLineItemTemplate.get().getBudgetCategories();
+            if(CollectionUtils.isNotEmpty(templateLineItems)){
+                for(Long categoryId:templateLineItems) {
+                    this.budgetCategoryService.findCategoryByIdAndUser(categoryId,currentUser).ifPresent(budgetCategory->{
+                        this.saveBudgetLineItem(budget, budgetCategory, BigDecimal.valueOf(0.00));
+                    });
+                }
+            }
+        }
     }
 
     private void saveBudget(Budget budget, User user) {
@@ -297,18 +329,19 @@ public class BudgetServiceImpl implements BudgetService {
 
     private void setLineItemAsTemplateForUser(User currentUser, BudgetPeriod budgetPeriod, Long budgetCategoryId) {
         try {
-            UserSettings settings = objectMapper.readValue(currentUser.getUserSetting(), UserSettings.class);
-            settings.getUserBudgetLineItemTemplate().stream().filter(period -> period.getPeriod().equals(budgetPeriod)).findFirst().ifPresentOrElse(
-                    (budgetPeriodCategorySetting) -> {
-                        budgetPeriodCategorySetting.addCategory(budgetCategoryId);
+            UserSettings userSettings = objectMapper.readValue(currentUser.getUserSetting(), UserSettings.class);
+            userSettings.getBudgetLineItemTemplateByPeriod(budgetPeriod).ifPresentOrElse(
+                    (budgetLineItemTemplate) -> {
+                        budgetLineItemTemplate.addCategory(budgetCategoryId);
                     },
                     () -> {
                         UserBudgetLineItemTemplate budgetLineItemTemplate=new UserBudgetLineItemTemplate();
                         budgetLineItemTemplate.setPeriod(budgetPeriod);
-                        settings.addUserBudgetPeriodCategorySetting(budgetLineItemTemplate);
+                        userSettings.addBudgetLineItemTemplateSetting(budgetLineItemTemplate);
                         budgetLineItemTemplate.addCategory(budgetCategoryId);
                     });
-            currentUser.setUserSetting(objectMapper.writeValueAsString(settings));
+
+            currentUser.setUserSetting(objectMapper.writeValueAsString(userSettings));
         } catch (Exception e) {
             log.error("cannot update user setting for budget", e);
         }
