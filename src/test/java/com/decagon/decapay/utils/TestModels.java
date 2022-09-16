@@ -3,12 +3,10 @@ package com.decagon.decapay.utils;
 import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.model.auth.PasswordReset;
 import com.decagon.decapay.model.budget.*;
-import com.decagon.decapay.model.reference.language.Language;
 import com.decagon.decapay.model.user.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Set;
 
 public class TestModels {
 
@@ -42,8 +40,8 @@ public class TestModels {
         return budget;
     }
 
-    public static Expenses expenses(BigDecimal amount, LocalDate transactionDate) {
-        Expenses expenses = new Expenses();
+    public static Expense expenses(BigDecimal amount, LocalDate transactionDate) {
+        Expense expenses = new Expense();
         expenses.setAmount(amount);
         expenses.setTransactionDate(transactionDate);
         return expenses;

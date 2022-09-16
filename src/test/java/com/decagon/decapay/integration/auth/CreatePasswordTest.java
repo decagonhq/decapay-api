@@ -12,6 +12,7 @@ import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,8 @@ class CreatePasswordTest {
     private MockMvc mockMvc;
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    ObjectMapper objectMapper;
     @Autowired
     private PasswordResetRepository passwordResetRepository;
     private HttpHeaders headers;
@@ -185,7 +187,7 @@ class CreatePasswordTest {
     @Test
     void shouldCreateNewPasswordForMobileDeviceSuccessfully() throws Exception {
         User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         user = this.userRepository.save(user);
 
         PasswordReset passwordReset = TestModels.passwordReset(user.getEmail(), "3215");
@@ -222,7 +224,7 @@ class CreatePasswordTest {
     @Test
     void shouldCreateNewPasswordForWebDeviceSuccessfully() throws Exception {
         User user = TestModels.user("John", "Doe", "fabiane@decagonhq.com", "password","08137640746");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         user = this.userRepository.save(user);
 
         PasswordReset passwordReset = TestModels.passwordReset(user.getEmail(), "3215");

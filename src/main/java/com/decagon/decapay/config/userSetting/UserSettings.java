@@ -1,21 +1,33 @@
 package com.decagon.decapay.config.userSetting;
 
+import com.decagon.decapay.model.budget.BudgetPeriod;
 import lombok.Data;
-import net.minidev.json.JSONAware;
-import net.minidev.json.JSONObject;
+import lombok.NoArgsConstructor;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+
 
 @Data
-public class UserSettings implements JSONAware {
+@NoArgsConstructor
+public class UserSettings  {
     private String countryCode;
     private String currencyCode;
     private String language;
+    private Collection<UserBudgetLineItemTemplate> userBudgetLineItemTemplate;
 
-    @Override
-    public String toJSONString() {
-        JSONObject obj = new JSONObject();
-        obj.put("countryCode", this.getCountryCode());
-        obj.put("currencyCode", this.getCurrencyCode());
-        obj.put("language", this.getLanguage());
-        return obj.toJSONString();
+    public void addBudgetLineItemTemplateSetting(UserBudgetLineItemTemplate budgetLineItemTemplate){
+      if(userBudgetLineItemTemplate==null){
+          userBudgetLineItemTemplate=new HashSet<>();
+      }
+      userBudgetLineItemTemplate.add(budgetLineItemTemplate);
+    }
+
+    public Optional<UserBudgetLineItemTemplate> getBudgetLineItemTemplateByPeriod(BudgetPeriod budgetPeriod) {
+        if(this.getUserBudgetLineItemTemplate()==null){
+          return Optional.empty();
+        }
+        return this.getUserBudgetLineItemTemplate().stream().filter(period -> period.getPeriod().equals(budgetPeriod)).findFirst();
     }
 }

@@ -3,15 +3,21 @@ package com.decagon.decapay.populator;
 import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.UserDTO;
 import com.decagon.decapay.model.user.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 @Setter
 @NoArgsConstructor
 @Service
+@Slf4j
 public class UserAccountPopulator extends AbstractDataPopulator<UserDTO, User> {
     private  PasswordEncoder passwordEncoder;
+    private ObjectMapper objectMapper;
+
     public UserAccountPopulator(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
@@ -28,7 +34,12 @@ public class UserAccountPopulator extends AbstractDataPopulator<UserDTO, User> {
         UserSettingPopulator userSettingPopulator = new UserSettingPopulator();
         UserSettings settings = new UserSettings();
         userSettingPopulator.populate(source, settings);
-        target.setUserSetting(settings.toJSONString());
+        try {
+            target.setUserSetting(objectMapper.writeValueAsString(settings));
+        } catch (JsonProcessingException e) {
+            log.error("error converting data",e);
+            target.setUserSetting("");
+        }
         return target;
     }
 

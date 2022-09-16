@@ -1,29 +1,24 @@
 package com.decagon.decapay.unit.controller;
 
-import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.controller.budget.BudgetController;
+import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.service.budget.BudgetService;
 import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.TestUtils;
+import com.decagon.decapay.utils.annotation.UnsecuredWebMvcTest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.servlet.Filter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -32,9 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@WebMvcTest(controllers = BudgetController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-        WebSecurityConfigurer.class, Filter.class}), excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@UnsecuredWebMvcTest(controllers = BudgetController.class)
 @ActiveProfiles("test")
 class CreateBudgetControllerTest {
 
@@ -51,8 +44,8 @@ class CreateBudgetControllerTest {
         budgetRequest.setTitle("Title");
         budgetRequest.setAmount(BigDecimal.TEN);
         budgetRequest.setPeriod(BudgetPeriod.DAILY.name());
-        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateDisplayConstants.DATE_INPUT_FORMAT));
-        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 2), DateDisplayConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 2), DateConstants.DATE_INPUT_FORMAT));
         budgetRequest.setDescription("des");
         budgetRequest.setYear((short)2022);
         budgetRequest.setMonth((short)8);
@@ -105,8 +98,8 @@ class CreateBudgetControllerTest {
     void createBudgetFailsWithInvalidRequestForCustomPeriod() throws Exception {
         CreateBudgetRequestDTO budgetRequest = budgetRequest();
         budgetRequest.setPeriod(BudgetPeriod.CUSTOM.name());
-        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateDisplayConstants.DATE_INPUT_FORMAT));
-        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateDisplayConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateConstants.DATE_INPUT_FORMAT));
         mockMvc.perform(
                         post(path + "/budgets").contentType(MediaType.APPLICATION_JSON).content(
                                 TestUtils.asJsonString(budgetRequest)))
@@ -119,8 +112,8 @@ class CreateBudgetControllerTest {
         CreateBudgetRequestDTO budgetRequest = budgetRequest();
         budgetRequest.setPeriod(BudgetPeriod.DAILY.name());
         //invalid different dates
-        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateDisplayConstants.DATE_INPUT_FORMAT));
-        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 03), DateDisplayConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 01), DateConstants.DATE_INPUT_FORMAT));
+        budgetRequest.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 01, 03), DateConstants.DATE_INPUT_FORMAT));
 
         mockMvc.perform(
                         post(path + "/budgets").contentType(MediaType.APPLICATION_JSON).content(

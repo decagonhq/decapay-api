@@ -1,7 +1,7 @@
 package com.decagon.decapay.service.period;
 
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.service.budget.periodHandler.DailyPeriodHandler;
@@ -59,7 +59,7 @@ public class DailyPeriodTest {
          TODO:must be of valid format
  */
     static Stream<Arguments> invalidRequestDtoProvider() {
-        String pattern = DateDisplayConstants.DATE_INPUT_FORMAT;
+        String pattern = DateConstants.DATE_INPUT_FORMAT;
         return Stream.of(
                 //invalid different dates
                 arguments(req(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), pattern), CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 3), pattern))),
@@ -87,8 +87,8 @@ public class DailyPeriodTest {
         LocalDate startDate=LocalDate.of(2002,01,01);
         LocalDate endDate=LocalDate.of(2002,01,01);
 
-        String requestStartDate= CustomDateUtil.formatLocalDateToString(startDate, DateDisplayConstants.DATE_INPUT_FORMAT);
-        String requestEndDate=CustomDateUtil.formatLocalDateToString(endDate, DateDisplayConstants.DATE_INPUT_FORMAT);
+        String requestStartDate= CustomDateUtil.formatLocalDateToString(startDate, DateConstants.DATE_INPUT_FORMAT);
+        String requestEndDate=CustomDateUtil.formatLocalDateToString(endDate, DateConstants.DATE_INPUT_FORMAT);
         return Stream.of(
                 //custom period return request start date and end date
                 arguments(req(requestStartDate,requestEndDate),new LocalDate[]{startDate,endDate})

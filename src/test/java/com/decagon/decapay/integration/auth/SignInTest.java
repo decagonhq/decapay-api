@@ -8,6 +8,7 @@ import com.decagon.decapay.repositories.user.UserRepository;
 
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.TestUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,8 @@ public class SignInTest {
 
     @Autowired
     private MockMvc mockMvc;
-
+    @Autowired
+    ObjectMapper objectMapper;
     private HttpHeaders headers;
 
     private final UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
@@ -66,7 +68,7 @@ public class SignInTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056155664");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         LoginDto loginDto = new LoginDto();
@@ -91,7 +93,7 @@ public class SignInTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056355664");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         LoginDto loginDto = new LoginDto();

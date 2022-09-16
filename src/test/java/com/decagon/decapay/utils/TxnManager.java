@@ -16,11 +16,11 @@ public class TxnManager {
     DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
     private TransactionStatus status;
 
-    public void endTxn() {
+    public void endTransaction() {
         transactionManager.commit(status);
     }
 
-    public void startTxn() {
+    public void startTransaction() {
         definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         status = transactionManager.getTransaction(definition);
     }

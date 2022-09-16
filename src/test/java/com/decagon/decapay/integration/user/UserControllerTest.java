@@ -213,7 +213,7 @@ class UserControllerTest {
 		settings.setCountryCode("FR");
 		settings.setCurrencyCode("GMD");
 
-		assertEquals(settings.toJSONString(), user.getUserSetting());
+		assertEquals(objectMapper.writeValueAsString(settings), user.getUserSetting());
 	}
 
 	@Test

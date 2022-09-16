@@ -1,6 +1,6 @@
 package com.decagon.decapay.validators.dateValidator;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -19,6 +19,6 @@ public @interface CustomDate {
 
  Class<? extends Payload>[] payload() default {};
  
- String format() default DateDisplayConstants.DATE_INPUT_FORMAT;
+ String format() default DateConstants.DATE_INPUT_FORMAT;
  boolean required() default true;
 }

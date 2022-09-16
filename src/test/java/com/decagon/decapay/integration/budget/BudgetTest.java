@@ -3,7 +3,7 @@ package com.decagon.decapay.integration.budget;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.constants.AppConstants;
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.model.budget.*;
 import com.decagon.decapay.model.user.User;
@@ -18,6 +18,7 @@ import com.decagon.decapay.utils.CustomDateUtil;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,7 +80,8 @@ public class BudgetTest {
     private BudgetCategoryRepository budgetCategoryRepository;
     @Autowired
     private ExpenseRepository expenseRepository;
-
+    @Autowired
+    ObjectMapper objectMapper;
     private final UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
 
     @BeforeEach
@@ -175,7 +177,7 @@ public class BudgetTest {
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
 
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
         LocalDate today = LocalDate.now();
 
@@ -212,10 +214,10 @@ public class BudgetTest {
                 .andExpect(jsonPath("$.data.displayProjectedAmount").value("₦5,000.00"))
                 .andExpect(jsonPath("$.data.notificationThreshold").value("Notification Trashold"))
                 .andExpect(jsonPath("$.data.title").value("Transportation Budget"))
-                .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                .andExpect(jsonPath("$.data.displayStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
-                .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DB_FORMAT)))
-                .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateDisplayConstants.DATE_DISPLAY_FORMAT)))
+                .andExpect(jsonPath("$.data.startDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.displayStartDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateConstants.DATE_DISPLAY_FORMAT)))
+                .andExpect(jsonPath("$.data.endDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateConstants.DATE_DB_FORMAT)))
+                .andExpect(jsonPath("$.data.displayEndDate").value(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateConstants.DATE_DISPLAY_FORMAT)))
                 .andExpect(jsonPath("$.data.totalAmountSpentSoFar").value(2500.00))
                 .andExpect(jsonPath("$.data.displayTotalAmountSpentSoFar").value("₦2,500.00"))
                 .andExpect(jsonPath("$.data.percentageSpentSoFar").value(50.0))
@@ -243,7 +245,7 @@ public class BudgetTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         Budget budget = new Budget();
@@ -316,7 +318,7 @@ public class BudgetTest {
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056355667");
 
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         userRepository.save(user);
@@ -423,7 +425,7 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056357667");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername("o4g@gmail.com");
@@ -453,7 +455,7 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056389667");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         Budget budget = new Budget();
@@ -473,7 +475,7 @@ public class BudgetTest {
         user2.setFirstName("Goodluck");
         user2.setLastName("Nwoko");
         user2.setPhoneNumber("07050359667");
-        user2.setUserSetting(userSettings.toJSONString());
+        user2.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user2);
 
         Budget budget2 = new Budget();
@@ -538,7 +540,7 @@ public class BudgetTest {
         user.setFirstName("Goodluck");
         user.setLastName("Nwoko");
         user.setPhoneNumber("07056389667");
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
         userRepository.save(user);
 
@@ -583,7 +585,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -611,7 +613,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -639,7 +641,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -666,7 +668,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -694,7 +696,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -722,7 +724,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -749,7 +751,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -778,7 +780,7 @@ public class BudgetTest {
         user.setPhoneNumber("07056389667");
         user.addBudget(budget);
         user.addBudget(budget2);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -813,7 +815,7 @@ public class BudgetTest {
         user.addBudget(budget2);
         user.addBudget(budget3);
         user.addBudget(budget4);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         setAuthHeader(user);
@@ -905,7 +907,7 @@ public class BudgetTest {
         //add expense
         var lineItem = budget.getBudgetLineItem(category);
 
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 1, 2));
+        Expense expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 1, 2));
         expense1.setBudgetLineItem(lineItem);
         expenseRepository.save(expense1);
         //input
@@ -914,7 +916,7 @@ public class BudgetTest {
         dto.setDescription("New Description");
         dto.setAmount(BigDecimal.valueOf(300));
         dto.setPeriod(WEEKLY.name());
-        dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 2, 1), DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 2, 1), DateConstants.DATE_INPUT_FORMAT));
         dto.setDuration(1);
         //act
         buildHeader(user.getEmail());
@@ -943,7 +945,7 @@ public class BudgetTest {
         budget.addBudgetLineItem(category,BigDecimal.valueOf(250));
         budgetRepository.save(budget);
         //add expense
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.now().plusDays(3));
+        Expense expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.now().plusDays(3));
         expense1.setBudgetLineItem(budget.getBudgetLineItem(category));
         expenseRepository.save(expense1);
         //input
@@ -1024,7 +1026,7 @@ public class BudgetTest {
         budget.addBudgetLineItem(category,BigDecimal.valueOf(250));
         budgetRepository.save(budget);
         //add expense
-        Expenses expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 3, 5));
+        Expense expense1 = TestModels.expenses(BigDecimal.valueOf(250), LocalDate.of(2022, 3, 5));
         expense1.setBudgetLineItem(budget.getBudgetLineItem(category));
         expenseRepository.save(expense1);
         //input
@@ -1034,8 +1036,8 @@ public class BudgetTest {
         dto.setDescription("New Description");
         dto.setAmount(BigDecimal.valueOf(250));
         dto.setPeriod(CUSTOM.name());
-        dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateDisplayConstants.DATE_INPUT_FORMAT));
-        dto.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 4, 30), DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), DateConstants.DATE_INPUT_FORMAT));
+        dto.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 4, 30), DateConstants.DATE_INPUT_FORMAT));
         //act
         buildHeader(user.getEmail());
         this.mockMvc
@@ -1126,15 +1128,15 @@ public class BudgetTest {
 
         Budget budget = this.fetchTestBudget( CUSTOM, LocalDate.now(), LocalDate.now().plusMonths(1),user);
         this.assertFetchObjectsSuccessfully(budget, user, Map.of(
-                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT),
-                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.now().plusMonths(1), DateDisplayConstants.DATE_INPUT_FORMAT)));
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT),
+                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.now().plusMonths(1), DateConstants.DATE_INPUT_FORMAT)));
 
         budget = this.fetchTestBudget( CUSTOM, LocalDate.of(1985,3,7), LocalDate.of(1985,9,20),user);
 
         //act
         this.assertFetchObjectsSuccessfully(budget, user, Map.of(
-                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(1985,3,7), DateDisplayConstants.DATE_INPUT_FORMAT),
-                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(1985,9,20), DateDisplayConstants.DATE_INPUT_FORMAT)));
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(1985,3,7), DateConstants.DATE_INPUT_FORMAT),
+                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(1985,9,20), DateConstants.DATE_INPUT_FORMAT)));
     }
 
     @Test
@@ -1145,14 +1147,14 @@ public class BudgetTest {
 
         Budget budget = this.fetchTestBudget( DAILY, LocalDate.now(), LocalDate.now(),user);
         this.assertFetchObjectsSuccessfully(budget, user, Map.of(
-                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT),
-                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT)));
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT),
+                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT)));
 
         budget = this.fetchTestBudget( DAILY, LocalDate.of(2001,4,23), LocalDate.of(2001,4,23),user);
         //act
         this.assertFetchObjectsSuccessfully(budget, user, Map.of(
-                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(2001,4,23), DateDisplayConstants.DATE_INPUT_FORMAT),
-                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(2001,4,23), DateDisplayConstants.DATE_INPUT_FORMAT)));
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(2001,4,23), DateConstants.DATE_INPUT_FORMAT),
+                "endDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(2001,4,23), DateConstants.DATE_INPUT_FORMAT)));
     }
 
     @Test
@@ -1164,12 +1166,12 @@ public class BudgetTest {
         Budget budget = this.fetchTestBudget( WEEKLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
         //act
         this.assertFetchObjectsSuccessfully(budget, user, Map.of(
-                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT),
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT),
                 "duration", 4 ));
         budget = this.fetchTestBudget( WEEKLY, LocalDate.of(2004,3,1), LocalDate.of(2004,3,15),user);
         //act
         this.assertFetchObjectsSuccessfully(budget, user, Map.of(
-                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(2004,3,1), DateDisplayConstants.DATE_INPUT_FORMAT),
+                "startDate", CustomDateUtil.formatLocalDateToString(LocalDate.of(2004,3,1), DateConstants.DATE_INPUT_FORMAT),
                 "duration", 2 ));
     }
 

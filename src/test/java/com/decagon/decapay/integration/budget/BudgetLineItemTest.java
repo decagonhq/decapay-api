@@ -1,6 +1,7 @@
 package com.decagon.decapay.integration.budget;
 
 
+import com.decagon.decapay.config.userSetting.UserBudgetLineItemTemplate;
 import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
 import com.decagon.decapay.dto.budget.EditBudgetLineItemDto;
@@ -19,6 +20,7 @@ import com.decagon.decapay.security.JwtUtil;
 import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -37,13 +39,14 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_CREATED_SUCCESSFULLY;
 import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_UPDATED_SUCCESSFULLY;
 import static com.decagon.decapay.constants.ResponseMessageConstants.LINE_ITEM_REMOVED_SUCCESSFULLY;
 import static com.decagon.decapay.model.budget.BudgetPeriod.MONTHLY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -74,6 +77,8 @@ class BudgetLineItemTest {
     private JwtUtil jwtUtil;
     @Autowired
     private ExpenseRepository expenseRepository;
+    @Autowired
+    ObjectMapper objectMapper;
 
     private UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
 
@@ -98,7 +103,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -122,7 +127,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
@@ -146,7 +151,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
         userRepository.save(user);
 
@@ -180,13 +185,13 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
                 passwordEncoder.encode("password"), "08067644802");
         user2.setUserStatus(UserStatus.ACTIVE);
-        user2.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         userRepository.saveAll(List.of(user, user2));
@@ -219,13 +224,13 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
                 passwordEncoder.encode("password"), "08067644802");
         user2.setUserStatus(UserStatus.ACTIVE);
-        user2.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         userRepository.saveAll(List.of(user, user2));
@@ -259,7 +264,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
 
@@ -305,7 +310,7 @@ class BudgetLineItemTest {
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
 
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
         userRepository.save(user);
 
@@ -332,11 +337,9 @@ class BudgetLineItemTest {
         this.budgetRepository.save(budget);
 
 
-
         CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
         dto.setBudgetCategoryId(category4.getId());
         dto.setAmount(BigDecimal.valueOf(500.00));
-
 
         setAuthHeader(user);;
 
@@ -361,6 +364,104 @@ class BudgetLineItemTest {
         assertEquals(dto.getAmount().setScale(2), lineItem.getProjectedAmount());
     }
 
+
+    @Test
+    void shouldCreateBudgetLineItemTemplate_WhenCreateLineItem_AndSetAsItemTemplateSelectedByUser() throws Exception {
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
+
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+
+        this.budgetCategoryRepository.saveAll(List.of(category));
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        this.budgetRepository.save(budget);
+
+
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
+        dto.setBudgetCategoryId(category.getId());
+        dto.setAmount(BigDecimal.valueOf(500.00));
+        dto.setSetLineItemAsTemplate(true);
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+                        .content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(LINE_ITEM_CREATED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.id").value(budget.getId()));
+
+        budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
+        assertEquals(1, budget.getBudgetLineItems().size());
+
+        //assert line item template set
+        user=this.userRepository.findByEmail(user.getEmail()).get();
+        UserSettings settings=objectMapper.readValue(user.getUserSetting(),UserSettings.class);
+        UserBudgetLineItemTemplate budgetLineItemTemplate=settings.getUserBudgetLineItemTemplate().stream().filter(period->period.getPeriod().equals(MONTHLY)).findFirst().get();
+        assertTrue(budgetLineItemTemplate.getBudgetCategories().contains(category.getId()));
+    }
+
+
+    @Test
+    void shouldNotCreateBudgetLineItemTemplate_WhenCreateLineItem_AndSetAsItemTemplateNotSelectedByUser() throws Exception {
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        UserBudgetLineItemTemplate budgetLineItemTemplate=new UserBudgetLineItemTemplate();
+        budgetLineItemTemplate.setPeriod(MONTHLY);
+        budgetLineItemTemplate.setBudgetCategories(new ArrayList<>());
+        userSettings.addBudgetLineItemTemplateSetting(budgetLineItemTemplate);
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
+
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+
+        this.budgetCategoryRepository.saveAll(List.of(category));
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        this.budgetRepository.save(budget);
+
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
+        dto.setBudgetCategoryId(category.getId());
+        dto.setAmount(BigDecimal.valueOf(500.00));
+        dto.setSetLineItemAsTemplate(false);
+
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+                        .content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(LINE_ITEM_CREATED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.id").value(budget.getId()));
+
+        budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
+        assertEquals(1, budget.getBudgetLineItems().size());
+
+        //assert line item template not set
+        user=this.userRepository.findByEmail(user.getEmail()).get();
+        UserSettings settings=objectMapper.readValue(user.getUserSetting(),UserSettings.class);
+        budgetLineItemTemplate=settings.getUserBudgetLineItemTemplate().stream().filter(item ->item.getPeriod().equals(MONTHLY)).findFirst().get();
+        assertNotNull(budgetLineItemTemplate);
+        assertFalse(budgetLineItemTemplate.getBudgetCategories().contains(category.getId()));
+    }
+
+
+
     private Budget fetchTestBudget(BudgetPeriod period, LocalDate startDate, LocalDate endDate, User user){
         Budget budget = TestModels.budget( period, startDate, endDate);
         budget.setUser(user);
@@ -373,13 +474,13 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         User user2 = TestModels.user("ola2", "dip2", "ola2@gmail.com",
                 passwordEncoder.encode("password"), "08067644802");
         user2.setUserStatus(UserStatus.ACTIVE);
-        user2.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
 
         userRepository.saveAll(List.of(user, user2));
@@ -412,7 +513,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
         BudgetCategory category = TestModels.budgetCategory("Food");
@@ -437,7 +538,7 @@ class BudgetLineItemTest {
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
         userRepository.save(user);
 
 
@@ -471,7 +572,7 @@ class BudgetLineItemTest {
                 passwordEncoder.encode("password"), "08067644805");
         user.setUserStatus(UserStatus.ACTIVE);
 
-        user.setUserSetting(userSettings.toJSONString());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
 
         userRepository.save(user);
 
@@ -522,7 +623,7 @@ class BudgetLineItemTest {
         settings.setCountryCode("NG");
         settings.setCurrencyCode("NGN");
 
-        assertEquals(settings.toJSONString(), user.getUserSetting());
+        user.setUserSetting(objectMapper.writeValueAsString(userSettings));
     }
 
     @Test
@@ -632,7 +733,7 @@ class BudgetLineItemTest {
 
         BudgetLineItem lineItem = budget.getBudgetLineItem(category);
 
-        Expenses expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
+        Expense expenses = TestModels.expenses(BigDecimal.valueOf(500.00), LocalDate.now());
         expenses.setBudgetLineItem(lineItem);
         expenseRepository.save(expenses);
 

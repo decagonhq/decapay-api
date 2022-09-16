@@ -1,7 +1,7 @@
 package com.decagon.decapay.service.period;
 
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.model.budget.BudgetPeriod;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.service.budget.periodHandler.WeeklyPeriodHandler;
@@ -55,7 +55,7 @@ public class WeeklyPeriodTest {
      duration must be a positive number
     */
     static Stream<Arguments> invalidRequestProvider() {
-        String pattern = DateDisplayConstants.DATE_INPUT_FORMAT;
+        String pattern = DateConstants.DATE_INPUT_FORMAT;
         return Stream.of(
                 //invalid start date field
                 arguments(req(null, 1)),
@@ -80,7 +80,7 @@ public class WeeklyPeriodTest {
     }
 
     static Stream<Arguments> requestDtoProvider() {
-        String pattern = DateDisplayConstants.DATE_INPUT_FORMAT;
+        String pattern = DateConstants.DATE_INPUT_FORMAT;
         String requestDate = CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 1, 1), pattern);
         return Stream.of(
                 //startdate:2022-01-01, duration:1 expected: 2022-01-08
@@ -94,7 +94,7 @@ public class WeeklyPeriodTest {
     @Test
     void testing() throws Exception {
 
-        String s=CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 10, 12),DateDisplayConstants.DATE_INPUT_FORMAT);
+        String s=CustomDateUtil.formatLocalDateToString(LocalDate.of(2022, 10, 12), DateConstants.DATE_INPUT_FORMAT);
         weeklyPeriodHandler.validateRequest(req(s,1));
     }
 

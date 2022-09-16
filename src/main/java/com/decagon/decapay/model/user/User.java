@@ -44,7 +44,7 @@ public class User implements Auditable, Serializable {
     @Column(length = 50)
     private String phoneNumber;
 
-    @Column(length = 100)
+    @Column(length = 1000)
     private String userSetting;
 
     @Enumerated(EnumType.STRING)

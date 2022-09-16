@@ -1,6 +1,6 @@
 package com.decagon.decapay.constants;
 
-public class DateDisplayConstants {
+public class DateConstants {
     public static final String DATE_INPUT_FORMAT ="dd/MM/yyyy";
     public static final String DATE_TIME_INPUT_FORMAT ="dd/MM/yyyy hh:mm";
     public static final String DATE_DISPLAY_FORMAT="MMM dd,yyyy";

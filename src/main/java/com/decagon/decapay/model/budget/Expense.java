@@ -12,7 +12,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static com.decagon.decapay.constants.SchemaConstants.TABLE_EXPENSES;
 
@@ -22,7 +21,7 @@ import static com.decagon.decapay.constants.SchemaConstants.TABLE_EXPENSES;
 @EntityListeners(AuditListener.class)
 @Entity
 @Table(name = TABLE_EXPENSES)
-public class Expenses implements Auditable, Serializable {
+public class Expense implements Auditable, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

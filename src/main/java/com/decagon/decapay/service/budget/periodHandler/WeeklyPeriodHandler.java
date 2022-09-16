@@ -2,7 +2,7 @@ package com.decagon.decapay.service.budget.periodHandler;
 
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.constants.AppConstants;
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.utils.CustomDateUtil;
@@ -26,11 +26,11 @@ public class WeeklyPeriodHandler extends AbstractBudgetPeriodHandler {
             throw new InvalidRequestException("Duration must be greater than 0 for WEEKLY period");
         }
 
-        if(!CustomDateUtil.isValidFormat(DateDisplayConstants.DATE_INPUT_FORMAT,req.getBudgetStartDate())){
-            throw new InvalidRequestException("Budget start date not in valid format:"+DateDisplayConstants.DATE_INPUT_FORMAT);
+        if(!CustomDateUtil.isValidFormat(DateConstants.DATE_INPUT_FORMAT,req.getBudgetStartDate())){
+            throw new InvalidRequestException("Budget start date not in valid format:"+ DateConstants.DATE_INPUT_FORMAT);
         }
 
-        LocalDate budgetStartDate = CustomDateUtil.formatStringToLocalDate(req.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT) ;
+        LocalDate budgetStartDate = CustomDateUtil.formatStringToLocalDate(req.getBudgetStartDate(), DateConstants.DATE_INPUT_FORMAT) ;
         if (budgetStartDate==null) {
             throw new InvalidRequestException("Budget start date must be provided for WEEKLY period");
         }
@@ -38,7 +38,7 @@ public class WeeklyPeriodHandler extends AbstractBudgetPeriodHandler {
 
     @Override
     public LocalDate[] calculateBudgetDateRange(CreateBudgetRequestDTO req) {
-        LocalDate budgetStartDate = CustomDateUtil.formatStringToLocalDate(req.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT) ;
+        LocalDate budgetStartDate = CustomDateUtil.formatStringToLocalDate(req.getBudgetStartDate(), DateConstants.DATE_INPUT_FORMAT) ;
         LocalDate budgetEndDate=budgetStartDate.plusDays(AppConstants.NUM_DAYS_IN_WEEK * req.getDuration());
         return new LocalDate[]{budgetStartDate,budgetEndDate};
     }
@@ -46,6 +46,6 @@ public class WeeklyPeriodHandler extends AbstractBudgetPeriodHandler {
     @Override
     public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
         dto.setDuration((int)  (DAYS.between(budget.getBudgetStartDate(),budget.getBudgetEndDate())/AppConstants.NUM_DAYS_IN_WEEK));
-        dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateConstants.DATE_INPUT_FORMAT));
     }
 }

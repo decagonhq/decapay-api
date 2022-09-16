@@ -1,15 +1,14 @@
 package com.decagon.decapay.service.budget;
 
+import com.decagon.decapay.config.userSetting.UserBudgetLineItemTemplate;
+import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.SearchCriteria;
 import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
-import com.decagon.decapay.model.budget.Budget;
-import com.decagon.decapay.model.budget.BudgetCategory;
-import com.decagon.decapay.model.budget.BudgetLineItem;
-import com.decagon.decapay.model.budget.Expenses;
+import com.decagon.decapay.model.budget.*;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.CreateBudgetPopulator;
 import com.decagon.decapay.populator.CreateExpensePopulator;
@@ -24,6 +23,7 @@ import com.decagon.decapay.utils.UserInfoUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -66,7 +66,38 @@ public class BudgetServiceImpl implements BudgetService {
 
         this.saveBudget(budget, currentUser);
 
+        //check if line item template exist for this new budget's period if exist then create the line items
+        UserSettings userSetting=null;
+        try {
+            userSetting=objectMapper.readValue(currentUser.getUserSetting(),UserSettings.class);
+        } catch (Exception e) {
+            //do nothing
+        }
+        if(userSetting!=null) {
+            this.createLineItemFromTemplateIfConfigured(userSetting,currentUser,budget);
+        }
+
         return new CreateBudgetResponseDTO(budget.getId());
+    }
+
+    /**
+     * @param userSetting
+     * @param currentUser
+     * @param budget
+     * @see UserBudgetLineItemTemplate
+     */
+    private void createLineItemFromTemplateIfConfigured(UserSettings userSetting,User currentUser,Budget budget) {
+        Optional<UserBudgetLineItemTemplate> budgetLineItemTemplate=userSetting.getBudgetLineItemTemplateByPeriod(budget.getBudgetPeriod());
+        if(budgetLineItemTemplate.isPresent()){
+            Collection<Long> templateLineItems=budgetLineItemTemplate.get().getBudgetCategories();
+            if(CollectionUtils.isNotEmpty(templateLineItems)){
+                for(Long categoryId:templateLineItems) {
+                    this.budgetCategoryService.findCategoryByIdAndUser(categoryId,currentUser).ifPresent(budgetCategory->{
+                        this.saveBudgetLineItem(budget, budgetCategory, BigDecimal.valueOf(0.00));
+                    });
+                }
+            }
+        }
     }
 
     private void saveBudget(Budget budget, User user) {
@@ -103,7 +134,7 @@ public class BudgetServiceImpl implements BudgetService {
         return budgets.map(budgetResponseDto -> {
 
             budgetResponseDto.setDisplayTotalAmountSpentSoFar(currencyService.formatAmount(budgetResponseDto.getTotalAmountSpentSoFar(), (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
-            budgetResponseDto.setDisplayProjectedAmount(currencyService.formatAmount(budgetResponseDto.getProjectedAmount(),  (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
+            budgetResponseDto.setDisplayProjectedAmount(currencyService.formatAmount(budgetResponseDto.getProjectedAmount(), (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
             budget1.setTotalAmountSpentSoFar(budgetResponseDto.getTotalAmountSpentSoFar());
             budget1.setProjectedAmount(budgetResponseDto.getProjectedAmount());
             BigDecimal percentageSpentSoFar = budget1.calculatePercentageAmountSpent();
@@ -129,7 +160,7 @@ public class BudgetServiceImpl implements BudgetService {
         if (!isCurrentUserOwnerOfBudget(currentUser, budget)) {
             throw new InvalidRequestException("Invalid Request");
         }
-        return this.convertBudgetViewDto(budget,currentUser);
+        return this.convertBudgetViewDto(budget, currentUser);
     }
 
 
@@ -222,7 +253,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     private boolean transactionExistsOutsideOfNewBudgetPeriod(CreateBudgetRequestDTO budgetRequestDto, Budget budget, AbstractBudgetPeriodHandler budgetPeriodHandler) {
         LocalDate[] targetdDateRange = budgetPeriodHandler.calculateBudgetDateRange(budgetRequestDto);
-        Slice<Long> id=this.expenseRepository.existsExpenseOutsideBudgetPeriod(budget.getId(), targetdDateRange[0], targetdDateRange[1],PageRequest.of(0, 1));
+        Slice<Long> id = this.expenseRepository.existsExpenseOutsideBudgetPeriod(budget.getId(), targetdDateRange[0], targetdDateRange[1], PageRequest.of(0, 1));
         return id.hasContent();
     }
 
@@ -269,10 +300,6 @@ public class BudgetServiceImpl implements BudgetService {
 
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
-        String userSettings = currentUser.getUserSetting();
-
-        Object[] currencyLocale = CommonUtil.getLocaleAndCurrency(userSettings, objectMapper);
-
         Budget budget = this.budgetRepository.findBudgetWithLineItems(budgetId, currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
 
@@ -286,12 +313,38 @@ public class BudgetServiceImpl implements BudgetService {
         BigDecimal expectedLineItemsTotalAmountAfterSave = calculateExpectedNewTotalLineItemsAmountAfterSave(budget, budgetLineItemDto);
 
         if (isBudgetProjectedAmountLessThanLineItemsTotalAmountAfterSave(budget, expectedLineItemsTotalAmountAfterSave)) {
+            String userSettings = currentUser.getUserSetting();
+            Object[] currencyLocale = CommonUtil.getLocaleAndCurrency(userSettings, objectMapper);
             throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountAfterSave, (Locale) currencyLocale[0], (Currency) currencyLocale[1]), budget.getProjectedAmount()));
         }
 
+        //update user settings if user wants category to be remembered for budget of this period type
+        if (budgetLineItemDto.isSetLineItemAsTemplate()) {
+            this.setLineItemAsTemplateForUser(currentUser, budget.getBudgetPeriod(), budgetLineItemDto.getBudgetCategoryId());
+        }
         this.saveBudgetLineItem(budget, category, budgetLineItemDto.getAmount());
 
         return new IdResponseDto(budget.getId());
+    }
+
+    private void setLineItemAsTemplateForUser(User currentUser, BudgetPeriod budgetPeriod, Long budgetCategoryId) {
+        try {
+            UserSettings userSettings = objectMapper.readValue(currentUser.getUserSetting(), UserSettings.class);
+            userSettings.getBudgetLineItemTemplateByPeriod(budgetPeriod).ifPresentOrElse(
+                    (budgetLineItemTemplate) -> {
+                        budgetLineItemTemplate.addCategory(budgetCategoryId);
+                    },
+                    () -> {
+                        UserBudgetLineItemTemplate budgetLineItemTemplate=new UserBudgetLineItemTemplate();
+                        budgetLineItemTemplate.setPeriod(budgetPeriod);
+                        userSettings.addBudgetLineItemTemplateSetting(budgetLineItemTemplate);
+                        budgetLineItemTemplate.addCategory(budgetCategoryId);
+                    });
+
+            currentUser.setUserSetting(objectMapper.writeValueAsString(userSettings));
+        } catch (Exception e) {
+            log.error("cannot update user setting for budget", e);
+        }
     }
 
     private void saveBudgetLineItem(Budget budget, BudgetCategory category, BigDecimal amount) {
@@ -328,7 +381,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     @Transactional
-    public void updateLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto){
+    public void updateLineItem(Long budgetId, Long categoryId, EditBudgetLineItemDto budgetLineItemDto) {
 
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
@@ -398,7 +451,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Transactional
     public void removeExpense(Long expenseId) {
         User currentUser = this.userInfoUtil.getCurrAuthUser();
-        Expenses expense = expenseRepository.findExpenseById(expenseId)
+        Expense expense = expenseRepository.findExpenseById(expenseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Expense with " + expenseId + " not found"));
         if (!isExpenseBelongToUser(currentUser, expense)) {
             throw new InvalidRequestException("Expense does not belong to user");
@@ -406,14 +459,14 @@ public class BudgetServiceImpl implements BudgetService {
         this.deleteExpense(expense, currentUser);
     }
 
-    private void deleteExpense(Expenses expense, User user) {
+    private void deleteExpense(Expense expense, User user) {
         expenseRepository.deleteById(expense.getId());
-       // Budget updateBudget = budgetRepository.findBudgetWithLineItems(expense.getBudgetLineItem().getBudget().getId(), user.getId())
-                //.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+        // Budget updateBudget = budgetRepository.findBudgetWithLineItems(expense.getBudgetLineItem().getBudget().getId(), user.getId())
+        //.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
         expense.getBudgetLineItem().removeExpense(expense);
     }
 
-    private boolean isExpenseBelongToUser(User user, Expenses expenses) {
+    private boolean isExpenseBelongToUser(User user, Expense expenses) {
         Long userBudgetId = expenses.getBudgetLineItem().getBudget().getUser().getId();
         Long userCategoryId = expenses.getBudgetLineItem().getBudgetCategory().getUser().getId();
         if (Objects.equals(userBudgetId, user.getId()) && Objects.equals(userCategoryId, user.getId())) {
@@ -447,7 +500,7 @@ public class BudgetServiceImpl implements BudgetService {
         }
         BudgetLineItem lineItem = this.getLineItem(budget, category);
 
-        Expenses expense = this.createExpenseModelEntity(expenseDto, lineItem);
+        Expense expense = this.createExpenseModelEntity(expenseDto, lineItem);
 
         expense = this.saveExpense(expense);
 
@@ -456,12 +509,12 @@ public class BudgetServiceImpl implements BudgetService {
         return new IdResponseDto(expense.getId());
     }
 
-    private Expenses saveExpense(Expenses expense) {
+    private Expense saveExpense(Expense expense) {
         return expenseRepository.save(expense);
     }
 
-    private Expenses createExpenseModelEntity(ExpenseDto expenseDto, BudgetLineItem lineItem) {
-        Expenses expense = new Expenses();
+    private Expense createExpenseModelEntity(ExpenseDto expenseDto, BudgetLineItem lineItem) {
+        Expense expense = new Expense();
         CreateExpensePopulator populator = new CreateExpensePopulator();
         expense = populator.populate(expenseDto, expense);
         expense.setBudgetLineItem(lineItem);
@@ -469,7 +522,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable){
+    public Page<BudgetExpensesResponseDto> getListOfBudgetExpenses(Long budgetId, Long categoryId, Pageable pageable) {
 
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
@@ -510,7 +563,7 @@ public class BudgetServiceImpl implements BudgetService {
     public IdResponseDto updateExpense(Long expenseId, ExpenseDto expenseDto) {
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
-        Expenses expense = this.expenseRepository.findExpenseById(expenseId)
+        Expense expense = this.expenseRepository.findExpenseById(expenseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
 
         Budget budget = expense.getBudgetLineItem().getBudget();
@@ -519,7 +572,7 @@ public class BudgetServiceImpl implements BudgetService {
             throw new InvalidRequestException(String.format("Expense transaction date {%s} is outside budget period {%s} - {%s} ", expenseDto.getTransactionDate(), budget.getBudgetStartDate(), budget.getBudgetEndDate()));
         }
 
-        if(!isExpenseBelongToUser(currentUser, expense)){
+        if (!isExpenseBelongToUser(currentUser, expense)) {
             throw new InvalidRequestException("Expense does not belong to user");
         }
 
@@ -527,12 +580,13 @@ public class BudgetServiceImpl implements BudgetService {
 
         expense = this.updateExpense(expenseDto, expense);
 
-        expense.getBudgetLineItem().updateExpense(expense, oldExpenseAmount);
+        //update budget line item amount spent so far
+        expense.getBudgetLineItem().updateAmountSpentSoFar(expense, oldExpenseAmount);
 
         return new IdResponseDto(expense.getId());
     }
 
-    private Expenses updateExpense(ExpenseDto expenseDto, Expenses expense) {
+    private Expense updateExpense(ExpenseDto expenseDto, Expense expense) {
         CreateExpensePopulator populator = new CreateExpensePopulator();
         return populator.populate(expenseDto, expense);
     }

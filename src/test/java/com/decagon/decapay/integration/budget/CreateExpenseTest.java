@@ -1,11 +1,11 @@
 package com.decagon.decapay.integration.budget;
 
-import com.decagon.decapay.constants.DateDisplayConstants;
+import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.dto.budget.ExpenseDto;
 import com.decagon.decapay.model.budget.Budget;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.budget.BudgetPeriod;
-import com.decagon.decapay.model.budget.Expenses;
+import com.decagon.decapay.model.budget.Expense;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.budget.BudgetCategoryRepository;
@@ -141,7 +141,7 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(null, category, dto, status().isNotFound());
@@ -167,7 +167,7 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(budget, null, dto, status().isNotFound());
@@ -196,7 +196,7 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT));
 
         setAuthHeader(user);
         this.validateExpectation(budget, category, dto, status().isNotFound());
@@ -224,7 +224,7 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(budgetStartDate.minusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(budgetStartDate.minusDays(1), DateConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(budget, category, dto, status().isBadRequest());
@@ -252,7 +252,7 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(LocalDate.now().plusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now().plusDays(1), DateConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         this.validateExpectation(budget, category, dto, status().isBadRequest());
@@ -286,14 +286,14 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(budgetStartDate.minusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(budgetStartDate.minusDays(1), DateConstants.DATE_INPUT_FORMAT));
         this.validateExpectation(budget, category, dto, status().isBadRequest());
 
         //request transaction date after budget end date
         dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(budgetEndDate.plusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(budgetEndDate.plusDays(1), DateConstants.DATE_INPUT_FORMAT));
         this.validateExpectation(budget, category, dto, status().isBadRequest());
     }
 
@@ -325,14 +325,14 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(budgetStartDate.minusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(budgetStartDate.minusDays(1), DateConstants.DATE_INPUT_FORMAT));
         this.validateExpectation(budget, category, dto, status().isBadRequest());
 
         //request transaction date after budget end date
         dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(100));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(budgetEndDate.plusDays(1),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(budgetEndDate.plusDays(1), DateConstants.DATE_INPUT_FORMAT));
         this.validateExpectation(budget, category, dto, status().isBadRequest());
     }
 
@@ -361,13 +361,13 @@ class CreateExpenseTest {
         var lineItem1 = budget.getBudgetLineItem(category);
         var lineItem2 = budget.getBudgetLineItem(category2);
 
-        Expenses expense1 = new Expenses();
+        Expense expense1 = new Expense();
         expense1.setAmount(BigDecimal.valueOf(500.00));
         expense1.setTransactionDate(LocalDate.now().plusDays(2));
         expense1.setDescription("Food expense1");
         expense1.setBudgetLineItem(lineItem1);
 
-        Expenses expense2 = new Expenses();
+        Expense expense2 = new Expense();
         expense2.setAmount(BigDecimal.valueOf(1000.00));
         expense2.setTransactionDate(LocalDate.now().plusDays(3));
         expense2.setDescription("Food expense2");
@@ -383,7 +383,7 @@ class CreateExpenseTest {
         ExpenseDto dto = new ExpenseDto();
         dto.setAmount(BigDecimal.valueOf(1000));
         dto.setDescription("Food");
-        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(),DateDisplayConstants.DATE_INPUT_FORMAT));
+        dto.setTransactionDate(formatLocalDateToString(LocalDate.now(), DateConstants.DATE_INPUT_FORMAT));
         setAuthHeader(user);
 
         var response = this.validateExpectation(budget, category, dto, status().isOk())
@@ -401,7 +401,7 @@ class CreateExpenseTest {
         assertNotNull(expense1.getId());
         assertThat(expense1.getAmount().doubleValue()).isEqualTo(dto.getAmount().doubleValue());
         assertThat(expense1.getDescription()).isEqualTo(dto.getDescription());
-        assertThat(expense1.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate(),DateDisplayConstants.DATE_INPUT_FORMAT));
+        assertThat(expense1.getTransactionDate()).isEqualTo(formatStringToLocalDate(dto.getTransactionDate(), DateConstants.DATE_INPUT_FORMAT));
         assertThat(lineItem1.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(1500.00).setScale(2));
         assertThat(budget.getTotalAmountSpentSoFar().setScale(2)).isEqualTo(BigDecimal.valueOf(2500.00).setScale(2));
     }

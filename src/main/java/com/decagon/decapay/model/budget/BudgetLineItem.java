@@ -44,7 +44,7 @@ public class BudgetLineItem implements Auditable, Serializable {
     private String notificationThreshold;
 
     @OneToMany(mappedBy = "budgetLineItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Expenses> expenses = new HashSet<>();
+    private Set<Expense> expenses = new HashSet<>();
 
     @Embedded
     private AuditSection auditSection = new AuditSection();
@@ -56,7 +56,7 @@ public class BudgetLineItem implements Auditable, Serializable {
     }
 
 
-    public void addExpense(Expenses expense) {
+    public void addExpense(Expense expense) {
         if (this.totalAmountSpentSoFar == null){
             this.totalAmountSpentSoFar = BigDecimal.ZERO;
         }
@@ -77,7 +77,7 @@ public class BudgetLineItem implements Auditable, Serializable {
         return spentSoFar.multiply(BigDecimal.valueOf(100)).setScale(1, RoundingMode.CEILING);
     }
 
-    public void updateExpense(Expenses expense, BigDecimal oldExpenseAmount) {
+    public void updateAmountSpentSoFar(Expense expense, BigDecimal oldExpenseAmount) {
         this.totalAmountSpentSoFar = this.totalAmountSpentSoFar
                 .subtract(oldExpenseAmount)
                 .add(expense.getAmount());
@@ -87,7 +87,7 @@ public class BudgetLineItem implements Auditable, Serializable {
                 .add(expense.getAmount()));
     }
 
-    public void removeExpense(Expenses expense){
+    public void removeExpense(Expense expense){
         BigDecimal newBudgetTotalAmount = this.budget.getTotalAmountSpentSoFar().subtract(expense.getAmount());
         this.budget.setTotalAmountSpentSoFar(newBudgetTotalAmount.setScale(2, RoundingMode.HALF_DOWN));
 
