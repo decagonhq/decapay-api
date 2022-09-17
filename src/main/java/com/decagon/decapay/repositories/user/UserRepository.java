@@ -1,7 +1,9 @@
 package com.decagon.decapay.repositories.user;
 
+import com.decagon.decapay.dto.UserResponseDto;
 import com.decagon.decapay.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
