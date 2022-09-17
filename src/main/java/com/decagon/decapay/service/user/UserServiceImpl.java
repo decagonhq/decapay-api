@@ -93,6 +93,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto viewUserProfile() {
         User currentUser = this.userInfoUtil.getCurrAuthUser();
-        return userRepository.findUserById(currentUser.getId());
+        return UserResponseDto.builder()
+                .firstName(currentUser.getFirstName())
+                .lastName(currentUser.getLastName())
+                .email(currentUser.getEmail())
+                .phoneNumber(currentUser.getPhoneNumber())
+                .build();
     }
 }

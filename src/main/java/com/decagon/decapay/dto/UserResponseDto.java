@@ -1,21 +1,17 @@
 package com.decagon.decapay.dto;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class UserResponseDto {
     private String firstName;
     private String lastName;
     private String email;
     private String phoneNumber;
-
-    public UserResponseDto(String firstName, String lastName, String email, String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-    }
 }

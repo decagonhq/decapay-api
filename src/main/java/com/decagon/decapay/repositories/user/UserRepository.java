@@ -12,9 +12,4 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     Optional<User> findUserByEmail(String email);
-
-    @Query("select new com.decagon.decapay.dto.UserResponseDto(u.firstName, u.lastName, u.email, u.phoneNumber) " +
-            "from User u " +
-            "where u.id =?1 " )
-    UserResponseDto findUserById(Long Id);
 }
