@@ -2,6 +2,7 @@ package com.decagon.decapay.integration.auth;
 
 
 import com.decagon.decapay.config.userSetting.UserSettings;
+import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.dto.auth.LoginDto;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.repositories.user.UserRepository;
@@ -111,4 +112,31 @@ public class SignInTest {
                 .andExpect(jsonPath("$.data.currency").value("NGN"))
                 .andReturn();
     }
+
+    @Test
+    void testReturnDefaultLocaleSettingWhenAuthenticateAndUserSettingNotSet() throws Exception {
+        User user = new User();
+        user.setEmail("ogg@gmail.com");
+        user.setPassword(passwordEncoder.encode("123456"));
+        user.setFirstName("Goodluck");
+        user.setLastName("Nwoko");
+        user.setPhoneNumber("07056355664");
+        userRepository.save(user);
+
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail("ogg@gmail.com");
+        loginDto.setPassword("123456");
+
+        MvcResult result =  this.mockMvc
+                .perform(MockMvcRequestBuilders.post(path + "/signin").content(TestUtils.asJsonString(loginDto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").exists())
+                .andExpect(jsonPath("$.data.country").value(AppConstants.DEFAULT_COUNTRY))
+                .andExpect(jsonPath("$.data.language").value(AppConstants.DEFAULT_LANGUAGE))
+                .andExpect(jsonPath("$.data.currency").value(AppConstants.DEFAULT_CURRENCY_CODE))
+                .andReturn();
+    }
+
 }

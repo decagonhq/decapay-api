@@ -37,7 +37,9 @@ public class AppConstants {
     public static final String EMAIL_PASSWORD_RESET_TMPL = "email_password_reset";
     public static final String EMAIL_PASSWORD_RESET_MOBILE_TMPL = "email_password_reset_mobile";
     public final static Locale DEFAULT_LOCALE = Locale.US;
-    public final static Currency DEFAULT_CURRENCY = Currency.getInstance("NGN");
+
+    public static final String DEFAULT_CURRENCY_CODE= "NGN";
+    public final static Currency DEFAULT_CURRENCY = Currency.getInstance(DEFAULT_CURRENCY_CODE);
     public static final String DEFAULT_COUNTRY = "NG";
     public static final String DEFAULT_LANGUAGE = "en";
     public static final short NUM_DAYS_IN_WEEK = 7;
