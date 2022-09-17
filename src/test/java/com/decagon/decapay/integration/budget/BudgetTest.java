@@ -200,10 +200,15 @@ public class BudgetTest {
         BudgetCategory category2 = TestModels.budgetCategory("Water");
         category2.setUser(user);
 
-        this.budgetCategoryRepository.saveAll(List.of(category1, category2));
+        BudgetCategory category3 = TestModels.budgetCategory("Cat3");
+        category3.setUser(user);
+
+        this.budgetCategoryRepository.saveAll(List.of(category1, category2,category3));
 
         budget.addBudgetLineItem(category1, BigDecimal.valueOf(2000));
         budget.addBudgetLineItem(category2, BigDecimal.valueOf(2500));
+        budget.addBudgetLineItem(category3, BigDecimal.valueOf(0.0));
+
         this.budgetRepository.save(budget);
 
         setAuthHeader(user);;
@@ -224,16 +229,16 @@ public class BudgetTest {
                 .andExpect(jsonPath("$.data.displayPercentageSpentSoFar").value("50.0%"))
                 .andExpect(jsonPath("$.data.budgetPeriod").value(MONTHLY.name()))
                 //line items
-                .andExpect(jsonPath("$.data.lineItems.size()").value(2))
-                .andExpect(jsonPath("$.data.lineItems[*].categoryId", Matchers.containsInAnyOrder(category1.getId().intValue(),category2.getId().intValue())))
-                .andExpect(jsonPath("$.data.lineItems[*].category", Matchers.containsInAnyOrder("Food","Water")))
-                .andExpect(jsonPath("$.data.lineItems[*].budgetId", Matchers.containsInAnyOrder(budget.getId().intValue(),budget.getId().intValue())))
-                .andExpect(jsonPath("$.data.lineItems[*].projectedAmount", Matchers.containsInAnyOrder(2000.00,2500.00)))
-                .andExpect(jsonPath("$.data.lineItems[*].displayProjectedAmount", Matchers.containsInAnyOrder("₦2,000.00", "₦2,500.00")))
-                .andExpect(jsonPath("$.data.lineItems[*].totalAmountSpentSoFar", Matchers.containsInAnyOrder(0.00,0.00)))
-                .andExpect(jsonPath("$.data.lineItems[*].displayTotalAmountSpentSoFar", Matchers.containsInAnyOrder("₦0.00", "₦0.00")))
-                .andExpect(jsonPath("$.data.lineItems[*].percentageSpentSoFar", Matchers.containsInAnyOrder(0.0,0.0)))
-                .andExpect(jsonPath("$.data.lineItems[*].displayPercentageSpentSoFar", Matchers.containsInAnyOrder("0.0%","0.0%")));
+                .andExpect(jsonPath("$.data.lineItems.size()").value(3))
+                .andExpect(jsonPath("$.data.lineItems[*].categoryId", Matchers.containsInAnyOrder(category1.getId().intValue(),category2.getId().intValue(),category3.getId().intValue())))
+                .andExpect(jsonPath("$.data.lineItems[*].category", Matchers.containsInAnyOrder("Food","Water","Cat3")))
+                .andExpect(jsonPath("$.data.lineItems[*].budgetId", Matchers.containsInAnyOrder(budget.getId().intValue(),budget.getId().intValue(),budget.getId().intValue())))
+                .andExpect(jsonPath("$.data.lineItems[*].projectedAmount", Matchers.containsInAnyOrder(2000.00,2500.00,0.00)))
+                .andExpect(jsonPath("$.data.lineItems[*].displayProjectedAmount", Matchers.containsInAnyOrder("₦2,000.00", "₦2,500.00","₦0.00")))
+                .andExpect(jsonPath("$.data.lineItems[*].totalAmountSpentSoFar", Matchers.containsInAnyOrder(0.00,0.00,0.00)))
+                .andExpect(jsonPath("$.data.lineItems[*].displayTotalAmountSpentSoFar", Matchers.containsInAnyOrder("₦0.00", "₦0.00","₦0.00")))
+                .andExpect(jsonPath("$.data.lineItems[*].percentageSpentSoFar", Matchers.containsInAnyOrder(0.0,0.0,0.0)))
+                .andExpect(jsonPath("$.data.lineItems[*].displayPercentageSpentSoFar", Matchers.containsInAnyOrder("0.0%","0.0%","0.0%")));
     }
 
 
