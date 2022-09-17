@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,27 +26,23 @@ public class BudgetLineItemTest {
     }
 
     static Stream<Arguments> budgetLineItemProvider() {
-
         return Stream.of(
-                arguments(budgetLineItem(500.00, 500.00), BigDecimal.valueOf(100.0)),
-                arguments(budgetLineItem(250.00, 500.00), BigDecimal.valueOf(50.0)),
-                arguments(budgetLineItem(0.00, 500.00), BigDecimal.valueOf(0.0)),
-                arguments(budgetLineItem(null, 500.00), BigDecimal.valueOf(0.0)),
-                arguments(budgetLineItem(0.00, 0.00), BigDecimal.valueOf(0.0)),
-                arguments(budgetLineItem(0.00, 0.0), BigDecimal.valueOf(0.0)),
-                arguments(budgetLineItem(500.00, 0.00), BigDecimal.valueOf(0.0)),
-                arguments(budgetLineItem(500.00, null), BigDecimal.valueOf(0.0)),
+                arguments(budgetLineItem(BigDecimal.valueOf(500.00), BigDecimal.valueOf(500.00)), BigDecimal.valueOf(100.0)),
+                arguments(budgetLineItem(BigDecimal.valueOf(250.00), BigDecimal.valueOf(500.00)), BigDecimal.valueOf(50.0)),
+                arguments(budgetLineItem(BigDecimal.valueOf(0.00), BigDecimal.valueOf(500.00)), BigDecimal.valueOf(0.0)),
+                arguments(budgetLineItem(null, BigDecimal.valueOf(500.00)), BigDecimal.valueOf(0.0)),
+                arguments(budgetLineItem(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_DOWN), BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_DOWN)), BigDecimal.valueOf(0.0)),
+                arguments(budgetLineItem(BigDecimal.valueOf(0.0).setScale(1, RoundingMode.HALF_DOWN), BigDecimal.valueOf(0.0).setScale(1, RoundingMode.HALF_DOWN)), BigDecimal.valueOf(0.0)),
+                arguments(budgetLineItem(BigDecimal.valueOf(500.00), BigDecimal.valueOf(0.00)), BigDecimal.valueOf(0.0)),
+                arguments(budgetLineItem(BigDecimal.valueOf(500.00), BigDecimal.valueOf(0.0)), BigDecimal.valueOf(0.0)),
+                arguments(budgetLineItem(BigDecimal.valueOf(500.00), null), BigDecimal.valueOf(0.0)),
                 arguments(budgetLineItem(null, null), BigDecimal.valueOf(0.0)));
     }
 
-    private static BudgetLineItem budgetLineItem(Double amountSpentSoFar, Double projectedAmount) {
+    private static BudgetLineItem budgetLineItem(BigDecimal amountSpentSoFar, BigDecimal projectedAmount) {
         BudgetLineItem budgetLineItem = new BudgetLineItem();
-        if (projectedAmount != null) {
-            budgetLineItem.setProjectedAmount(BigDecimal.valueOf(projectedAmount));
-        }
-        if (amountSpentSoFar != null) {
-            budgetLineItem.setTotalAmountSpentSoFar(BigDecimal.valueOf(amountSpentSoFar));
-        }
+        budgetLineItem.setProjectedAmount(projectedAmount);
+        budgetLineItem.setTotalAmountSpentSoFar(amountSpentSoFar);
         return budgetLineItem;
     }
 

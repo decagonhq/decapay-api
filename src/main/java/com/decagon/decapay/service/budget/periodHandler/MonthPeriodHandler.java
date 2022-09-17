@@ -9,39 +9,41 @@ import java.time.LocalDate;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.INVALID_REQUEST;
 
-
+/**
+ * handles Monthly budgets
+ */
 public class MonthPeriodHandler extends AbstractBudgetPeriodHandler {
-    /*
-      for monthly period, year and month are both required
-                         year must be a number and 4xters in len and
-                         month must be number and btw 1 and 12
+
+    /**
+     * validate Monthly budget strategy.
+     * Year and month are required year must be a number
+     * and 4 characters in length and month must be number and betweent 1 and 12
+     * @param req budget request input object to be validated
      */
     @Override
     public void validateRequest(CreateBudgetRequestDTO req) {
-        if (req.getMonth() <= 0 || req.getMonth()>12) {
+        if (req.getMonth() <= 0 || req.getMonth() > 12) {
             throw new InvalidRequestException(INVALID_REQUEST + ": Invalid value for Month (valid values 1 - 12): " + req.getMonth());
         }
-        if (req.getYear() < 1000 || req.getYear()>9999) {
+        if (req.getYear() < 1000 || req.getYear() > 9999) {
             throw new InvalidRequestException(INVALID_REQUEST + ": Invalid value for Year (valid values 1000 - 9999): " + req.getYear());
         }
     }
 
     /**
-     * if current month and year, then startdate is current date
-     * if current month  and not current year, then start date is first date
-     * if not current month but year current , start date is first date
-     * if not current month and year ,start date is first date
-     * enddate always last date of month
-     *
-     * @param dto
+     * Calculate monthly budget period interval strategy
+     * Given a year and month meta data, calculate the the start and end date for the budget
+     * startdate is first date of month and enddate last date of month
+     * @param dto budget request input object contains year and month metadata
      * @return
      */
+
     public LocalDate[] calculateBudgetDateRange(CreateBudgetRequestDTO dto) {
 
         short requestBudgetMnth = dto.getMonth();
         short requestBudgetYr = dto.getYear();
 
-        if (requestBudgetMnth <= 0 || requestBudgetMnth>12) {
+        if (requestBudgetMnth <= 0 || requestBudgetMnth > 12) {
             throw new InvalidRequestException(INVALID_REQUEST + ": Invalid value for Month (valid values 1 - 12): " + requestBudgetMnth);
         }
 
@@ -61,6 +63,14 @@ public class MonthPeriodHandler extends AbstractBudgetPeriodHandler {
         return new LocalDate[]{startDate, endDate};
     }
 
+
+    /**
+     * Set monthly budget metadata strategy
+     * populate Monthly budget DTO object required year and month field with reverse engineered data
+     *
+     * @param dto    budget DTO to be populated
+     * @param budget source budget, contains start and end date to reverse engineered
+     */
     @Override
     public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
         dto.setMonth((short) budget.getBudgetStartDate().getMonthValue());

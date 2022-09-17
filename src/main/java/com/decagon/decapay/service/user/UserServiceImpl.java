@@ -2,6 +2,7 @@ package com.decagon.decapay.service.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.UserDTO;
+import com.decagon.decapay.dto.UserResponseDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
@@ -14,6 +15,7 @@ import com.decagon.decapay.repositories.reference.currency.CurrencyRepository;
 import com.decagon.decapay.repositories.reference.language.LanguageRepository;
 import com.decagon.decapay.repositories.reference.zone.country.CountryRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
+import com.decagon.decapay.utils.UserInfoUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,15 +32,17 @@ public class UserServiceImpl implements UserService {
     private final LanguageRepository languageRepository;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
+    private final UserInfoUtil userInfoUtil;
 
     public UserServiceImpl(UserRepository userRepository, CountryRepository countryRepository, CurrencyRepository currencyRepository,
-                           LanguageRepository languageRepository, PasswordEncoder passwordEncoder,ObjectMapper objectMapper) {
+                           LanguageRepository languageRepository, PasswordEncoder passwordEncoder, ObjectMapper objectMapper, UserInfoUtil userInfoUtil) {
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
         this.currencyRepository = currencyRepository;
         this.languageRepository = languageRepository;
         this.passwordEncoder = passwordEncoder;
         this.objectMapper=objectMapper;
+        this.userInfoUtil = userInfoUtil;
     }
 
     @Override
@@ -84,5 +88,16 @@ public class UserServiceImpl implements UserService {
     public UserSettings getUserSettings() {
 
         return null;
+    }
+
+    @Override
+    public UserResponseDto viewUserProfile() {
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+        return UserResponseDto.builder()
+                .firstName(currentUser.getFirstName())
+                .lastName(currentUser.getLastName())
+                .email(currentUser.getEmail())
+                .phoneNumber(currentUser.getPhoneNumber())
+                .build();
     }
 }

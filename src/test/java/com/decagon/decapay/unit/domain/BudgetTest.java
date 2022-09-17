@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
@@ -32,28 +33,25 @@ public class BudgetTest {
         assertEquals(expectedCalculatedAmount, calculatedPercentage);
     }
 
-   static   Stream<Arguments> budgetProvider() {
+    static Stream<Arguments> budgetProvider() {
 
-       return Stream.of(
-               arguments(budget(500.00, 500.00), BigDecimal.valueOf(100.0)),
-               arguments(budget(250.00, 500.00), BigDecimal.valueOf(50.0)),
-               arguments(budget(0.00, 500.00), BigDecimal.valueOf(0.0)),
-               arguments(budget(null, 500.00), BigDecimal.valueOf(0.0)),
-               arguments(budget(0.00, 0.00), BigDecimal.valueOf(0.0)),
-               arguments(budget(0.00, 0.0), BigDecimal.valueOf(0.0)),
-               arguments(budget(500.00, 0.00), BigDecimal.valueOf(0.0)),
-               arguments(budget(500.00, null), BigDecimal.valueOf(0.0)),
-               arguments(budget(null, null), BigDecimal.valueOf(0.0)));
+        return Stream.of(
+                arguments(budget(BigDecimal.valueOf(500.00), BigDecimal.valueOf(500.00)), BigDecimal.valueOf(100.0)),
+                arguments(budget(BigDecimal.valueOf(250.00), BigDecimal.valueOf(500.00)), BigDecimal.valueOf(50.0)),
+                arguments(budget(BigDecimal.valueOf(0.00), BigDecimal.valueOf(500.00)), BigDecimal.valueOf(0.0)),
+                arguments(budget(null, BigDecimal.valueOf(500.00)), BigDecimal.valueOf(0.0)),
+                arguments(budget(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_DOWN), BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_DOWN)), BigDecimal.valueOf(0.0)),
+                arguments(budget(BigDecimal.valueOf(0.0).setScale(1, RoundingMode.HALF_DOWN), BigDecimal.valueOf(0.0).setScale(1, RoundingMode.HALF_DOWN)), BigDecimal.valueOf(0.0)),
+                arguments(budget(BigDecimal.valueOf(500.00), BigDecimal.valueOf(0.00)), BigDecimal.valueOf(0.0)),
+                arguments(budget(BigDecimal.valueOf(500.00), BigDecimal.valueOf(0.0)), BigDecimal.valueOf(0.0)),
+                arguments(budget(BigDecimal.valueOf(500.00), null), BigDecimal.valueOf(0.0)),
+                arguments(budget(null, null), BigDecimal.valueOf(0.0)));
     }
 
-    private static Budget budget(Double amountSpentSoFar, Double projectedAmount){
+    private static Budget budget(BigDecimal amountSpentSoFar, BigDecimal projectedAmount) {
         Budget budget = new Budget();
-        if (projectedAmount!= null){
-            budget.setProjectedAmount(BigDecimal.valueOf(projectedAmount));
-        }
-        if (amountSpentSoFar != null){
-            budget.setTotalAmountSpentSoFar(BigDecimal.valueOf(amountSpentSoFar));
-        }
+        budget.setProjectedAmount(projectedAmount);
+        budget.setTotalAmountSpentSoFar(amountSpentSoFar);
         return budget;
     }
 
@@ -63,8 +61,8 @@ public class BudgetTest {
         assertEquals(expectedBudgetLineItem, budget.getBudgetLineItem(budgetCategory));
     }
 
-    static  Stream<Arguments> budgetLineItemProvider() {
-        Budget budgetWithNoLineItem = TestModels.budget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1));
+    static Stream<Arguments> budgetLineItemProvider() {
+        Budget budgetWithNoLineItem = TestModels.budget(MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1));
         budgetWithNoLineItem.setId(2L);
 
         BudgetCategory category = TestModels.budgetCategory("Food");

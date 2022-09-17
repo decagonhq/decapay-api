@@ -35,8 +35,8 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
     }
 
     private void createLanguages()  {
-        log.info(String.format("%s : Populating Languages ", name));
         if (!languageService.existLanguages()) {
+            log.info(String.format("%s : Populating Languages ", name));
             HashMap<String, Locale> locales = CommonUtil.getLocales();
             for (String code : SchemaConstants.LANGUAGE_ISO_CODE) {
                 try {
