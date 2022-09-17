@@ -67,14 +67,14 @@ public class BudgetServiceImpl implements BudgetService {
         this.saveBudget(budget, currentUser);
 
         //check if line item template exist for this new budget's period if exist then create the line items
-        UserSettings userSetting=null;
+        UserSettings userSetting = null;
         try {
-            userSetting=objectMapper.readValue(currentUser.getUserSetting(),UserSettings.class);
+            userSetting = objectMapper.readValue(currentUser.getUserSetting(), UserSettings.class);
         } catch (Exception e) {
             //do nothing
         }
-        if(userSetting!=null) {
-            this.createLineItemFromTemplateIfConfigured(userSetting,currentUser,budget);
+        if (userSetting != null) {
+            this.createLineItemFromTemplateIfConfigured(userSetting, currentUser, budget);
         }
 
         return new CreateBudgetResponseDTO(budget.getId());
@@ -86,13 +86,13 @@ public class BudgetServiceImpl implements BudgetService {
      * @param budget
      * @see UserBudgetLineItemTemplate
      */
-    private void createLineItemFromTemplateIfConfigured(UserSettings userSetting,User currentUser,Budget budget) {
-        Optional<UserBudgetLineItemTemplate> budgetLineItemTemplate=userSetting.getBudgetLineItemTemplateByPeriod(budget.getBudgetPeriod());
-        if(budgetLineItemTemplate.isPresent()){
-            Collection<Long> templateLineItems=budgetLineItemTemplate.get().getBudgetCategories();
-            if(CollectionUtils.isNotEmpty(templateLineItems)){
-                for(Long categoryId:templateLineItems) {
-                    this.budgetCategoryService.findCategoryByIdAndUser(categoryId,currentUser).ifPresent(budgetCategory->{
+    private void createLineItemFromTemplateIfConfigured(UserSettings userSetting, User currentUser, Budget budget) {
+        Optional<UserBudgetLineItemTemplate> budgetLineItemTemplate = userSetting.getBudgetLineItemTemplateByPeriod(budget.getBudgetPeriod());
+        if (budgetLineItemTemplate.isPresent()) {
+            Collection<Long> templateLineItems = budgetLineItemTemplate.get().getBudgetCategories();
+            if (CollectionUtils.isNotEmpty(templateLineItems)) {
+                for (Long categoryId : templateLineItems) {
+                    this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser).ifPresent(budgetCategory -> {
                         this.saveBudgetLineItem(budget, budgetCategory, BigDecimal.valueOf(0.00));
                     });
                 }
@@ -315,7 +315,9 @@ public class BudgetServiceImpl implements BudgetService {
         if (isBudgetProjectedAmountLessThanLineItemsTotalAmountAfterSave(budget, expectedLineItemsTotalAmountAfterSave)) {
             String userSettings = currentUser.getUserSetting();
             Object[] currencyLocale = CommonUtil.getLocaleAndCurrency(userSettings, objectMapper);
-            throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountAfterSave, (Locale) currencyLocale[0], (Currency) currencyLocale[1]), budget.getProjectedAmount()));
+            throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ",
+                    currencyService.formatAmount(expectedLineItemsTotalAmountAfterSave, (Locale) currencyLocale[0], (Currency) currencyLocale[1]),
+                    currencyService.formatAmount(budget.getProjectedAmount(), (Locale) currencyLocale[0], (Currency) currencyLocale[1])));
         }
 
         //update user settings if user wants category to be remembered for budget of this period type
@@ -329,13 +331,19 @@ public class BudgetServiceImpl implements BudgetService {
 
     private void setLineItemAsTemplateForUser(User currentUser, BudgetPeriod budgetPeriod, Long budgetCategoryId) {
         try {
-            UserSettings userSettings = objectMapper.readValue(currentUser.getUserSetting(), UserSettings.class);
+            UserSettings userSettings;
+            String userSettingsJsonStr = currentUser.getUserSetting();
+            if (userSettingsJsonStr == null) {
+                userSettings = new UserSettings();
+            } else {
+                userSettings = objectMapper.readValue(userSettingsJsonStr, UserSettings.class);
+            }
             userSettings.getBudgetLineItemTemplateByPeriod(budgetPeriod).ifPresentOrElse(
                     (budgetLineItemTemplate) -> {
                         budgetLineItemTemplate.addCategory(budgetCategoryId);
                     },
                     () -> {
-                        UserBudgetLineItemTemplate budgetLineItemTemplate=new UserBudgetLineItemTemplate();
+                        UserBudgetLineItemTemplate budgetLineItemTemplate = new UserBudgetLineItemTemplate();
                         budgetLineItemTemplate.setPeriod(budgetPeriod);
                         userSettings.addBudgetLineItemTemplateSetting(budgetLineItemTemplate);
                         budgetLineItemTemplate.addCategory(budgetCategoryId);

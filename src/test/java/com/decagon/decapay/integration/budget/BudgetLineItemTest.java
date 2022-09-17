@@ -366,7 +366,7 @@ class BudgetLineItemTest {
 
 
     @Test
-    void shouldCreateBudgetLineItemTemplate_WhenCreateLineItem_AndSetAsItemTemplateSelectedByUser() throws Exception {
+    void shouldCreateBudgetLineItemTemplate_WhenCreateLineItem_AndSetLineItemAsTemplateSelectedByUser() throws Exception {
 
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
@@ -411,8 +411,9 @@ class BudgetLineItemTest {
     }
 
 
+
     @Test
-    void shouldNotCreateBudgetLineItemTemplate_WhenCreateLineItem_AndSetAsItemTemplateNotSelectedByUser() throws Exception {
+    void shouldNotCreateBudgetLineItemTemplate_WhenCreateLineItem_AndSetItemAsTemplateNotSelectedByUser() throws Exception {
 
         User user = TestModels.user("ola", "dip", "ola@gmail.com",
                 passwordEncoder.encode("password"), "08067644805");
@@ -460,6 +461,45 @@ class BudgetLineItemTest {
         assertFalse(budgetLineItemTemplate.getBudgetCategories().contains(category.getId()));
     }
 
+    @Test
+    void givenUserDoesNoHaveExistingSettings_WhenCreateLineItemAndSetItemAsTemplateSelected_ShouldCreateLineItemTemplate() throws Exception {
+
+        User user = TestModels.user("ola", "dip", "ola@gmail.com",
+                passwordEncoder.encode("password"), "08067644805");
+        user.setUserStatus(UserStatus.ACTIVE);
+        user.setUserSetting(null);
+        userRepository.save(user);
+
+        BudgetCategory category = TestModels.budgetCategory("Food");
+        category.setUser(user);
+
+        this.budgetCategoryRepository.saveAll(List.of(category));
+
+        Budget budget = this.fetchTestBudget( MONTHLY, LocalDate.now(), LocalDate.now().plusMonths(1),user);
+        budget.setProjectedAmount(BigDecimal.valueOf(5000.00));
+        this.budgetRepository.save(budget);
+
+        CreateBudgetLineItemDto dto = new CreateBudgetLineItemDto();
+        dto.setBudgetCategoryId(category.getId());
+        dto.setAmount(BigDecimal.valueOf(500.00));
+        dto.setSetLineItemAsTemplate(true);
+        setAuthHeader(user);;
+
+        this.mockMvc.perform(post(path + "/budgets/{budgetId}/lineItems", budget.getId())
+                        .content(TestUtils.asJsonString(dto))
+                        .contentType(MediaType.APPLICATION_JSON).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(LINE_ITEM_CREATED_SUCCESSFULLY))
+                .andExpect(jsonPath("$.data.id").value(budget.getId()));
+
+        budget = this.budgetRepository.findBudgetWithLineItems(budget.getId(), user.getId()).get();
+        assertEquals(1, budget.getBudgetLineItems().size());
+        //assert line item template set
+        user=this.userRepository.findByEmail(user.getEmail()).get();
+        UserSettings settings=objectMapper.readValue(user.getUserSetting(),UserSettings.class);
+        UserBudgetLineItemTemplate budgetLineItemTemplate=settings.getUserBudgetLineItemTemplate().stream().filter(period->period.getPeriod().equals(MONTHLY)).findFirst().get();
+        assertTrue(budgetLineItemTemplate.getBudgetCategories().contains(category.getId()));
+    }
 
 
     private Budget fetchTestBudget(BudgetPeriod period, LocalDate startDate, LocalDate endDate, User user){
@@ -637,7 +677,6 @@ class BudgetLineItemTest {
         user2.setUserStatus(UserStatus.ACTIVE);
 
         userRepository.saveAll(List.of(user, user2));
-
 
         BudgetCategory category = TestModels.budgetCategory("Food");
         category.setUser(user);
