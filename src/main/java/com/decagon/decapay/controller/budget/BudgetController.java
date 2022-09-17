@@ -106,7 +106,6 @@ public class BudgetController {
 
 
 
-
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = BUDGET_UPDATED_SUCCESSFULLY),
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST),
@@ -132,6 +131,12 @@ public class BudgetController {
     }
 
 
+    /**
+     * validate budget request based on period selected by user
+     * @param createBudgetRequest
+     * @param budgetPeriodHandler handler used to validate request, created based on budget's period type
+     * @see AbstractBudgetPeriodHandler
+     */
     private void validateRequest(CreateBudgetRequestDTO createBudgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
         budgetPeriodHandler.validateRequest(createBudgetRequest);
     }

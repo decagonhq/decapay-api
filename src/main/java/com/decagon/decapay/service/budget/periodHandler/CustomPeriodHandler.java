@@ -8,8 +8,16 @@ import com.decagon.decapay.utils.CustomDateUtil;
 
 import java.time.LocalDate;
 
+/**
+ * handles Custom budgets
+ */
 public class CustomPeriodHandler extends AbstractBudgetPeriodHandler {
 
+    /**
+     * validate Custom budget strategy.
+     * Start and end date are required and must be a valid date format
+     * @param req budget request input object to be validated
+     */
     @Override
     public void validateRequest(CreateBudgetRequestDTO req) {
 
@@ -28,6 +36,12 @@ public class CustomPeriodHandler extends AbstractBudgetPeriodHandler {
         }
     }
 
+    /**
+     * Calculate custom budget period interval strategy
+     * simply returns request start and end date
+     * @param dto budget request input object contains start and end date
+     * @return
+     */
     @Override
     public LocalDate[] calculateBudgetDateRange(CreateBudgetRequestDTO dto) {
         String budgetRequestStartDate= dto.getBudgetStartDate();
@@ -36,6 +50,15 @@ public class CustomPeriodHandler extends AbstractBudgetPeriodHandler {
         return new LocalDate[]{CustomDateUtil.formatStringToLocalDate(budgetRequestStartDate, DateConstants.DATE_INPUT_FORMAT),
                 CustomDateUtil.formatStringToLocalDate(budgetRequestEndDate, DateConstants.DATE_INPUT_FORMAT)};
     }
+
+    /**
+     * Set custom budget metadata strategy
+     * Simply populate Custom budget DTO object required start and end date field with
+     * budget start and end date. No reverse engineering required
+     *
+     * @param dto    budget DTO contains meta data fields to be populated
+     * @param budget source budget, contains start and end date
+     */
 
     @Override
     public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
