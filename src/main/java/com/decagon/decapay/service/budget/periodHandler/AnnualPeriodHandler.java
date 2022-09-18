@@ -35,7 +35,7 @@ public class AnnualPeriodHandler extends AbstractBudgetPeriodHandler {
      * @return
      */
     @Override
-    public LocalDate[] calculateBudgetDateRange(CreateBudgetRequestDTO dto) {
+    public LocalDate[] calculateBudgetPeriodInterval(CreateBudgetRequestDTO dto) {
 
         short requestBudgetYr = dto.getYear();
         if (requestBudgetYr < 1000 || requestBudgetYr>9999) {
@@ -67,7 +67,7 @@ public class AnnualPeriodHandler extends AbstractBudgetPeriodHandler {
      * @param budget source budget, contains start and end date to reverse engineered
      */
     @Override
-    public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
+    public void setBudgetMetaData(CreateBudgetRequestDTO dto, Budget budget) {
         dto.setYear((short) budget.getBudgetStartDate().getYear());
     }
 }

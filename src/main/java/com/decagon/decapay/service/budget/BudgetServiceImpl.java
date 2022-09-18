@@ -252,7 +252,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     private boolean transactionExistsOutsideOfNewBudgetPeriod(CreateBudgetRequestDTO budgetRequestDto, Budget budget, AbstractBudgetPeriodHandler budgetPeriodHandler) {
-        LocalDate[] targetdDateRange = budgetPeriodHandler.calculateBudgetDateRange(budgetRequestDto);
+        LocalDate[] targetdDateRange = budgetPeriodHandler.calculateBudgetPeriodInterval(budgetRequestDto);
         Slice<Long> id = this.expenseRepository.existsExpenseOutsideBudgetPeriod(budget.getId(), targetdDateRange[0], targetdDateRange[1], PageRequest.of(0, 1));
         return id.hasContent();
     }
@@ -289,7 +289,7 @@ public class BudgetServiceImpl implements BudgetService {
         budgetRequestDto.setTitle(budget.getTitle());
         budgetRequestDto.setDescription(budget.getDescription());
         budgetRequestDto.setPeriod(budget.getBudgetPeriod().name());
-        budgetPeriodHandler.setBudgetPeriodMetaData(budgetRequestDto, budget);
+        budgetPeriodHandler.setBudgetMetaData(budgetRequestDto, budget);
         return budgetRequestDto;
     }
 

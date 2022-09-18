@@ -38,7 +38,7 @@ public class MonthPeriodHandler extends AbstractBudgetPeriodHandler {
      * @return
      */
 
-    public LocalDate[] calculateBudgetDateRange(CreateBudgetRequestDTO dto) {
+    public LocalDate[] calculateBudgetPeriodInterval(CreateBudgetRequestDTO dto) {
 
         short requestBudgetMnth = dto.getMonth();
         short requestBudgetYr = dto.getYear();
@@ -72,7 +72,7 @@ public class MonthPeriodHandler extends AbstractBudgetPeriodHandler {
      * @param budget source budget, contains start and end date to reverse engineered
      */
     @Override
-    public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
+    public void setBudgetMetaData(CreateBudgetRequestDTO dto, Budget budget) {
         dto.setMonth((short) budget.getBudgetStartDate().getMonthValue());
         dto.setYear((short) budget.getBudgetStartDate().getYear());
     }

@@ -74,7 +74,7 @@ public class WeeklyPeriodTest {
     @ParameterizedTest
     @MethodSource("requestDtoProvider")
     void testShouldCalculateBudgetDateRangeSuccessfully(CreateBudgetRequestDTO dto, LocalDate[] expectedRange) throws Exception {
-        LocalDate[] dateRange = weeklyPeriodHandler.calculateBudgetDateRange(dto);
+        LocalDate[] dateRange = weeklyPeriodHandler.calculateBudgetPeriodInterval(dto);
         assertEquals(expectedRange[0], dateRange[0]);
         assertEquals(expectedRange[1], dateRange[1]);
     }

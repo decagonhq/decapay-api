@@ -43,7 +43,7 @@ public class CustomPeriodHandler extends AbstractBudgetPeriodHandler {
      * @return
      */
     @Override
-    public LocalDate[] calculateBudgetDateRange(CreateBudgetRequestDTO dto) {
+    public LocalDate[] calculateBudgetPeriodInterval(CreateBudgetRequestDTO dto) {
         String budgetRequestStartDate= dto.getBudgetStartDate();
         String budgetRequestEndDate= dto.getBudgetEndDate();
 
@@ -61,7 +61,7 @@ public class CustomPeriodHandler extends AbstractBudgetPeriodHandler {
      */
 
     @Override
-    public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
+    public void setBudgetMetaData(CreateBudgetRequestDTO dto, Budget budget) {
         dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateConstants.DATE_INPUT_FORMAT));
         dto.setBudgetEndDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetEndDate(), DateConstants.DATE_INPUT_FORMAT));
     }

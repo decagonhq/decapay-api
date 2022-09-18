@@ -22,7 +22,7 @@ public class CreateBudgetPopulator extends
         target.setProjectedAmount(source.getAmount());
         BudgetPeriod period = BudgetPeriod.valueOf(source.getPeriod());
         target.setBudgetPeriod(period);
-        LocalDate[] targetdDateRange = budgetPeriodHandler.calculateBudgetDateRange(source);
+        LocalDate[] targetdDateRange = budgetPeriodHandler.calculateBudgetPeriodInterval(source);
         target.setBudgetStartDate(targetdDateRange[0]);
         target.setBudgetEndDate(targetdDateRange[1]);
         target.setDescription(source.getDescription());
