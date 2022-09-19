@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static com.decagon.decapay.constants.AppConstants.AUTHORIZATION;
 import static com.decagon.decapay.constants.AppConstants.DEVICE_KEY_HEADER;
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
@@ -33,11 +34,11 @@ public class ChangePasswordController {
             @ApiResponse(responseCode = "200", description = PASSWORD_CHANGED_SUCCESSFULLY),
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
-    @Operation(summary = "Change Password", description = "Change User Password with RequestHeader key = DVC_KY_HDR and value = MOBILE_DEVICE_ID = 1 | WEB_DEVICE_ID = 2")
+    @Operation(summary = "Change Password", description = "Change User Password With Token Passed In Header")
     @PostMapping("/change-password")
     public ResponseEntity<ApiDataResponse<Object>> changePassword(@Valid @RequestBody ChangePasswordRequestDto changePasswordRequestDto,
-                                                                  @RequestHeader(DEVICE_KEY_HEADER) String deviceId) {
-        this.service.changePassword(changePasswordRequestDto, deviceId);
+                                                                  @RequestHeader(AUTHORIZATION) String token) {
+        this.service.changePassword(changePasswordRequestDto, token);
         return ApiResponseUtil.response(HttpStatus.OK, PASSWORD_CHANGED_SUCCESSFULLY);
     }
 }

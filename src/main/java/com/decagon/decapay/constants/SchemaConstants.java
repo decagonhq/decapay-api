@@ -15,6 +15,7 @@ public class SchemaConstants {
     public static final String TABLE_CURRENCY = "currencies";
     public static final String TABLE_COUNTRY = "countries";
     public static final String TABLE_LANGUAGE = "languages";
+    public static final String TABLE_BLACKLISTED_TOKEN = "token_blacklist";
 
     // field sizes
     public static final int BUDGET_TITLE_SIZE = 100;

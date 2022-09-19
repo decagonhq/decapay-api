@@ -16,5 +16,5 @@ public interface UserService {
 
     UserSettings getUserSettings();
 
-    void changePassword(ChangePasswordRequestDto changePasswordRequestDto, String deviceId);
+    void changePassword(ChangePasswordRequestDto changePasswordRequestDto, String token);
 }

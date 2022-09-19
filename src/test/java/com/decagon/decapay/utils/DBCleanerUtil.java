@@ -34,6 +34,7 @@ public class DBCleanerUtil {
         tables.add(TABLE_LANGUAGE);
         tables.add(TABLE_COUNTRY);
         tables.add(TABLE_CURRENCY);
+        tables.add(TABLE_BLACKLISTED_TOKEN);
 
 
         String[] excludes={};

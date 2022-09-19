@@ -5,9 +5,11 @@ import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
 import com.decagon.decapay.dto.auth.LoginDto;
 import com.decagon.decapay.model.auth.PasswordReset;
+import com.decagon.decapay.model.auth.TokenBlacklist;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
+import com.decagon.decapay.repositories.auth.TokenBlacklistRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.JwtUtil;
@@ -34,9 +36,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import static com.decagon.decapay.constants.AppConstants.*;
 import static com.decagon.decapay.constants.ResponseMessageConstants.PASSWORD_CHANGED_SUCCESSFULLY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,7 +70,7 @@ class ChangePasswordTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    private PasswordResetRepository passwordResetRepository;
+    private TokenBlacklistRepository tokenBlacklistRepository;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -99,10 +107,6 @@ class ChangePasswordTest {
         headers.add("Authorization", "Bearer " + token);
     }
 
-    private void addWebIdToHeaders(){
-        headers.add(DEVICE_KEY_HEADER, WEB_DEVICE_ID);
-    };
-
 
     @Test
     void givenAUserExist_WhenUserChangePasswordWithInvalidData_SystemShouldFailWith400() throws Exception {
@@ -113,9 +117,8 @@ class ChangePasswordTest {
 
         //then
         this.setAuthHeader(user);
-        this.addWebIdToHeaders();
 
-        this.validateExpectation(dto, status().isBadRequest());
+        this.validateExpectation(dto, status().isBadRequest(),"/change-password");
     }
 
     @Test
@@ -127,9 +130,8 @@ class ChangePasswordTest {
 
         //then
         this.setAuthHeader(user);
-        this.addWebIdToHeaders();
 
-        this.validateExpectation(dto, status().isBadRequest());
+        this.validateExpectation(dto, status().isBadRequest(),"/change-password");
     }
 
     @Test
@@ -141,9 +143,8 @@ class ChangePasswordTest {
 
         //then
         this.setAuthHeader(user);
-        this.addWebIdToHeaders();
 
-        this.validateExpectation(dto, status().isBadRequest());
+        this.validateExpectation(dto, status().isBadRequest(),"/change-password");
     }
 
     @Test
@@ -151,28 +152,26 @@ class ChangePasswordTest {
         //given
         User user = createUser();
 
-        PasswordReset passwordReset = TestModels.passwordReset(user.getEmail(), "3215");
-        passwordReset.setDeviceId(WEB_DEVICE_ID);
-        passwordReset = this.passwordResetRepository.save(passwordReset);
 
         //when
         ChangePasswordRequestDto dto = new ChangePasswordRequestDto("password","newPassword","newPassword");
 
         //then
         this.setAuthHeader(user);
-        this.addWebIdToHeaders();
 
-        this.validateExpectation(dto, status().isOk())
+        this.validateExpectation(dto, status().isOk(), "/change-password")
                 .andExpect(jsonPath("$.message").value(PASSWORD_CHANGED_SUCCESSFULLY));
+
+        Collection<TokenBlacklist> tokenBlacklistCollection = this.tokenBlacklistRepository.findAll();
+        System.out.println(Arrays.toString(tokenBlacklistCollection.toArray(TokenBlacklist[]::new)));
+        assertEquals(1, tokenBlacklistCollection.size());
 
         //assert user can't log in with old password
         LoginDto loginRequest = new LoginDto();
         loginRequest.setEmail(user.getEmail());
         loginRequest.setPassword(dto.getPassword());
 
-        this.mockMvc.perform(post(path + "/signin").content(TestUtils.asJsonString(loginRequest))
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
+        this.validateExpectation(loginRequest, status().isBadRequest(), "/signin")
                 .andExpect(jsonPath("$.data.token").doesNotHaveJsonPath());
 
         //assert user can log in with new password
@@ -180,14 +179,12 @@ class ChangePasswordTest {
         loginRequest.setEmail(user.getEmail());
         loginRequest.setPassword(dto.getNewPassword());
 
-        this.mockMvc.perform(post(path + "/signin").content(TestUtils.asJsonString(loginRequest))
-                        .contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+        this.validateExpectation(loginRequest, status().isOk(), "/signin")
                 .andExpect(jsonPath("$.data.token").exists());
     }
 
-    private ResultActions validateExpectation(ChangePasswordRequestDto dto, ResultMatcher expectedResult) throws Exception {
-        return this.mockMvc.perform(post(path + "/change-password")
+    private ResultActions validateExpectation(Object dto, ResultMatcher expectedResult, String uri) throws Exception {
+        return this.mockMvc.perform(post(path + uri)
                         .content(TestUtils.asJsonString(dto))
                         .contentType(MediaType.APPLICATION_JSON).headers(headers))
                 .andExpect(expectedResult);
