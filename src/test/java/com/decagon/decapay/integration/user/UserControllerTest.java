@@ -1,11 +1,8 @@
 package com.decagon.decapay.integration.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.EditUserDto;
-import com.decagon.decapay.dto.UserDTO;
-import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
-import com.decagon.decapay.dto.budget.ExpenseDto;
-import com.decagon.decapay.model.budget.BudgetCategory;
+import com.decagon.decapay.dto.UserDto;
+import com.decagon.decapay.dto.SignUpRequestDTO;
 import com.decagon.decapay.model.reference.country.Country;
 import com.decagon.decapay.model.reference.currency.Currency;
 import com.decagon.decapay.model.reference.language.Language;
@@ -38,8 +35,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -83,7 +78,7 @@ class UserControllerTest {
 
 	private HttpHeaders headers;
 
-	UserDTO userDTO;
+	SignUpRequestDTO signUpRequestDTO;
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
@@ -92,7 +87,7 @@ class UserControllerTest {
 
 	@BeforeEach
 	void setUp() {
-		userDTO = new UserDTO("firstName", "lastName", "a@b.com", "Password1!", "0123456789");
+		signUpRequestDTO = new SignUpRequestDTO("firstName", "lastName", "a@b.com", "Password1!", "0123456789");
 	}
 
 	private UserSettings userSettings = TestModels.userSettings("en", "NG", "NGN");
@@ -107,13 +102,13 @@ class UserControllerTest {
 
 	@Test
 	void givenNoUserSettingsExists_WhenUserCreateAccountWithInvalidUserSettingRequestData_ShouldReturnInvalidRequest() throws Exception {
-		userDTO.setCurrencyCode("KKKK");
-		userDTO.setLanguageCode("KKK");
-		userDTO.setCountryCode("KKK");
+		signUpRequestDTO.setCurrencyCode("KKKK");
+		signUpRequestDTO.setLanguageCode("KKK");
+		signUpRequestDTO.setCountryCode("KKK");
 
 		mockMvc.perform(
 				post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-						objectMapper.writeValueAsString(userDTO)))
+						objectMapper.writeValueAsString(signUpRequestDTO)))
 				.andExpect(status().is(400));
 	}
 
@@ -132,15 +127,15 @@ class UserControllerTest {
 		language.setCode("en");
 		languageRepository.save(language);
 
-		userDTO.setCountryCode("ZZ");
-		userDTO.setLanguageCode("en");
-		userDTO.setCurrencyCode("BBD");
+		signUpRequestDTO.setCountryCode("ZZ");
+		signUpRequestDTO.setLanguageCode("en");
+		signUpRequestDTO.setCurrencyCode("BBD");
 
 		mockMvc.perform(
 				post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-						objectMapper.writeValueAsString(userDTO)))
+						objectMapper.writeValueAsString(signUpRequestDTO)))
 				.andExpect(status().is(404))
-				.andExpect(jsonPath("$.message").value("Resource not found for country with code " + userDTO.getCountryCode()))
+				.andExpect(jsonPath("$.message").value("Resource not found for country with code " + signUpRequestDTO.getCountryCode()))
 				.andDo(print()).andDo(print());
 
 	}
@@ -160,16 +155,16 @@ class UserControllerTest {
 		currency.setCurrency(c);
 		currencyRepository.save(currency);
 
-		userDTO.setCountryCode("NG");
-		userDTO.setCurrencyCode("USD");
+		signUpRequestDTO.setCountryCode("NG");
+		signUpRequestDTO.setCurrencyCode("USD");
 
-		userDTO.setLanguageCode("mm");
+		signUpRequestDTO.setLanguageCode("mm");
 
 		mockMvc.perform(
 						post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-								objectMapper.writeValueAsString(userDTO)))
+								objectMapper.writeValueAsString(signUpRequestDTO)))
 				.andExpect(status().is(404))
-				.andExpect(jsonPath("$.message").value("Resource not found for language with code " + userDTO.getLanguageCode()))
+				.andExpect(jsonPath("$.message").value("Resource not found for language with code " + signUpRequestDTO.getLanguageCode()))
 				.andDo(print()).andDo(print());
 	}
 
@@ -186,15 +181,15 @@ class UserControllerTest {
 		language.setCode("gm");
 		languageRepository.save(language);
 
-		userDTO.setCountryCode("GN");
-		userDTO.setLanguageCode("gm");
-		userDTO.setCurrencyCode("CUP");
+		signUpRequestDTO.setCountryCode("GN");
+		signUpRequestDTO.setLanguageCode("gm");
+		signUpRequestDTO.setCurrencyCode("CUP");
 
 		mockMvc.perform(
 						post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-								objectMapper.writeValueAsString(userDTO)))
+								objectMapper.writeValueAsString(signUpRequestDTO)))
 				.andExpect(status().is(404))
-				.andExpect(jsonPath("$.message").value("Resource not found for currency with code " + userDTO.getCurrencyCode()))
+				.andExpect(jsonPath("$.message").value("Resource not found for currency with code " + signUpRequestDTO.getCurrencyCode()))
 				.andDo(print()).andDo(print());
 	}
 
@@ -219,16 +214,16 @@ class UserControllerTest {
 		currency.setCurrency(c);
 		currencyRepository.save(currency);
 
-		userDTO.setCountryCode("FR");
-		userDTO.setCurrencyCode("GMD");
-		userDTO.setLanguageCode("au");
+		signUpRequestDTO.setCountryCode("FR");
+		signUpRequestDTO.setCurrencyCode("GMD");
+		signUpRequestDTO.setLanguageCode("au");
 
 		ResultActions response = mockMvc.perform(
 			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(201))
+				objectMapper.writeValueAsString(signUpRequestDTO))).andExpect(status().is(201))
 				.andExpect(jsonPath("$.data.id").value(Matchers.greaterThan(0)));
 
-		User user = userRepository.findByEmail(userDTO.getEmail()).get();
+		User user = userRepository.findByEmail(signUpRequestDTO.getEmail()).get();
 
 
 		assertEquals("firstName", user.getFirstName());
@@ -250,7 +245,7 @@ class UserControllerTest {
 	void registerUserFailsWithIncompleteDTO() throws Exception {
 		mockMvc.perform(
 			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(new UserDTO()))).andExpect(status().is(400));
+				objectMapper.writeValueAsString(new SignUpRequestDTO()))).andExpect(status().is(400));
 	}
 
 	@Test
@@ -266,7 +261,7 @@ class UserControllerTest {
 
 		mockMvc.perform(
 			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(409));
+				objectMapper.writeValueAsString(signUpRequestDTO))).andExpect(status().is(409));
 	}
 
 
@@ -298,7 +293,7 @@ class UserControllerTest {
 		user.setUserStatus(UserStatus.ACTIVE);
 		userRepository.save(user);
 
-		EditUserDto dto = new EditUserDto();
+		UserDto dto = new UserDto();
 		dto.setFirstName("");
 		dto.setLastName("");
 		dto.setEmail("og");
@@ -324,7 +319,8 @@ class UserControllerTest {
 		user.setUserStatus(UserStatus.ACTIVE);
 		userRepository.save(user2);
 
-		EditUserDto dto = new EditUserDto();
+
+		UserDto dto = new UserDto();
 		dto.setFirstName("Goodluck");
 		dto.setLastName("Nwoko");
 		dto.setEmail("og@gmail.com");
@@ -339,13 +335,35 @@ class UserControllerTest {
 	}
 
 	@Test
+	void givenUserProfileExist_WhenUserUpdateProfileWithValidDataButWExistingEmail_ShouldUpdateProfileSuccessfully() throws Exception {
+		User user = TestModels.user("ola", "dip", "ola@gmail.com",
+				passwordEncoder.encode("password"), "08067644805");
+		user.setUserStatus(UserStatus.ACTIVE);
+		userRepository.save(user);
+
+
+		UserDto dto = new UserDto();
+		dto.setFirstName("Goodluck");
+		dto.setLastName("Nwoko");
+		dto.setEmail("ola@gmail.com");
+		dto.setPhoneNumber("07056755667");
+
+		setAuthHeader(user);
+
+		this.mockMvc.perform(put(path + "/user/edit")
+						.content(TestUtils.asJsonString(dto))
+						.contentType(MediaType.APPLICATION_JSON).headers(headers))
+				.andExpect(status().isOk());
+	}
+
+	@Test
 	void givenUserProfileExist_WhenUserUpdateProfileWithValidData_ShouldUpdateProfileSuccessfully() throws Exception {
 		User user = TestModels.user("ola", "dip", "ola@gmail.com",
 				passwordEncoder.encode("password"), "08067644805");
 		user.setUserStatus(UserStatus.ACTIVE);
 		userRepository.save(user);
 
-		EditUserDto dto = new EditUserDto();
+		UserDto dto = new UserDto();
 		dto.setFirstName("Goodluck");
 		dto.setLastName("Nwoko");
 		dto.setEmail("og@gmail.com");
@@ -357,5 +375,11 @@ class UserControllerTest {
 						.content(TestUtils.asJsonString(dto))
 						.contentType(MediaType.APPLICATION_JSON).headers(headers))
 				.andExpect(status().isOk());
+
+		User updatedUser = userRepository.findByEmail("og@gmail.com").get();
+		assertEquals(updatedUser.getEmail(), dto.getEmail());
+		assertEquals(updatedUser.getFirstName(), dto.getFirstName());
+		assertEquals(updatedUser.getLastName(), dto.getLastName());
+		assertEquals(updatedUser.getPhoneNumber(), dto.getPhoneNumber());
 	}
 }

@@ -2,7 +2,7 @@ package com.decagon.decapay.controller.user;
 
 import javax.validation.Valid;
 
-import com.decagon.decapay.dto.UserDTO;
+import com.decagon.decapay.dto.SignUpRequestDTO;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 
@@ -45,7 +44,7 @@ public class SignUpController {
 	})
 	@Operation(summary = "Register user", description = "Register new user account with all mandatory fields.")
 	@PostMapping("/register")
-	public ResponseEntity<ApiDataResponse<IdResponseDto>> registerUser(@Valid @RequestBody UserDTO userRegistrationRequest) {
+	public ResponseEntity<ApiDataResponse<IdResponseDto>> registerUser(@Valid @RequestBody SignUpRequestDTO userRegistrationRequest) {
 		return ApiResponseUtil.response(HttpStatus.CREATED, userService.registerUser(userRegistrationRequest),
 			USER_SUCCESSFULLY_REGISTERED);
 	}

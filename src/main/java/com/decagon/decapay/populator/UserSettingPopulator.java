@@ -1,17 +1,16 @@
 package com.decagon.decapay.populator;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.UserDTO;
-import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.dto.SignUpRequestDTO;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 @Setter
 @Service
-public class UserSettingPopulator extends AbstractDataPopulator<UserDTO, UserSettings> {
+public class UserSettingPopulator extends AbstractDataPopulator<SignUpRequestDTO, UserSettings> {
 
     @Override
-    public UserSettings populate(UserDTO source, UserSettings target) {
+    public UserSettings populate(SignUpRequestDTO source, UserSettings target) {
 
         target.setCountryCode(source.getCountryCode());
         target.setCurrencyCode(source.getCurrencyCode());

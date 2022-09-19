@@ -2,12 +2,10 @@ package com.decagon.decapay.controller.user;
 
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.dto.EditUserDto;
+import com.decagon.decapay.dto.UserDto;
 import com.decagon.decapay.dto.UserResponseDto;
-import com.decagon.decapay.dto.budget.ViewBudgetDto;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.ApiResponseUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,8 +45,8 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS,content = @Content)})
     @Operation(summary = "Edit User Profile", description = "Edit User Profile")
     @PutMapping("/user/edit")
-    public ResponseEntity<ApiDataResponse<Object>> editUserProfile(@Valid @RequestBody EditUserDto editUserDto){
-        String editUserResponse = userService.editUserProfile(editUserDto);
-        return ApiResponseUtil.response(HttpStatus.OK, editUserResponse);
+    public ResponseEntity<ApiDataResponse<Object>> editUserProfile(@Valid @RequestBody UserDto userDto){
+        userService.updateUserProfile(userDto);
+        return ApiResponseUtil.response(HttpStatus.OK, USER_PROFILE_UPDATED_SUCCESSFULLY);
     }
 }

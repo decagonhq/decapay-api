@@ -1,17 +1,17 @@
 package com.decagon.decapay.service.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.EditUserDto;
+import com.decagon.decapay.dto.UserDto;
 import com.decagon.decapay.dto.UserResponseDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 
-import com.decagon.decapay.dto.UserDTO;
+import com.decagon.decapay.dto.SignUpRequestDTO;
 import com.decagon.decapay.model.user.User;
 
 import java.util.Optional;
 
 public interface UserService {
-	IdResponseDto registerUser(UserDTO userDTO);
+	IdResponseDto registerUser(SignUpRequestDTO signUpRequestDTO);
 
     Optional<User> findUserByEmail(String userName);
 
@@ -19,5 +19,5 @@ public interface UserService {
 
     UserResponseDto viewUserProfile();
 
-    String editUserProfile(EditUserDto editUserDto);
+    User updateUserProfile(UserDto userDto);
 }

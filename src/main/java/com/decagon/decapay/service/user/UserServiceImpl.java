@@ -1,8 +1,8 @@
 package com.decagon.decapay.service.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.EditUserDto;
-import com.decagon.decapay.dto.UserDTO;
+import com.decagon.decapay.dto.UserDto;
+import com.decagon.decapay.dto.SignUpRequestDTO;
 import com.decagon.decapay.dto.UserResponseDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.exception.ResourceConflictException;
@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 
@@ -47,37 +48,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public IdResponseDto registerUser(final UserDTO userDTO) throws ResourceConflictException {
+    public IdResponseDto registerUser(final SignUpRequestDTO signUpRequestDTO) throws ResourceConflictException {
 
-        if (userRepository.findByEmail(userDTO.getEmail().toLowerCase()).isPresent()) {
+        if (userRepository.findByEmail(signUpRequestDTO.getEmail().toLowerCase()).isPresent()) {
             throw new ResourceConflictException();
         }
 
-        Country country = countryRepository.findByIsoCode(userDTO.getCountryCode());
+        Country country = countryRepository.findByIsoCode(signUpRequestDTO.getCountryCode());
         if (country == null){
-            throw new ResourceNotFoundException("Resource not found for country with code " + userDTO.getCountryCode());
+            throw new ResourceNotFoundException("Resource not found for country with code " + signUpRequestDTO.getCountryCode());
         }
 
-        Language language = languageRepository.findByCode(userDTO.getLanguageCode());
+        Language language = languageRepository.findByCode(signUpRequestDTO.getLanguageCode());
         if (language == null){
-            throw new ResourceNotFoundException("Resource not found for language with code " + userDTO.getLanguageCode());
+            throw new ResourceNotFoundException("Resource not found for language with code " + signUpRequestDTO.getLanguageCode());
         }
 
-        Currency currency = currencyRepository.getByCode(userDTO.getCurrencyCode());
+        Currency currency = currencyRepository.getByCode(signUpRequestDTO.getCurrencyCode());
         if (currency == null){
-            throw new ResourceNotFoundException("Resource not found for currency with code " + userDTO.getCurrencyCode());
+            throw new ResourceNotFoundException("Resource not found for currency with code " + signUpRequestDTO.getCurrencyCode());
         }
 
-        User user = this.createModelEntity(userDTO);
+        User user = this.createModelEntity(signUpRequestDTO);
         return new IdResponseDto(userRepository.save(user).getId());
     }
 
-    private User createModelEntity(UserDTO userDTO) {
+    private User createModelEntity(SignUpRequestDTO signUpRequestDTO) {
         User user = new User();
+        this.populateUserModel(signUpRequestDTO, user);
+        return user;
+    }
+
+    private void populateUserModel(UserDto dto, User user){
         UserAccountPopulator userAccountPopulator = new UserAccountPopulator(passwordEncoder);
         userAccountPopulator.setObjectMapper(objectMapper);
-        userAccountPopulator.populate(userDTO, user);
-        return user;
+        userAccountPopulator.populate(dto, user);
     }
 
     @Override
@@ -102,17 +107,14 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Transactional
     @Override
-    public String editUserProfile(EditUserDto editUserDto) {
-        if (userRepository.findByEmail(editUserDto.getEmail().toLowerCase()).isPresent()) {
+    public User updateUserProfile(UserDto userDto) {
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+        if (userRepository.findByEmail(userDto.getEmail().toLowerCase()).isPresent()) {
             throw new ResourceConflictException();
         }
-        User currentUser = this.userInfoUtil.getCurrAuthUser();
-        currentUser.setFirstName(editUserDto.getFirstName());
-        currentUser.setLastName(editUserDto.getLastName());
-        currentUser.setEmail(editUserDto.getEmail());
-        currentUser.setPhoneNumber(editUserDto.getPhoneNumber());
-        userRepository.save(currentUser);
-        return "Profile updated successfully";
+        this.populateUserModel(userDto, currentUser);
+        return currentUser;
     }
 }

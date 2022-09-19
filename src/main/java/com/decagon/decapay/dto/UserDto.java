@@ -12,8 +12,8 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
-@Schema(description = "DTO containing information needed to edit a user profile")
-public class EditUserDto {
+@Schema(description = "DTO containing information needed to create and edit a user")
+public class UserDto {
 
     @NotBlank
     @Size(min = 1, max = 100, message = "First name field cannot be empty or more than 100 characters")
@@ -33,4 +33,11 @@ public class EditUserDto {
     @Pattern(regexp = "^\\d{7,15}$", message = "Phone number must be a valid number format")
     @Schema(description = "Phone number, all digits, at least seven and at most 15 characters", required = true)
     private String phoneNumber;
+
+    public UserDto(String firstName, String lastName, String email, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
 }
