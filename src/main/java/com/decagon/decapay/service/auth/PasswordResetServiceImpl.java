@@ -1,5 +1,6 @@
 package com.decagon.decapay.service.auth;
 
+import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.auth.PasswordReset;
@@ -10,6 +11,7 @@ import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.EmailTemplateUtil;
+import com.decagon.decapay.utils.UserInfoUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,6 +38,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final UserRepository userRepository;
     private final EmailTemplateUtil emailTemplateUtil;
     private final PasswordEncoder passwordEncoder;
+    private final UserInfoUtil userInfoUtil;
 
 
     @Override
@@ -80,6 +84,33 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             case WEB_DEVICE_ID -> this.createNewPasswordForWeb(createPasswordRequestDto);
             default -> throw new InvalidRequestException(UNEXPECTED_VALUE + deviceId);
         }
+    }
+
+    @Override
+    public void changePassword(ChangePasswordRequestDto changePasswordRequestDto, String deviceId) {
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+
+        if (!this.checkIfOldPasswordIsValid(changePasswordRequestDto.getPassword(), currentUser.getPassword())) {
+            throw new InvalidRequestException("Invalid old password");
+        }
+
+        if(!this.checkIfNewPasswordMatches(changePasswordRequestDto)) {
+            throw new InvalidRequestException("Passwords do not match");
+        }
+
+        PasswordReset passwordReset = this.repository.findByEmailAndDeviceId(currentUser.getEmail(), deviceId)
+                .orElseThrow(() -> new ResourceNotFoundException(TOKEN_DOES_NOT_EXIST));
+
+        this.saveNewPassword(currentUser, changePasswordRequestDto.getNewPassword());
+        this.invalidateToken(passwordReset);
+    }
+
+    private boolean checkIfOldPasswordIsValid(final String oldPassword, final String userPassword) {
+        return passwordEncoder.matches(oldPassword, userPassword);
+    }
+
+    private boolean checkIfNewPasswordMatches(ChangePasswordRequestDto changePasswordRequestDto){
+        return Objects.equals(changePasswordRequestDto.getNewPassword(), changePasswordRequestDto.getConfirmNewPassword());
     }
 
     private void createNewPasswordForWeb(CreatePasswordRequestDto createPasswordRequestDto) {
