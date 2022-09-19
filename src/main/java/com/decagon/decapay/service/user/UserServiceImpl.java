@@ -10,7 +10,7 @@ import com.decagon.decapay.model.reference.country.Country;
 import com.decagon.decapay.model.reference.currency.Currency;
 import com.decagon.decapay.model.reference.language.Language;
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.populator.user.UserAccountPopulator;
+import com.decagon.decapay.populator.user.UserPopulator;
 import com.decagon.decapay.repositories.reference.currency.CurrencyRepository;
 import com.decagon.decapay.repositories.reference.language.LanguageRepository;
 import com.decagon.decapay.repositories.reference.zone.country.CountryRepository;
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
     private User createModelEntity(UserDTO userDTO) {
         User user = new User();
-        UserAccountPopulator userAccountPopulator = new UserAccountPopulator(passwordEncoder);
+        UserPopulator userAccountPopulator = new UserPopulator(passwordEncoder);
         userAccountPopulator.setObjectMapper(objectMapper);
         userAccountPopulator.populate(userDTO, user);
         return user;
