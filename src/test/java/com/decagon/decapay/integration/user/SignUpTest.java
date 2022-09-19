@@ -1,7 +1,7 @@
 package com.decagon.decapay.integration.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.user.UserDTO;
+import com.decagon.decapay.dto.user.SignUpRequestDTO;
 import com.decagon.decapay.model.reference.country.Country;
 import com.decagon.decapay.model.reference.currency.Currency;
 import com.decagon.decapay.model.reference.language.Language;
@@ -11,7 +11,6 @@ import com.decagon.decapay.repositories.reference.language.LanguageRepository;
 import com.decagon.decapay.repositories.reference.zone.country.CountryRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.service.user.UserService;
-import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -64,7 +63,7 @@ class SignUpTest {
 	UserService userService;
 
 
-	UserDTO userDTO;
+	SignUpRequestDTO signUpRequestDTO;
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
@@ -73,18 +72,18 @@ class SignUpTest {
 
 	@BeforeEach
 	void setUp() {
-		userDTO = new UserDTO("firstName", "lastName", "a@b.com", "Password1!", "0123456789");
+		signUpRequestDTO = new SignUpRequestDTO("firstName", "lastName", "a@b.com", "Password1!", "0123456789");
 	}
 
 	@Test
 	void givenNoUserSettingsExists_WhenUserCreateAccountWithInvalidUserSettingRequestData_ShouldReturnInvalidRequest() throws Exception {
-		userDTO.setCurrencyCode("KKKK");
-		userDTO.setLanguageCode("KKK");
-		userDTO.setCountryCode("KKK");
+		signUpRequestDTO.setCurrencyCode("KKKK");
+		signUpRequestDTO.setLanguageCode("KKK");
+		signUpRequestDTO.setCountryCode("KKK");
 
 		mockMvc.perform(
 				post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-						objectMapper.writeValueAsString(userDTO)))
+						objectMapper.writeValueAsString(signUpRequestDTO)))
 				.andExpect(status().is(400));
 	}
 
@@ -103,15 +102,15 @@ class SignUpTest {
 		language.setCode("en");
 		languageRepository.save(language);
 
-		userDTO.setCountryCode("ZZ");
-		userDTO.setLanguageCode("en");
-		userDTO.setCurrencyCode("BBD");
+		signUpRequestDTO.setCountryCode("ZZ");
+		signUpRequestDTO.setLanguageCode("en");
+		signUpRequestDTO.setCurrencyCode("BBD");
 
 		mockMvc.perform(
 				post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-						objectMapper.writeValueAsString(userDTO)))
+						objectMapper.writeValueAsString(signUpRequestDTO)))
 				.andExpect(status().is(404))
-				.andExpect(jsonPath("$.message").value("Resource not found for country with code " + userDTO.getCountryCode()))
+				.andExpect(jsonPath("$.message").value("Resource not found for country with code " + signUpRequestDTO.getCountryCode()))
 				.andDo(print()).andDo(print());
 
 	}
@@ -131,16 +130,16 @@ class SignUpTest {
 		currency.setCurrency(c);
 		currencyRepository.save(currency);
 
-		userDTO.setCountryCode("NG");
-		userDTO.setCurrencyCode("USD");
+		signUpRequestDTO.setCountryCode("NG");
+		signUpRequestDTO.setCurrencyCode("USD");
 
-		userDTO.setLanguageCode("mm");
+		signUpRequestDTO.setLanguageCode("mm");
 
 		mockMvc.perform(
 						post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-								objectMapper.writeValueAsString(userDTO)))
+								objectMapper.writeValueAsString(signUpRequestDTO)))
 				.andExpect(status().is(404))
-				.andExpect(jsonPath("$.message").value("Resource not found for language with code " + userDTO.getLanguageCode()))
+				.andExpect(jsonPath("$.message").value("Resource not found for language with code " + signUpRequestDTO.getLanguageCode()))
 				.andDo(print()).andDo(print());
 	}
 
@@ -157,15 +156,15 @@ class SignUpTest {
 		language.setCode("gm");
 		languageRepository.save(language);
 
-		userDTO.setCountryCode("GN");
-		userDTO.setLanguageCode("gm");
-		userDTO.setCurrencyCode("CUP");
+		signUpRequestDTO.setCountryCode("GN");
+		signUpRequestDTO.setLanguageCode("gm");
+		signUpRequestDTO.setCurrencyCode("CUP");
 
 		mockMvc.perform(
 						post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-								objectMapper.writeValueAsString(userDTO)))
+								objectMapper.writeValueAsString(signUpRequestDTO)))
 				.andExpect(status().is(404))
-				.andExpect(jsonPath("$.message").value("Resource not found for currency with code " + userDTO.getCurrencyCode()))
+				.andExpect(jsonPath("$.message").value("Resource not found for currency with code " + signUpRequestDTO.getCurrencyCode()))
 				.andDo(print()).andDo(print());
 	}
 
@@ -190,16 +189,16 @@ class SignUpTest {
 		currency.setCurrency(c);
 		currencyRepository.save(currency);
 
-		userDTO.setCountryCode("FR");
-		userDTO.setCurrencyCode("GMD");
-		userDTO.setLanguageCode("au");
+		signUpRequestDTO.setCountryCode("FR");
+		signUpRequestDTO.setCurrencyCode("GMD");
+		signUpRequestDTO.setLanguageCode("au");
 
 		ResultActions response = mockMvc.perform(
 			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(201))
+				objectMapper.writeValueAsString(signUpRequestDTO))).andExpect(status().is(201))
 				.andExpect(jsonPath("$.data.id").value(Matchers.greaterThan(0)));
 
-		User user = userRepository.findByEmail(userDTO.getEmail()).get();
+		User user = userRepository.findByEmail(signUpRequestDTO.getEmail()).get();
 
 
 		assertEquals("firstName", user.getFirstName());
@@ -221,7 +220,7 @@ class SignUpTest {
 	void registerUserFailsWithIncompleteDTO() throws Exception {
 		mockMvc.perform(
 			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(new UserDTO()))).andExpect(status().is(400));
+				objectMapper.writeValueAsString(new SignUpRequestDTO()))).andExpect(status().is(400));
 	}
 
 	@Test
@@ -237,7 +236,7 @@ class SignUpTest {
 
 		mockMvc.perform(
 			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
-				objectMapper.writeValueAsString(userDTO))).andExpect(status().is(409));
+				objectMapper.writeValueAsString(signUpRequestDTO))).andExpect(status().is(409));
 	}
 
 

@@ -1,9 +1,10 @@
 package com.decagon.decapay.service.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.user.UserDTO;
+import com.decagon.decapay.dto.user.UserDto;
 import com.decagon.decapay.dto.user.UserResponseDto;
 import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
+import com.decagon.decapay.dto.user.SignUpRequestDTO;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceConflictException;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,37 +54,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public IdResponseDto registerUser(final UserDTO userDTO) throws ResourceConflictException {
+    public IdResponseDto registerUser(final SignUpRequestDTO signUpRequestDTO) throws ResourceConflictException {
 
-        if (userRepository.findByEmail(userDTO.getEmail().toLowerCase()).isPresent()) {
+        if (userRepository.findByEmail(signUpRequestDTO.getEmail().toLowerCase()).isPresent()) {
             throw new ResourceConflictException();
         }
 
-        Country country = countryRepository.findByIsoCode(userDTO.getCountryCode());
+        Country country = countryRepository.findByIsoCode(signUpRequestDTO.getCountryCode());
         if (country == null){
-            throw new ResourceNotFoundException("Resource not found for country with code " + userDTO.getCountryCode());
+            throw new ResourceNotFoundException("Resource not found for country with code " + signUpRequestDTO.getCountryCode());
         }
 
-        Language language = languageRepository.findByCode(userDTO.getLanguageCode());
+        Language language = languageRepository.findByCode(signUpRequestDTO.getLanguageCode());
         if (language == null){
-            throw new ResourceNotFoundException("Resource not found for language with code " + userDTO.getLanguageCode());
+            throw new ResourceNotFoundException("Resource not found for language with code " + signUpRequestDTO.getLanguageCode());
         }
 
-        Currency currency = currencyRepository.getByCode(userDTO.getCurrencyCode());
+        Currency currency = currencyRepository.getByCode(signUpRequestDTO.getCurrencyCode());
         if (currency == null){
-            throw new ResourceNotFoundException("Resource not found for currency with code " + userDTO.getCurrencyCode());
+            throw new ResourceNotFoundException("Resource not found for currency with code " + signUpRequestDTO.getCurrencyCode());
         }
 
-        User user = this.createModelEntity(userDTO);
+        User user = this.createModelEntity(signUpRequestDTO);
         return new IdResponseDto(userRepository.save(user).getId());
     }
 
-    private User createModelEntity(UserDTO userDTO) {
+    private User createModelEntity(SignUpRequestDTO signUpRequestDTO) {
         User user = new User();
-        UserPopulator userAccountPopulator = new UserPopulator(passwordEncoder);
-        userAccountPopulator.setObjectMapper(objectMapper);
-        userAccountPopulator.populate(userDTO, user);
+        this.populateUserModel(signUpRequestDTO, user);
         return user;
+    }
+
+    private void populateUserModel(UserDto dto, User user){
+        UserPopulator userPopulator = new UserPopulator(passwordEncoder);
+        userPopulator.setObjectMapper(objectMapper);
+        userPopulator.populate(dto, user);
     }
 
     @Override
@@ -105,6 +111,17 @@ public class UserServiceImpl implements UserService {
                 .email(currentUser.getEmail())
                 .phoneNumber(currentUser.getPhoneNumber())
                 .build();
+    }
+
+    @Transactional
+    @Override
+    public User updateUserProfile(UserDto userDto) {
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+        if (userRepository.findByEmail(userDto.getEmail().toLowerCase()).isPresent()) {
+            throw new ResourceConflictException();
+        }
+        this.populateUserModel(userDto, currentUser);
+        return currentUser;
     }
 
     @Override

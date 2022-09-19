@@ -3,6 +3,7 @@ package com.decagon.decapay.controller.user;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
+import com.decagon.decapay.dto.user.UserDto;
 import com.decagon.decapay.dto.user.UserResponseDto;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.ApiResponseUtil;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.*;
+
 
 import javax.validation.Valid;
 
@@ -52,4 +55,15 @@ public class UserController {
         return ApiResponseUtil.response(HttpStatus.OK, PASSWORD_CHANGED_SUCCESSFULLY);
     }
 
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = USER_PROFILE_UPDATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS,content = @Content)})
+    @Operation(summary = "Edit User Profile", description = "Edit User Profile")
+    @PutMapping("/profile")
+    public ResponseEntity<ApiDataResponse<Object>> editUserProfile(@Valid @RequestBody UserDto userDto){
+        userService.updateUserProfile(userDto);
+        return ApiResponseUtil.response(HttpStatus.OK, USER_PROFILE_UPDATED_SUCCESSFULLY);
+    }
 }

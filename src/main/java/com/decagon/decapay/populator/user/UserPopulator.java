@@ -1,7 +1,8 @@
 package com.decagon.decapay.populator.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.user.UserDTO;
+import com.decagon.decapay.dto.user.SignUpRequestDTO;
+import com.decagon.decapay.dto.user.UserDto;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.populator.AbstractDataPopulator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 @NoArgsConstructor
 @Service
 @Slf4j
-public class UserPopulator extends AbstractDataPopulator<UserDTO, User> {
+public class UserPopulator extends AbstractDataPopulator<UserDto, User> {
     private  PasswordEncoder passwordEncoder;
     private ObjectMapper objectMapper;
 
@@ -24,22 +25,24 @@ public class UserPopulator extends AbstractDataPopulator<UserDTO, User> {
     }
 
     @Override
-    public User populate(UserDTO source, User target) {
+    public User populate(UserDto source, User target) {
 
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
         target.setPhoneNumber(source.getPhoneNumber());
         target.setEmail(source.getEmail());
-        target.setPassword(passwordEncoder.encode(source.getPassword()));
+        if (target.getId()==null){
+            target.setPassword(passwordEncoder.encode(((SignUpRequestDTO)source).getPassword()));
 
-        UserSettingPopulator userSettingPopulator = new UserSettingPopulator();
-        UserSettings settings = new UserSettings();
-        userSettingPopulator.populate(source, settings);
-        try {
-            target.setUserSetting(objectMapper.writeValueAsString(settings));
-        } catch (JsonProcessingException e) {
-            log.error("error converting data",e);
-            target.setUserSetting("");
+            UserSettingPopulator userSettingPopulator = new UserSettingPopulator();
+            UserSettings settings = new UserSettings();
+            userSettingPopulator.populate((SignUpRequestDTO) source, settings);
+            try {
+                target.setUserSetting(objectMapper.writeValueAsString(settings));
+            } catch (JsonProcessingException e) {
+                log.error("error converting data",e);
+                target.setUserSetting("");
+            }
         }
         return target;
     }
