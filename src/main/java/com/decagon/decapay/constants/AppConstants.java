@@ -17,6 +17,7 @@ public class AppConstants {
     public static final String DEVICE_KEY_HEADER="DVC_KY_HDR";
     public static final String MOBILE_DEVICE_ID = "1";
     public static final String WEB_DEVICE_ID = "2";
+    public static final String AUTHORIZATION = "Authorization";
     public static final String PASSWORD_RESET_URI = "/resetPassword";
     public static final String USER_URI = "/user";
 

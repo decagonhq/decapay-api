@@ -1,5 +1,6 @@
 package com.decagon.decapay.service.auth;
 
+import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.auth.PasswordReset;
@@ -10,6 +11,7 @@ import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;
 import com.decagon.decapay.repositories.auth.PasswordResetRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.utils.EmailTemplateUtil;
+import com.decagon.decapay.utils.UserInfoUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,6 +38,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final UserRepository userRepository;
     private final EmailTemplateUtil emailTemplateUtil;
     private final PasswordEncoder passwordEncoder;
+    private final UserInfoUtil userInfoUtil;
 
 
     @Override
