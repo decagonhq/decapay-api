@@ -11,6 +11,7 @@ import com.decagon.decapay.repositories.reference.language.LanguageRepository;
 import com.decagon.decapay.repositories.reference.zone.country.CountryRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.service.user.UserService;
+import com.decagon.decapay.utils.TestModels;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;

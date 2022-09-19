@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 @NoArgsConstructor
 @Service
 @Slf4j
-public class UserAccountPopulator extends AbstractDataPopulator<UserDTO, User> {
+public class UserPopulator extends AbstractDataPopulator<UserDTO, User> {
     private  PasswordEncoder passwordEncoder;
     private ObjectMapper objectMapper;
 
-    public UserAccountPopulator(PasswordEncoder passwordEncoder) {
+    public UserPopulator(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
