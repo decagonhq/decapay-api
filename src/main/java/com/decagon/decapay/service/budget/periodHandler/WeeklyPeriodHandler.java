@@ -43,7 +43,7 @@ public class WeeklyPeriodHandler extends AbstractBudgetPeriodHandler {
 
 
     @Override
-    public LocalDate[] calculateBudgetDateRange(CreateBudgetRequestDTO req) {
+    public LocalDate[] calculateBudgetPeriodInterval(CreateBudgetRequestDTO req) {
         LocalDate budgetStartDate = CustomDateUtil.formatStringToLocalDate(req.getBudgetStartDate(), DateConstants.DATE_INPUT_FORMAT);
         LocalDate budgetEndDate = budgetStartDate.plusDays(AppConstants.NUM_DAYS_IN_WEEK * req.getDuration());
         return new LocalDate[]{budgetStartDate, budgetEndDate};
@@ -58,7 +58,7 @@ public class WeeklyPeriodHandler extends AbstractBudgetPeriodHandler {
      */
 
     @Override
-    public void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget) {
+    public void setBudgetMetaData(CreateBudgetRequestDTO dto, Budget budget) {
         dto.setDuration((int) (DAYS.between(budget.getBudgetStartDate(), budget.getBudgetEndDate()) / AppConstants.NUM_DAYS_IN_WEEK));
         dto.setBudgetStartDate(CustomDateUtil.formatLocalDateToString(budget.getBudgetStartDate(), DateConstants.DATE_INPUT_FORMAT));
     }

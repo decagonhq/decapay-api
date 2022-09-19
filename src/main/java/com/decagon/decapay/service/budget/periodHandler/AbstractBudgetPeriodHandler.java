@@ -60,29 +60,29 @@ public abstract class AbstractBudgetPeriodHandler {
      *
      * @param req input request object to be used to create a new budget, contains budget meta data
      * @return array of LocalDates contain calculate start and end date
-     * @see MonthPeriodHandler#calculateBudgetDateRange(CreateBudgetRequestDTO)
-     * @see AnnualPeriodHandler#calculateBudgetDateRange(CreateBudgetRequestDTO)
-     * @see WeeklyPeriodHandler#calculateBudgetDateRange(CreateBudgetRequestDTO)
-     * @see DailyPeriodHandler#calculateBudgetDateRange(CreateBudgetRequestDTO)
-     * @see CustomPeriodHandler#calculateBudgetDateRange(CreateBudgetRequestDTO)
+     * @see MonthPeriodHandler#calculateBudgetPeriodInterval(CreateBudgetRequestDTO)
+     * @see AnnualPeriodHandler#calculateBudgetPeriodInterval(CreateBudgetRequestDTO)
+     * @see WeeklyPeriodHandler#calculateBudgetPeriodInterval(CreateBudgetRequestDTO)
+     * @see DailyPeriodHandler#calculateBudgetPeriodInterval(CreateBudgetRequestDTO)
+     * @see CustomPeriodHandler#calculateBudgetPeriodInterval(CreateBudgetRequestDTO)
      */
-    public abstract LocalDate[] calculateBudgetDateRange(CreateBudgetRequestDTO req);
+    public abstract LocalDate[] calculateBudgetPeriodInterval(CreateBudgetRequestDTO req);
 
 
     /**
      * Set budget meta data strategy based on period
-     * populate budget input object with specfic meta data {@link #calculateBudgetDateRange(CreateBudgetRequestDTO)}
+     * populate budget input object with specfic meta data {@link #calculateBudgetPeriodInterval(CreateBudgetRequestDTO)}
      * These meta data are reverse engineered from the budget start and end date.
      *
      * @param dto    budget input to be populated
      * @param budget source budget, contains start and end date to reverse engineered
-     * @see MonthPeriodHandler#setBudgetPeriodMetaData(CreateBudgetRequestDTO, Budget)
-     * @see AnnualPeriodHandler#setBudgetPeriodMetaData(CreateBudgetRequestDTO, Budget)
-     * @see WeeklyPeriodHandler#setBudgetPeriodMetaData(CreateBudgetRequestDTO, Budget)
-     * @see DailyPeriodHandler#setBudgetPeriodMetaData(CreateBudgetRequestDTO, Budget)
-     * @see CustomPeriodHandler#setBudgetPeriodMetaData(CreateBudgetRequestDTO, Budget)
+     * @see MonthPeriodHandler#setBudgetMetaData(CreateBudgetRequestDTO, Budget)
+     * @see AnnualPeriodHandler#setBudgetMetaData(CreateBudgetRequestDTO, Budget)
+     * @see WeeklyPeriodHandler#setBudgetMetaData(CreateBudgetRequestDTO, Budget)
+     * @see DailyPeriodHandler#setBudgetMetaData(CreateBudgetRequestDTO, Budget)
+     * @see CustomPeriodHandler#setBudgetMetaData(CreateBudgetRequestDTO, Budget)
      */
-    public abstract void setBudgetPeriodMetaData(CreateBudgetRequestDTO dto, Budget budget);
+    public abstract void setBudgetMetaData(CreateBudgetRequestDTO dto, Budget budget);
 
 
 }

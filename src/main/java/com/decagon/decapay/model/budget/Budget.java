@@ -128,4 +128,11 @@ public class Budget implements Auditable, Serializable {
        }
         return !(transactionLocalDate.isBefore(this.getBudgetStartDate()) || transactionLocalDate.isAfter(budgetValidTransactionEndDate));
     }
+
+    public boolean hasLineItemForCategory(BudgetCategory category) {
+        return this.budgetLineItems
+                .stream()
+                .anyMatch(lineItem -> lineItem.getBudgetCategory().getId().equals(category.getId()));
+    }
+
 }

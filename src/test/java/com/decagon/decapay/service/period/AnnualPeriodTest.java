@@ -69,16 +69,16 @@ public class AnnualPeriodTest {
     @Test
     void testThrow400WhenYearInvalid() throws Exception {
         assertThrows(InvalidRequestException.class, () -> {
-            annualPeriod.calculateBudgetDateRange(req((short)999));
+            annualPeriod.calculateBudgetPeriodInterval(req((short)999));
         });
         assertThrows(InvalidRequestException.class, () -> {
-            annualPeriod.calculateBudgetDateRange(req((short)10000));
+            annualPeriod.calculateBudgetPeriodInterval(req((short)10000));
         });
     }
     @ParameterizedTest
     @MethodSource("requestDtoProvider")
     void testShouldGetPeriodDateRangeSuccessfully(CreateBudgetRequestDTO dto, LocalDate[] expectedRange) throws Exception {
-        LocalDate[] dateRange = annualPeriod.calculateBudgetDateRange(dto);
+        LocalDate[] dateRange = annualPeriod.calculateBudgetPeriodInterval(dto);
         assertEquals(expectedRange[0], dateRange[0]);
         assertEquals(expectedRange[1], dateRange[1]);
     }

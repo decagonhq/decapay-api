@@ -79,17 +79,17 @@ public class MonthPeriodTest {
     @Test
     void testThrow400WhenGetDateRandeAndMonthInvalid() throws Exception {
         assertThrows(InvalidRequestException.class, () -> {
-            monthPeriod.calculateBudgetDateRange(req((short) 0,(short)2022));
+            monthPeriod.calculateBudgetPeriodInterval(req((short) 0,(short)2022));
         });
         assertThrows(InvalidRequestException.class, () -> {
-            monthPeriod.calculateBudgetDateRange(req((short) 13,(short)2022));
+            monthPeriod.calculateBudgetPeriodInterval(req((short) 13,(short)2022));
         });
 
     }
     @ParameterizedTest
     @MethodSource("requestDtoProvider")
     void testShouldGetPeriodDateRangeSuccessfully(CreateBudgetRequestDTO dto, LocalDate[] expectedRange) throws Exception {
-        LocalDate[] dateRange = monthPeriod.calculateBudgetDateRange(dto);
+        LocalDate[] dateRange = monthPeriod.calculateBudgetPeriodInterval(dto);
         assertEquals(expectedRange[0], dateRange[0]);
         assertEquals(expectedRange[1], dateRange[1]);
     }

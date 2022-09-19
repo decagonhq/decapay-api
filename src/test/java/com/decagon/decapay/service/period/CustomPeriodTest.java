@@ -83,7 +83,7 @@ public class CustomPeriodTest {
     @ParameterizedTest
     @MethodSource("requestDtoProvider")
     void testShouldGetPeriodDateRangeSuccessfully(CreateBudgetRequestDTO dto, LocalDate[] expectedRange) throws Exception {
-        LocalDate[] dateRange = customPeriod.calculateBudgetDateRange(dto);
+        LocalDate[] dateRange = customPeriod.calculateBudgetPeriodInterval(dto);
         assertEquals(expectedRange[0], dateRange[0]);
         assertEquals(expectedRange[1], dateRange[1]);
     }

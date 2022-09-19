@@ -29,7 +29,7 @@ public class SecurityConfig {
      */
     @Configuration
     @Order(1)
-    public static class ClientWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+    public static class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 //        @Value("${api.basepath-api}")
         private final String path = "/api/v1";
@@ -58,7 +58,7 @@ public class SecurityConfig {
         public void configure(WebSecurity web) {
         }
 
-        public ClientWebSecurityConfigurerAdapter() {
+        public WebSecurityConfigurer() {
             super();
         }
 
