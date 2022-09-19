@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public IdResponseDto registerUser(final SignUpRequestDTO signUpRequestDTO) throws ResourceConflictException {
 
-        if (userRepository.findByEmail(signUpRequestDTO.getEmail().toLowerCase()).isPresent()) {
+        if (this.userEmailTaken(signUpRequestDTO.getEmail())) {
             throw new ResourceConflictException();
         }
 
@@ -117,7 +117,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUserProfile(UserDto userDto) {
         User currentUser = this.userInfoUtil.getCurrAuthUser();
-        if (userRepository.findByEmail(userDto.getEmail().toLowerCase()).isPresent()) {
+
+        if (this.userEmailTaken(userDto.getEmail(),currentUser.getId())) {
             throw new ResourceConflictException();
         }
         this.populateUserModel(userDto, currentUser);
@@ -158,4 +159,23 @@ public class UserServiceImpl implements UserService {
     private boolean checkIfNewPasswordMatches(ChangePasswordRequestDto changePasswordRequestDto){
         return Objects.equals(changePasswordRequestDto.getNewPassword(), changePasswordRequestDto.getConfirmNewPassword());
     }
+
+    private boolean userEmailTaken(String email) {
+        return this.userRepository.existsByEmail(email);
+    }
+
+    /**
+     * use to check if user email exist on editing by excluding the user from
+     * the query using the user id.
+     * @param email
+     * @param id
+     * @return
+     */
+    private boolean userEmailTaken(String email, Long id) {
+        return this.userRepository.existsByEmailAndIdNot(email, id);
+    }
+
+
+
+
 }
