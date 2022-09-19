@@ -36,6 +36,9 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Class manages Budget, Budget Line Item and Expense Entities
+ */
 @Service
 @Slf4j
 public class BudgetServiceImpl implements BudgetService {
@@ -62,7 +65,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
-        Budget budget = this.createModelEntity(budgetRequest, budgetPeriodHandler);
+        Budget budget = this.createBudgetModelEntity(budgetRequest, budgetPeriodHandler);
 
         this.saveBudget(budget, currentUser);
 
@@ -106,7 +109,7 @@ public class BudgetServiceImpl implements BudgetService {
         budgetRepository.save(budget);
     }
 
-    private Budget createModelEntity(CreateBudgetRequestDTO budgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
+    private Budget createBudgetModelEntity(CreateBudgetRequestDTO budgetRequest, AbstractBudgetPeriodHandler budgetPeriodHandler) {
 
         Budget budget = new Budget();
         CreateBudgetPopulator populator = new CreateBudgetPopulator();
@@ -119,20 +122,21 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     public Page<BudgetResponseDto> getBudgets(int pageSize, int pageNo, List<SearchCriteria> searchCriterias) throws JsonProcessingException {
 
-        Pageable pageable = PageUtil.normalisePageRequest(pageNo, pageSize);
-
         User currentUser = this.userInfoUtil.getCurrAuthUser();
+
+        Page<BudgetResponseDto> budgets = budgetRepository.findBudgetsByUserId(PageUtil.normalisePageRequest(pageNo, pageSize), currentUser.getId(), searchCriterias);
 
         String userSettings = currentUser.getUserSetting();
 
+        return convertBudgetsToResponseDtos(budgets,userSettings);
+    }
+
+    private Page<BudgetResponseDto> convertBudgetsToResponseDtos(Page<BudgetResponseDto> budgets,String userSettings) {
+
         Object[] currencyLocale = CommonUtil.getLocaleAndCurrency(userSettings, objectMapper);
 
-        Page<BudgetResponseDto> budgets = budgetRepository.findBudgetsByUserId(pageable, currentUser.getId(), searchCriterias);
-
         Budget budget1 = new Budget();
-
         return budgets.map(budgetResponseDto -> {
-
             budgetResponseDto.setDisplayTotalAmountSpentSoFar(currencyService.formatAmount(budgetResponseDto.getTotalAmountSpentSoFar(), (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
             budgetResponseDto.setDisplayProjectedAmount(currencyService.formatAmount(budgetResponseDto.getProjectedAmount(), (Locale) currencyLocale[0], (Currency) currencyLocale[1]));
             budget1.setTotalAmountSpentSoFar(budgetResponseDto.getTotalAmountSpentSoFar());
@@ -142,6 +146,7 @@ public class BudgetServiceImpl implements BudgetService {
             budgetResponseDto.setDisplayPercentageSpentSoFar(percentageSpentSoFar + "%");
             return budgetResponseDto;
         });
+
     }
 
     @Override
@@ -149,13 +154,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         User currentUser = this.userInfoUtil.getCurrAuthUser();
 
-        Optional<Budget> optionalBudget = budgetRepository.findBudgetDetailsById(budgetId);
-
-        if (optionalBudget.isEmpty()) {
-            throw new ResourceNotFoundException("Resource Not Found");
-        }
-
-        Budget budget = optionalBudget.get();
+        Budget budget = budgetRepository.findBudgetDetailsById(budgetId).orElseThrow(()-> new ResourceNotFoundException("Resource Not Found"));
 
         if (!isCurrentUserOwnerOfBudget(currentUser, budget)) {
             throw new InvalidRequestException("Invalid Request");
@@ -306,7 +305,7 @@ public class BudgetServiceImpl implements BudgetService {
         BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(budgetLineItemDto.getBudgetCategoryId(), currentUser)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-        if (isBudgetLineItemExistsForCategory(budget.getBudgetLineItems(), category)) {
+        if (budget.hasLineItemForCategory(category)) {
             throw new ResourceConflictException("Budget line item already exists");
         }
 
@@ -381,11 +380,6 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
 
-    private boolean isBudgetLineItemExistsForCategory(Collection<BudgetLineItem> budgetLineItems, BudgetCategory category) {
-        return budgetLineItems
-                .stream()
-                .anyMatch(lineItem -> lineItem.getBudgetCategory().getId().equals(category.getId()));
-    }
 
     @Override
     @Transactional
@@ -402,7 +396,7 @@ public class BudgetServiceImpl implements BudgetService {
         BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-        BudgetLineItem lineItem = getLineItem(budget, category);
+        BudgetLineItem lineItem = budget.getBudgetLineItem(category);//getLineItem(budget, category);
 
         BigDecimal expectedLineItemsTotalAmountForNewEditRequestAfterSave = calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(budget, lineItem, budgetLineItemDto);
 
@@ -426,13 +420,6 @@ public class BudgetServiceImpl implements BudgetService {
         return budgetTotalAmount.add(budgetLineItemDto.getAmount());
     }
 
-    private BudgetLineItem getLineItem(Budget budget, BudgetCategory category) {
-        BudgetLineItem budgetLineItem = budget.getBudgetLineItem(category);
-        if (budgetLineItem == null) {
-            throw new ResourceNotFoundException("Budget Line item not found");
-        }
-        return budgetLineItem;
-    }
 
     @Override
     @Transactional
@@ -446,13 +433,15 @@ public class BudgetServiceImpl implements BudgetService {
         BudgetCategory category = this.budgetCategoryService.findCategoryByIdAndUser(categoryId, currentUser)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-        BudgetLineItem lineItem = this.getLineItem(budget, category);
-
-        if (isExpensesPresentForLineItem(lineItem)) {
-            throw new InvalidRequestException("Cannot delete line item with existing expenses");
+        BudgetLineItem budgetLineItem = budget.getBudgetLineItem(category);
+        if (budgetLineItem == null) {
+            throw new ResourceNotFoundException("Budget Line item not found");
         }
 
-        this.removeLineItem(budget, category);
+        if (isExpensePresentForLineItem(budgetLineItem)) {
+            throw new InvalidRequestException("Cannot delete line item with existing expenses");
+        }
+        budget.removeBudgetLineItem(category);
     }
 
     @Override
@@ -468,27 +457,19 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     private void deleteExpense(Expense expense, User user) {
+
         expenseRepository.deleteById(expense.getId());
-        // Budget updateBudget = budgetRepository.findBudgetWithLineItems(expense.getBudgetLineItem().getBudget().getId(), user.getId())
-        //.orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
         expense.getBudgetLineItem().removeExpense(expense);
     }
 
     private boolean isExpenseBelongToUser(User user, Expense expenses) {
         Long userBudgetId = expenses.getBudgetLineItem().getBudget().getUser().getId();
         Long userCategoryId = expenses.getBudgetLineItem().getBudgetCategory().getUser().getId();
-        if (Objects.equals(userBudgetId, user.getId()) && Objects.equals(userCategoryId, user.getId())) {
-            return true;
-        }
-        return false;
+        return Objects.equals(userBudgetId, user.getId()) && Objects.equals(userCategoryId, user.getId());
     }
 
-    private boolean isExpensesPresentForLineItem(BudgetLineItem lineItem) {
+    private boolean isExpensePresentForLineItem(BudgetLineItem lineItem) {
         return expenseRepository.existsByBudgetLineItem_BudgetCategoryAndBudgetLineItem_Budget(lineItem.getBudgetCategory(), lineItem.getBudget());
-    }
-
-    private void removeLineItem(Budget budget, BudgetCategory category) {
-        budget.removeBudgetLineItem(category);
     }
 
     @Override
@@ -506,13 +487,16 @@ public class BudgetServiceImpl implements BudgetService {
         if (!budget.isValidExpenseTransactionDate(expenseDto.getTransactionDate())) {
             throw new InvalidRequestException(String.format("Expense transaction date {%s} is outside budget period {%s} - {%s} ", expenseDto.getTransactionDate(), budget.getBudgetStartDate(), budget.getBudgetEndDate()));
         }
-        BudgetLineItem lineItem = this.getLineItem(budget, category);
+        BudgetLineItem budgetLineItem = budget.getBudgetLineItem(category);
+        if (budgetLineItem == null) {
+            throw new ResourceNotFoundException("Budget Line item not found");
+        }
 
-        Expense expense = this.createExpenseModelEntity(expenseDto, lineItem);
+        Expense expense = this.createExpenseModelEntity(expenseDto, budgetLineItem);
 
         expense = this.saveExpense(expense);
 
-        lineItem.addExpense(expense);
+        budgetLineItem.addExpense(expense);
 
         return new IdResponseDto(expense.getId());
     }
