@@ -1,8 +1,8 @@
 package com.decagon.decapay.service.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.UserDTO;
-import com.decagon.decapay.dto.UserResponseDto;
+import com.decagon.decapay.dto.user.UserDTO;
+import com.decagon.decapay.dto.user.UserResponseDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.exception.ResourceConflictException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
@@ -10,7 +10,7 @@ import com.decagon.decapay.model.reference.country.Country;
 import com.decagon.decapay.model.reference.currency.Currency;
 import com.decagon.decapay.model.reference.language.Language;
 import com.decagon.decapay.model.user.User;
-import com.decagon.decapay.populator.UserAccountPopulator;
+import com.decagon.decapay.populator.user.UserAccountPopulator;
 import com.decagon.decapay.repositories.reference.currency.CurrencyRepository;
 import com.decagon.decapay.repositories.reference.language.LanguageRepository;
 import com.decagon.decapay.repositories.reference.zone.country.CountryRepository;

@@ -1,4 +1,4 @@
-package com.decagon.decapay.dto;
+package com.decagon.decapay.dto.common;
 
 
 import lombok.Data;

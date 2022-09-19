@@ -2,7 +2,7 @@ package com.decagon.decapay.controller.user;
 
 import javax.validation.Valid;
 
-import com.decagon.decapay.dto.UserDTO;
+import com.decagon.decapay.dto.user.UserDTO;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 

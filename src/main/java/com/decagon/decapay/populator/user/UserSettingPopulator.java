@@ -1,8 +1,8 @@
-package com.decagon.decapay.populator;
+package com.decagon.decapay.populator.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.UserDTO;
-import com.decagon.decapay.model.user.User;
+import com.decagon.decapay.dto.user.UserDTO;
+import com.decagon.decapay.populator.AbstractDataPopulator;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 

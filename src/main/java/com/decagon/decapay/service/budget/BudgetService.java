@@ -1,7 +1,7 @@
 package com.decagon.decapay.service.budget;
 
 
-import com.decagon.decapay.dto.SearchCriteria;
+import com.decagon.decapay.dto.common.SearchCriteria;
 import com.decagon.decapay.dto.budget.*;
 import com.decagon.decapay.dto.common.IdResponseDto;
 import com.decagon.decapay.service.budget.periodHandler.AbstractBudgetPeriodHandler;

@@ -1,4 +1,4 @@
-package com.decagon.decapay.controller;
+package com.decagon.decapay.controller.reference;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.reference.UserSettingReferencesDto;

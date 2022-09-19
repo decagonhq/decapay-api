@@ -1,4 +1,4 @@
-package com.decagon.decapay.dto;
+package com.decagon.decapay.dto.user;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

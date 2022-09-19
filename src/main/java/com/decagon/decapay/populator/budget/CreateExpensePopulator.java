@@ -1,12 +1,13 @@
-package com.decagon.decapay.populator;
+package com.decagon.decapay.populator.budget;
 
 import com.decagon.decapay.constants.DateConstants;
 import com.decagon.decapay.dto.budget.ExpenseDto;
 import com.decagon.decapay.exception.ConversionRuntimeException;
 import com.decagon.decapay.model.budget.Expense;
+import com.decagon.decapay.populator.AbstractDataPopulator;
 import com.decagon.decapay.utils.CustomDateUtil;
 
-public class CreateExpensePopulator extends AbstractDataPopulator<ExpenseDto, Expense>{
+public class CreateExpensePopulator extends AbstractDataPopulator<ExpenseDto, Expense> {
     @Override
     public Expense populate(ExpenseDto source, Expense target) throws ConversionRuntimeException {
         target.setAmount(source.getAmount());

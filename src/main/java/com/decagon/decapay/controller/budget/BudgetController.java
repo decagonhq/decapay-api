@@ -1,7 +1,7 @@
 package com.decagon.decapay.controller.budget;
 
 
-import com.decagon.decapay.dto.SearchCriteria;
+import com.decagon.decapay.dto.common.SearchCriteria;
 import com.decagon.decapay.dto.budget.BudgetResponseDto;
 import com.decagon.decapay.dto.budget.CreateBudgetRequestDTO;
 import com.decagon.decapay.dto.budget.CreateBudgetResponseDTO;
