@@ -32,9 +32,40 @@ From the command line:
 
 	$ mvn clean install
 
+Run the application:
+-------------------
+From the command line:
+
+    $ mvn spring-boot:run
+
+From the IDE:
+
+    Run the main method in the com.decagon.decapay.DecapayApplication class from your IDE.
+
 Run the application in a container:
 -------------------
 	$ docker-compose run --service-ports web -d
+
+To speed up the Project development, a `docker-compose` file has been provided that
+will run the application and a [PostgreSQL](https://www.postgresql.org/) instance,
+which you can start with the following command: `docker-compose up`. You can connect to
+this instance from your application with the following values:
+
+```
+JDBC URL = jdbc:postgresql://localhost:5432/decapay
+Username = decapay
+Password = password
+```
+Run the Tests:
+-------------------
+From the command line:
+
+    $ mvn test
+
+From the IDE:
+    
+        Run the test classes in the com.decagon.decapay package within the test package from your IDE.
+
 
 ## Accessing the Application:
 -------------------
