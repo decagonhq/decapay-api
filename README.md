@@ -11,7 +11,7 @@ Decapay is a digital product that allows users to track and manage their finance
 - Manage Budget categories.
 - Manage Budget line items.
 - log and manage Expenses.
-- Track their expenses.
+- Track expenses.
 
 ### Tools:
 - Language/Framework: Java/Spring Boot
@@ -38,8 +38,7 @@ Run the application in a container:
 
  Accessing the Application:
 -------------------
-Api documentation available at : http://localhost:5010/swagger-ui.html
-
+Api documentation available at : http://localhost:5000/swagger-ui.html
 
  Deployment Architecture
 -------------------
