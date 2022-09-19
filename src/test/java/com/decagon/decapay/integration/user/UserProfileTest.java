@@ -96,7 +96,7 @@ class UserProfileTest {
 
 		setAuthHeader(user);
 
-		this.mockMvc.perform(get(path + "/user")
+		this.mockMvc.perform(get(path + "/profile")
 						.contentType(MediaType.APPLICATION_JSON).headers(headers).accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andExpect(status().isOk())

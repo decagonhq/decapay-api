@@ -1,8 +1,7 @@
 package com.decagon.decapay.unit.controller;
 
-import com.decagon.decapay.controller.auth.ChangePasswordController;
+import com.decagon.decapay.controller.user.UserController;
 import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
-import com.decagon.decapay.service.auth.PasswordResetService;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.annotation.UnsecuredWebMvcTest;
@@ -19,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@UnsecuredWebMvcTest(controllers = ChangePasswordController.class)
+@UnsecuredWebMvcTest(controllers = UserController.class)
 @ActiveProfiles("test")
 class ChangePasswordControllerTest {
     @Value("${api.basepath-api}")
@@ -38,7 +37,7 @@ class ChangePasswordControllerTest {
     }
 
     void assertFailWithInvalidRequest(ChangePasswordRequestDto requestDto, String... invalidInputs) throws Exception {
-        mockMvc.perform(post(path + "/change-password")
+        mockMvc.perform(post(path + "/profile/changePassword")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtils.asJsonString(requestDto)))
                 .andExpect(status().isBadRequest()).
@@ -71,7 +70,7 @@ class ChangePasswordControllerTest {
         requestDto.setNewPassword("newPassword");
         requestDto.setConfirmNewPassword("newPassword1");
 
-        mockMvc.perform(post(path + "/change-password")
+        mockMvc.perform(post(path + "/profile/changePassword")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtils.asJsonString(requestDto)))
                 .andExpect(status().isBadRequest());

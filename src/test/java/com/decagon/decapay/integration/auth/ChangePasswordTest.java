@@ -118,7 +118,7 @@ class ChangePasswordTest {
         //then
         this.setAuthHeader(user);
 
-        this.validateExpectation(dto, status().isBadRequest(),"/change-password");
+        this.validateExpectation(dto, status().isBadRequest(),"/profile/changePassword");
     }
 
     @Test
@@ -131,7 +131,7 @@ class ChangePasswordTest {
         //then
         this.setAuthHeader(user);
 
-        this.validateExpectation(dto, status().isBadRequest(),"/change-password");
+        this.validateExpectation(dto, status().isBadRequest(),"/profile/changePassword");
     }
 
     @Test
@@ -144,7 +144,7 @@ class ChangePasswordTest {
         //then
         this.setAuthHeader(user);
 
-        this.validateExpectation(dto, status().isBadRequest(),"/change-password");
+        this.validateExpectation(dto, status().isBadRequest(),"/profile/changePassword");
     }
 
     @Test
@@ -159,11 +159,10 @@ class ChangePasswordTest {
         //then
         this.setAuthHeader(user);
 
-        this.validateExpectation(dto, status().isOk(), "/change-password")
+        this.validateExpectation(dto, status().isOk(), "/profile/changePassword")
                 .andExpect(jsonPath("$.message").value(PASSWORD_CHANGED_SUCCESSFULLY));
 
         Collection<TokenBlacklist> tokenBlacklistCollection = this.tokenBlacklistRepository.findAll();
-        System.out.println(Arrays.toString(tokenBlacklistCollection.toArray(TokenBlacklist[]::new)));
         assertEquals(1, tokenBlacklistCollection.size());
 
         //assert user can't log in with old password
