@@ -1,6 +1,7 @@
 package com.decagon.decapay.service.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
+import com.decagon.decapay.dto.EditUserDto;
 import com.decagon.decapay.dto.UserDTO;
 import com.decagon.decapay.dto.UserResponseDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
@@ -99,5 +100,19 @@ public class UserServiceImpl implements UserService {
                 .email(currentUser.getEmail())
                 .phoneNumber(currentUser.getPhoneNumber())
                 .build();
+    }
+
+    @Override
+    public String editUserProfile(EditUserDto editUserDto) {
+        if (userRepository.findByEmail(editUserDto.getEmail().toLowerCase()).isPresent()) {
+            throw new ResourceConflictException();
+        }
+        User currentUser = this.userInfoUtil.getCurrAuthUser();
+        currentUser.setFirstName(editUserDto.getFirstName());
+        currentUser.setLastName(editUserDto.getLastName());
+        currentUser.setEmail(editUserDto.getEmail());
+        currentUser.setPhoneNumber(editUserDto.getPhoneNumber());
+        userRepository.save(currentUser);
+        return "Profile updated successfully";
     }
 }

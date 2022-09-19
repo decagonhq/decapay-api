@@ -1,8 +1,10 @@
 package com.decagon.decapay.integration.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
+import com.decagon.decapay.dto.EditUserDto;
 import com.decagon.decapay.dto.UserDTO;
 import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
+import com.decagon.decapay.dto.budget.ExpenseDto;
 import com.decagon.decapay.model.budget.BudgetCategory;
 import com.decagon.decapay.model.reference.country.Country;
 import com.decagon.decapay.model.reference.currency.Currency;
@@ -40,8 +42,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -288,5 +289,73 @@ class UserControllerTest {
 				.andExpect(jsonPath("$.data.lastName").value("dip"))
 				.andExpect(jsonPath("$.data.email").value("ola@gmail.com"))
 				.andExpect(jsonPath("$.data.phoneNumber").value("08067644805"));
+	}
+
+	@Test
+	void givenUserProfileExist_WhenUserUpdateProfileWithInvalidData_ShouldReturn400() throws Exception {
+		User user = TestModels.user("ola", "dip", "ola@gmail.com",
+				passwordEncoder.encode("password"), "08067644805");
+		user.setUserStatus(UserStatus.ACTIVE);
+		userRepository.save(user);
+
+		EditUserDto dto = new EditUserDto();
+		dto.setFirstName("");
+		dto.setLastName("");
+		dto.setEmail("og");
+		dto.setPhoneNumber("070");
+
+		setAuthHeader(user);
+
+		this.mockMvc.perform(put(path + "/user/edit")
+						.content(TestUtils.asJsonString(dto))
+						.contentType(MediaType.APPLICATION_JSON).headers(headers))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void givenUserProfileExist_WhenUserUpdateProfileWithValidDataButExistingEmail_shouldReturn409() throws Exception {
+		User user = TestModels.user("ola", "dip", "ola@gmail.com",
+				passwordEncoder.encode("password"), "08067644805");
+		user.setUserStatus(UserStatus.ACTIVE);
+		userRepository.save(user);
+
+		User user2 = TestModels.user("king", "john", "og@gmail.com",
+				passwordEncoder.encode("password"), "08067655805");
+		user.setUserStatus(UserStatus.ACTIVE);
+		userRepository.save(user2);
+
+		EditUserDto dto = new EditUserDto();
+		dto.setFirstName("Goodluck");
+		dto.setLastName("Nwoko");
+		dto.setEmail("og@gmail.com");
+		dto.setPhoneNumber("07056755667");
+
+		setAuthHeader(user);
+
+		this.mockMvc.perform(put(path + "/user/edit")
+						.content(TestUtils.asJsonString(dto))
+						.contentType(MediaType.APPLICATION_JSON).headers(headers))
+				.andExpect(status().isConflict());
+	}
+
+	@Test
+	void givenUserProfileExist_WhenUserUpdateProfileWithValidData_ShouldUpdateProfileSuccessfully() throws Exception {
+		User user = TestModels.user("ola", "dip", "ola@gmail.com",
+				passwordEncoder.encode("password"), "08067644805");
+		user.setUserStatus(UserStatus.ACTIVE);
+		userRepository.save(user);
+
+		EditUserDto dto = new EditUserDto();
+		dto.setFirstName("Goodluck");
+		dto.setLastName("Nwoko");
+		dto.setEmail("og@gmail.com");
+		dto.setPhoneNumber("07056755667");
+
+		setAuthHeader(user);
+
+		this.mockMvc.perform(put(path + "/user/edit")
+						.content(TestUtils.asJsonString(dto))
+						.contentType(MediaType.APPLICATION_JSON).headers(headers))
+				.andExpect(status().isOk());
 	}
 }

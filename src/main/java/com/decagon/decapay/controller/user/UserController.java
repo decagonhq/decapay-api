@@ -2,6 +2,7 @@ package com.decagon.decapay.controller.user;
 
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
+import com.decagon.decapay.dto.EditUserDto;
 import com.decagon.decapay.dto.UserResponseDto;
 import com.decagon.decapay.dto.budget.ViewBudgetDto;
 import com.decagon.decapay.service.user.UserService;
@@ -15,10 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 
@@ -39,5 +39,16 @@ public class UserController {
     public ResponseEntity<ApiDataResponse<UserResponseDto>> viewUserProfile(){
        UserResponseDto userResponseDto = userService.viewUserProfile();
         return ApiResponseUtil.response(HttpStatus.OK, userResponseDto);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = USER_PROFILE_UPDATED_SUCCESSFULLY),
+            @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
+            @ApiResponse(responseCode = "409", description = USER_EMAIL_ALREADY_EXISTS,content = @Content)})
+    @Operation(summary = "Edit User Profile", description = "Edit User Profile")
+    @PutMapping("/user/edit")
+    public ResponseEntity<ApiDataResponse<Object>> editUserProfile(@Valid @RequestBody EditUserDto editUserDto){
+        String editUserResponse = userService.editUserProfile(editUserDto);
+        return ApiResponseUtil.response(HttpStatus.OK, editUserResponse);
     }
 }

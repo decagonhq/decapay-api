@@ -1,6 +1,7 @@
 package com.decagon.decapay.service.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
+import com.decagon.decapay.dto.EditUserDto;
 import com.decagon.decapay.dto.UserResponseDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 
@@ -17,4 +18,6 @@ public interface UserService {
     UserSettings getUserSettings();
 
     UserResponseDto viewUserProfile();
+
+    String editUserProfile(EditUserDto editUserDto);
 }
