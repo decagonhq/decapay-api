@@ -1,19 +1,19 @@
 
 
-##Decapay Backend API
+## Decapay Backend API
 
-##Overview
+### Overview
 
 Decapay is a digital product that allows users to track and manage their finances.
 
-###Features:
+### Features:
 - Manage Budgets
 - Manage Budget categories.
 - Manage Budget line items.
 - log and manage Expenses.
 - Track their expenses.
 
-###Tools:
+### Tools:
 - Language/Framework: Java/Spring Boot
 - Flyway -Database migration
 - JUnit - Unit and Integration testing
@@ -36,10 +36,10 @@ Run the application in a container:
 -------------------
 	$ docker-compose run --service-ports web -d
 
-## Accessing the Application:
+ Accessing the Application:
 -------------------
 Api documentation available at : http://localhost:5010/swagger-ui.html
 
 
-## Deployment Architecture
+ Deployment Architecture
 -------------------
