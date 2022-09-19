@@ -44,7 +44,7 @@ From the IDE:
 
 Run the application in a container:
 -------------------
-	$ docker-compose run --service-ports web -d
+	$ docker-compose run --service-ports app -d
 
 To speed up the Project development, a `docker-compose` file has been provided that
 will run the application and a [PostgreSQL](https://www.postgresql.org/) instance,
