@@ -3,6 +3,7 @@ package com.decagon.decapay.unit.controller;
 import com.decagon.decapay.controller.auth.ChangePasswordController;
 import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
 import com.decagon.decapay.service.auth.PasswordResetService;
+import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.annotation.UnsecuredWebMvcTest;
 import org.hamcrest.Matchers;
@@ -26,7 +27,7 @@ class ChangePasswordControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    PasswordResetService passwordResetService;
+    UserService passwordResetService;
 
     ChangePasswordRequestDto requestDto(){
         ChangePasswordRequestDto requestDto = new ChangePasswordRequestDto();

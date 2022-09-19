@@ -2,7 +2,7 @@ package com.decagon.decapay.controller.auth;
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
-import com.decagon.decapay.service.auth.PasswordResetService;
+import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +27,7 @@ import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 @RequestMapping(value = "${api.basepath-api}")
 public class ChangePasswordController {
 
-    private final PasswordResetService service;
+    private final UserService service;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = PASSWORD_CHANGED_SUCCESSFULLY),

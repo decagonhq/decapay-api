@@ -1,6 +1,7 @@
 package com.decagon.decapay.service.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
+import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 
 import com.decagon.decapay.dto.UserDTO;
@@ -14,4 +15,6 @@ public interface UserService {
     Optional<User> findUserByEmail(String userName);
 
     UserSettings getUserSettings();
+
+    void changePassword(ChangePasswordRequestDto changePasswordRequestDto, String deviceId);
 }

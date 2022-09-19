@@ -86,33 +86,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         }
     }
 
-    @Override
-    public void changePassword(ChangePasswordRequestDto changePasswordRequestDto, String deviceId) {
-        User currentUser = this.userInfoUtil.getCurrAuthUser();
-
-        if (!this.checkIfOldPasswordIsValid(changePasswordRequestDto.getPassword(), currentUser.getPassword())) {
-            throw new InvalidRequestException("Invalid old password");
-        }
-
-        if(!this.checkIfNewPasswordMatches(changePasswordRequestDto)) {
-            throw new InvalidRequestException("Passwords do not match");
-        }
-
-        PasswordReset passwordReset = this.repository.findByEmailAndDeviceId(currentUser.getEmail(), deviceId)
-                .orElseThrow(() -> new ResourceNotFoundException(TOKEN_DOES_NOT_EXIST));
-
-        this.saveNewPassword(currentUser, changePasswordRequestDto.getNewPassword());
-        this.invalidateToken(passwordReset);
-    }
-
-    private boolean checkIfOldPasswordIsValid(final String oldPassword, final String userPassword) {
-        return passwordEncoder.matches(oldPassword, userPassword);
-    }
-
-    private boolean checkIfNewPasswordMatches(ChangePasswordRequestDto changePasswordRequestDto){
-        return Objects.equals(changePasswordRequestDto.getNewPassword(), changePasswordRequestDto.getConfirmNewPassword());
-    }
-
     private void createNewPasswordForWeb(CreatePasswordRequestDto createPasswordRequestDto) {
         PasswordReset passwordReset = this.repository.findByToken(createPasswordRequestDto.getToken()).orElseThrow(() -> new ResourceNotFoundException(TOKEN_DOES_NOT_EXIST));
         if (passwordReset.tokenExpired()) {

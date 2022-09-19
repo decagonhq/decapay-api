@@ -12,5 +12,4 @@ public interface PasswordResetService {
 
     void createPassword(CreatePasswordRequestDto createPasswordRequestDto, String deviceId);
 
-    void changePassword(ChangePasswordRequestDto changePasswordRequestDto, String deviceId);
 }
