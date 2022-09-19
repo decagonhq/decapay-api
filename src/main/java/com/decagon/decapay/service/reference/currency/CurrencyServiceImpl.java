@@ -1,4 +1,4 @@
-package com.decagon.decapay.service.currency;
+package com.decagon.decapay.service.reference.currency;
 
 import com.decagon.decapay.constants.AppConstants;
 import com.decagon.decapay.model.reference.currency.Currency;

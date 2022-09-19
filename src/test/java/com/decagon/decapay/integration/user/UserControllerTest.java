@@ -1,9 +1,7 @@
 package com.decagon.decapay.integration.user;
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.UserDTO;
-import com.decagon.decapay.dto.budget.CreateBudgetLineItemDto;
-import com.decagon.decapay.model.budget.BudgetCategory;
+import com.decagon.decapay.dto.user.UserDTO;
 import com.decagon.decapay.model.reference.country.Country;
 import com.decagon.decapay.model.reference.currency.Currency;
 import com.decagon.decapay.model.reference.language.Language;
@@ -17,7 +15,6 @@ import com.decagon.decapay.security.CustomUserDetailsService;
 import com.decagon.decapay.security.JwtUtil;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.TestModels;
-import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.extensions.DBCleanerExtension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -36,8 +33,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

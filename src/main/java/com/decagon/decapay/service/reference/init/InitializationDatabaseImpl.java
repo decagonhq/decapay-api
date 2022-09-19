@@ -3,7 +3,7 @@ package com.decagon.decapay.service.reference.init;
 import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.model.reference.country.Country;
 import com.decagon.decapay.model.reference.language.Language;
-import com.decagon.decapay.service.currency.CurrencyService;
+import com.decagon.decapay.service.reference.currency.CurrencyService;
 import com.decagon.decapay.service.reference.country.CountryService;
 import com.decagon.decapay.service.reference.language.LanguageService;
 import com.decagon.decapay.utils.CommonUtil;

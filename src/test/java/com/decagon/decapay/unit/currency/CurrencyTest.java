@@ -2,7 +2,7 @@ package com.decagon.decapay.unit.currency;
 
 
 import com.decagon.decapay.constants.AppConstants;
-import com.decagon.decapay.service.currency.CurrencyServiceImpl;
+import com.decagon.decapay.service.reference.currency.CurrencyServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
