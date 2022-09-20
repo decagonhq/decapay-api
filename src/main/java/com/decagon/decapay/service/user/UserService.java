@@ -3,7 +3,7 @@ package com.decagon.decapay.service.user;
 import com.decagon.decapay.config.userSetting.UserSettings;
 import com.decagon.decapay.dto.user.UserDto;
 import com.decagon.decapay.dto.user.UserResponseDto;
-import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
+import com.decagon.decapay.dto.user.ChangePasswordRequestDto;
 import com.decagon.decapay.dto.common.IdResponseDto;
 
 import com.decagon.decapay.dto.user.SignUpRequestDTO;

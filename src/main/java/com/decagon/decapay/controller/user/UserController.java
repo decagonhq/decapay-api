@@ -2,17 +2,14 @@ package com.decagon.decapay.controller.user;
 
 
 import com.decagon.decapay.apiresponse.ApiDataResponse;
-import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
+import com.decagon.decapay.dto.user.ChangePasswordRequestDto;
 import com.decagon.decapay.dto.user.UserDto;
 import com.decagon.decapay.dto.user.UserResponseDto;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.*;
-
 
 import javax.validation.Valid;
 

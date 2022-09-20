@@ -1,4 +1,4 @@
-package com.decagon.decapay.dto.auth;
+package com.decagon.decapay.dto.user;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

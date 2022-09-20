@@ -1,7 +1,7 @@
 package com.decagon.decapay.unit.controller;
 
 import com.decagon.decapay.controller.user.UserController;
-import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
+import com.decagon.decapay.dto.user.ChangePasswordRequestDto;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.TestUtils;
 import com.decagon.decapay.utils.annotation.UnsecuredWebMvcTest;

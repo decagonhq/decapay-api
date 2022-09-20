@@ -2,13 +2,11 @@ package com.decagon.decapay.integration.auth;
 
 
 import com.decagon.decapay.config.userSetting.UserSettings;
-import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
+import com.decagon.decapay.dto.user.ChangePasswordRequestDto;
 import com.decagon.decapay.dto.auth.LoginDto;
-import com.decagon.decapay.model.auth.PasswordReset;
 import com.decagon.decapay.model.auth.TokenBlacklist;
 import com.decagon.decapay.model.user.User;
 import com.decagon.decapay.model.user.UserStatus;
-import com.decagon.decapay.repositories.auth.PasswordResetRepository;
 import com.decagon.decapay.repositories.auth.TokenBlacklistRepository;
 import com.decagon.decapay.repositories.user.UserRepository;
 import com.decagon.decapay.security.CustomUserDetailsService;
@@ -36,10 +34,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 
-import java.util.Arrays;
 import java.util.Collection;
 
-import static com.decagon.decapay.constants.AppConstants.*;
 import static com.decagon.decapay.constants.ResponseMessageConstants.PASSWORD_CHANGED_SUCCESSFULLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

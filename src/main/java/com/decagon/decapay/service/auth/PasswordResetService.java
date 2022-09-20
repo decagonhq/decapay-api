@@ -1,6 +1,5 @@
 package com.decagon.decapay.service.auth;
 
-import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
 import com.decagon.decapay.dto.auth.CreatePasswordRequestDto;
 import com.decagon.decapay.dto.auth.ForgotPasswordRequestDto;
 import com.decagon.decapay.dto.auth.VerifyPasswordResetCodeRequest;

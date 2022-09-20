@@ -1,6 +1,5 @@
 package com.decagon.decapay.service.auth;
 
-import com.decagon.decapay.dto.auth.ChangePasswordRequestDto;
 import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.exception.ResourceNotFoundException;
 import com.decagon.decapay.model.auth.PasswordReset;
@@ -19,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
