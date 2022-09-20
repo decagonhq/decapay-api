@@ -42,6 +42,29 @@ From the IDE:
 
     Run the main method in the com.decagon.decapay.DecapayApplication class from your IDE.
 
+Locally:
+
+    Create application-dev.properties file in src/main/resources folder,
+    Create your database,
+   
+    add the following for Datasource configuration:
+    
+    spring.datasource.driverClassName = org.postgresql.Driver
+    spring.datasource.url = jdbc:postgresql://localhost:5432/{your_database_name}
+    spring.datasource.username = {your_database_username}
+    spring.datasource.password = {your_database_password}
+
+    add the following email configuration for smtp protocol:
+
+    spring.mail.host = {your_email_host}
+    spring.mail.username = {your_email_username}
+    spring.mail.password = {your_email_password}
+    spring.mail.properties.mail.transport.protocol = {your_email_protocol}
+    spring.mail.properties.mail.smtp.port = {your_email_port}
+    spring.mail.properties.mail.smtp.auth = {true|false}
+    spring.mail.properties.mail.smtp.starttls.enable = {true|false}
+    spring.mail.properties.mail.smtp.starttls.required = {true|false}
+
 Run the application in a container:
 -------------------
 	$ docker-compose run --service-ports app -d

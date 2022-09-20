@@ -134,10 +134,6 @@ public class UserServiceImpl implements UserService {
             throw new InvalidRequestException("Invalid old password");
         }
 
-        if(!this.checkIfNewPasswordMatches(changePasswordRequestDto)) {
-            throw new InvalidRequestException("Passwords do not match");
-        }
-
         this.saveNewPassword(currentUser, changePasswordRequestDto.getNewPassword());
 
         this.invalidateToken(token);
@@ -154,10 +150,6 @@ public class UserServiceImpl implements UserService {
 
     private boolean checkIfOldPasswordIsValid(final String oldPassword, final String userPassword) {
         return passwordEncoder.matches(oldPassword, userPassword);
-    }
-
-    private boolean checkIfNewPasswordMatches(ChangePasswordRequestDto changePasswordRequestDto){
-        return Objects.equals(changePasswordRequestDto.getNewPassword(), changePasswordRequestDto.getConfirmNewPassword());
     }
 
     private boolean userEmailTaken(String email) {
