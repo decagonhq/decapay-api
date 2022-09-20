@@ -401,7 +401,8 @@ public class BudgetServiceImpl implements BudgetService {
         BigDecimal expectedLineItemsTotalAmountForNewEditRequestAfterSave = calculateExpectedNewTotalLineItemsAmountForNewEditRequestAfterSave(budget, lineItem, budgetLineItemDto);
 
         if (isBudgetProjectedAmountLessThanLineItemsTotalAmountAfterSave(budget, expectedLineItemsTotalAmountForNewEditRequestAfterSave)) {
-            throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountForNewEditRequestAfterSave, (Locale) currencyLocale[0], (Currency) currencyLocale[1]), budget.getProjectedAmount()));
+            throw new InvalidRequestException(String.format("Sum of Line Item Projected amount {%s} Cannot be greater than budget total amount {%s} ", currencyService.formatAmount(expectedLineItemsTotalAmountForNewEditRequestAfterSave, (Locale) currencyLocale[0], (Currency) currencyLocale[1]),
+                   this.currencyService.formatAmount(budget.getProjectedAmount(),(Locale)currencyLocale[0],(Currency)currencyLocale[1])));
         }
 
         this.updateBudgetLineItem(lineItem, budgetLineItemDto.getAmount());
