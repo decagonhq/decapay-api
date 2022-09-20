@@ -8,7 +8,11 @@ import com.decagon.decapay.dto.user.UserResponseDto;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,9 +52,10 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = INVALID_REQUEST,content = @Content),
             @ApiResponse(responseCode = "404", description = NOT_FOUND,content = @Content)})
     @Operation(summary = "Change Password", description = "Change User Password With Token Passed In Header")
+    @Parameter(name = "token", hidden = true)
     @PostMapping("/profile/changePassword")
     public ResponseEntity<ApiDataResponse<Object>> changePassword(@Valid @RequestBody ChangePasswordRequestDto changePasswordRequestDto,
-                                                                  @RequestHeader(AUTHORIZATION) String token) {
+                                                                  @RequestHeader(name =AUTHORIZATION,required = false) String token) {
         this.userService.changePassword(changePasswordRequestDto, token);
         return ApiResponseUtil.response(HttpStatus.OK, PASSWORD_CHANGED_SUCCESSFULLY);
     }
