@@ -5,6 +5,7 @@ import com.decagon.decapay.apiresponse.ApiDataResponse;
 import com.decagon.decapay.dto.user.ChangePasswordRequestDto;
 import com.decagon.decapay.dto.user.UserDto;
 import com.decagon.decapay.dto.user.UserResponseDto;
+import com.decagon.decapay.exception.InvalidRequestException;
 import com.decagon.decapay.service.user.UserService;
 import com.decagon.decapay.utils.ApiResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,8 +52,17 @@ public class UserController {
     @PostMapping("/profile/changePassword")
     public ResponseEntity<ApiDataResponse<Object>> changePassword(@Valid @RequestBody ChangePasswordRequestDto changePasswordRequestDto,
                                                                   @RequestHeader(name =AUTHORIZATION,required = false) String token) {
+        this.validateRequest(changePasswordRequestDto);
         this.userService.changePassword(changePasswordRequestDto, token);
         return ApiResponseUtil.response(HttpStatus.OK, PASSWORD_CHANGED_SUCCESSFULLY);
+    }
+
+
+    private void validateRequest(ChangePasswordRequestDto changePasswordRequestDto) {
+        //check if new password matches confirmation password
+        if(!changePasswordRequestDto.getNewPassword().equals(changePasswordRequestDto.getConfirmNewPassword())){
+            throw new InvalidRequestException("Password and Confirmation password does not match");
+        }
     }
 
 
