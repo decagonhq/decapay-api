@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import static com.decagon.decapay.constants.ResponseMessageConstants.*;
 import static com.decagon.decapay.constants.ResponseMessageConstants.NOT_FOUND;
 
-@Tag(name ="Register User Controller")
+@Tag(name ="Sign Up Controller")
 @SecurityRequirements
 @RestController
 @RequestMapping(value = "${api.basepath-api}")
