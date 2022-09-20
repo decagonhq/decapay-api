@@ -2,12 +2,7 @@ package com.decagon.decapay.constants;
 //TODO: use localisation to localise messages
 public class ResponseMessageConstants {
     //SUCCESS MESSAGES
-    public static final String RESOURCE_CREATED_SUCCESSFULLY = "Resource Created Successfully";
     public static final String RESOURCE_RETRIEVED_SUCCESSFULLY = "Resource Retrieved Successfully";
-    public static final String RESOURCE_UPDATED_SUCCESSFULLY = "Resource Updated Successfully";
-    public static final String RESOURCE_DEACTIVATED_SUCCESSFULLY = "Resource Deactivated Successfully";
-    public static final String RESOURCE_ACTIVATED_SUCCESSFULLY = "Resource Activated Successfully";
-    public static final String EMAIL_SENT_SUCCESSFULLY = "Email Sent Successfully";
     public static final String FORGOT_PASSWORD_INITIATED_SUCCESSFULLY = "Forgot Password Initiated Successfully";
     public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Password Changed Successfully";
     public static final String PASSWORD_CREATED_SUCCESSFULLY = "Password Created Successfully";
@@ -49,7 +44,6 @@ public class ResponseMessageConstants {
     public static final String PASSWORD_RESET_TOKEN_HAS_EXPIRED = "Reset Token Has Expired";
     public static final String PASSWORD_RESET_CODE_IS_UNVERIFIED = "Reset Code Is Unverified";
     public static final String TOKEN_DOES_NOT_EXIST = "Token Does Not Exist";
-    public static final String PASSWORD_SHOULD_NOT_BE_EMPTY = "Password Should Not be Empty";
     public static final String PASSWORDS_DONT_MATCH = "Passwords Dont Match";
     public static final String UNEXPECTED_VALUE = "Unexpected value: ";
     public static final String BUDGET_FETCHED_SUCCESSFULLY = "Budget fetched sucessfully";
