@@ -1,5 +1,5 @@
 package com.decagon.decapay.constants;
-
+//TODO: use localisation to localise messages
 public class ResponseMessageConstants {
     //SUCCESS MESSAGES
     public static final String RESOURCE_CREATED_SUCCESSFULLY = "Resource Created Successfully";
