@@ -26,6 +26,13 @@ public class SchemaConstants {
 
 
     public static final String[] LANGUAGE_ISO_CODE = {"en"};
+    public static final int FIRST_NAME_MAX_SIZE = 100;
+    public static final int LAST_NAME_MAX_SIZE = 100;
+    public static final int PHONE_NUMBER_MAX_SIZE = 50;
+    public static final int COUNTRY_CODE_MAX_SIZE = 2;
+    public static final int CURRENCY_CODE_MAX_SIZE = 3;
+    public static final int LANGUAGE_CODE_MAX_SIZE = 2;
+    public static final int EMAIL_MAX_SIZE = 100;
 
     public static HashMap<String, String> getCurrenciesMap() {
 

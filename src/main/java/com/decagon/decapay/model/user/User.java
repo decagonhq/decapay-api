@@ -1,6 +1,7 @@
 package com.decagon.decapay.model.user;
 
 
+import com.decagon.decapay.constants.SchemaConstants;
 import com.decagon.decapay.model.audit.AuditListener;
 import com.decagon.decapay.model.audit.AuditSection;
 import com.decagon.decapay.model.audit.Auditable;
@@ -28,20 +29,20 @@ public class User implements Auditable, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100)
+    @Column(length = SchemaConstants.FIRST_NAME_MAX_SIZE)
     private String firstName;
 
-    @Column(length = 100)
+    @Column(length = SchemaConstants.LAST_NAME_MAX_SIZE)
     private String lastName;
 
     @Email
-    @Column(unique = true, length = 100)
+    @Column(unique = true, length = SchemaConstants.EMAIL_MAX_SIZE)
     private String email;
 
     @Column(length = 64)
     private String password;
 
-    @Column(length = 50)
+    @Column(length = SchemaConstants.PHONE_NUMBER_MAX_SIZE)
     private String phoneNumber;
 
     @Column(length = 1000)

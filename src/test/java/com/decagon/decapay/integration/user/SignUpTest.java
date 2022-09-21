@@ -73,6 +73,9 @@ class SignUpTest {
 	@BeforeEach
 	void setUp() {
 		signUpRequestDTO = new SignUpRequestDTO("firstName", "lastName", "a@b.com", "Password1!", "0123456789");
+		signUpRequestDTO.setCountryCode("FR");
+		signUpRequestDTO.setCurrencyCode("GMD");
+		signUpRequestDTO.setLanguageCode("au");
 	}
 
 	@Test
@@ -233,6 +236,8 @@ class SignUpTest {
 		user.setPassword("Password1!");
 		user.setPhoneNumber("0123456789");
 		userRepository.save(user);
+
+		signUpRequestDTO.setEmail("a@b.com");
 
 		mockMvc.perform(
 			post(path + "/register").contentType(MediaType.APPLICATION_JSON).content(
