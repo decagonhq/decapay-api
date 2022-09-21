@@ -7,10 +7,8 @@
 Decapay is a digital product that allows users to track and manage their finances.
 
 ### Features:
-- Manage Budgets
-- Manage Budget categories.
-- Manage Budget line items.
-- log and manage Expenses.
+- Create and Manage Budgets
+- Log and manage Expenses.
 - Track expenses.
 
 ### Tools:
@@ -42,19 +40,22 @@ From the IDE:
 
     Run the main method in the com.decagon.decapay.DecapayApplication class from your IDE.
 
-Locally:
+### To Run the Application Locally:
 
-    Create application-dev.properties file in src/main/resources folder,
-    Create your database,
-   
-    add the following for Datasource configuration:
+- Create application-dev.properties file in src/main/resources folder,
+    
+- Create your database,
+
+#### For Database configuration:
+Add the followings in application-dev file: 
     
     spring.datasource.driverClassName = org.postgresql.Driver
     spring.datasource.url = jdbc:postgresql://localhost:5432/{your_database_name}
     spring.datasource.username = {your_database_username}
     spring.datasource.password = {your_database_password}
 
-    add the following email configuration for smtp protocol:
+#### For Email configuration-smtp protocol:
+Add the followings in application-dev file:
 
     spring.mail.host = {your_email_host}
     spring.mail.username = {your_email_username}
@@ -65,8 +66,8 @@ Locally:
     spring.mail.properties.mail.smtp.starttls.enable = {true|false}
     spring.mail.properties.mail.smtp.starttls.required = {true|false}
 
-Run the application in a container:
--------------------
+### To Run the application in a container:
+
 	$ docker-compose run --service-ports app -d
 
 To speed up the Project development, a `docker-compose` file has been provided that
